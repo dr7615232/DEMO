@@ -55,3 +55,4 @@ Artifact links are listed in the top-level repository `README.md`.
 - [ ] Ensure no secrets are present: Supabase keys, Cloudinary/Google/Resend credentials, `.env` values. (None are included here — code snippets read from env only.)
 - [ ] Double-check screenshots/recordings do not capture a real admin session.
 - [ ] If publishing the source separately, verify no `service_role` key or Supabase project ref is committed.
+- [ ] Note: the interactive demo now includes the owner's **real brand logo and property photos** (provided by the owner) under `../demo/img/`. These identify the business, so treat the demo as non-anonymous and share it only where that is intended. Booking data (names/phones/emails) remains fictional.

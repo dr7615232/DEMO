@@ -4,6 +4,41 @@ A portfolio repository of project case studies.
 
 ## Projects
 
+### 🌞 [SUNSUITE](./sunsuite/) — booking & operations platform for luxury vacation-rental and spa complexes
+
+A production, Hebrew-RTL platform where guests book short-stay suites and a private
+spa (overnight or by the hour) online, and the owner runs the whole operation from
+one admin panel. Availability accounts for the cleaning buffer between guests; one
+click approves a booking and the system auto-schedules the cleaning, syncs the stay
+to Google Calendar, and emails the guest. A dedicated **Shabbat mode** closes the
+site automatically using real candle-lighting/havdalah times.
+
+**Stack:** TanStack Start (React 19) · TanStack Router/Query · Supabase (PostgreSQL + RLS) ·
+TypeScript · Tailwind v4 · Cloudflare · Google Calendar · Cloudinary · Resend/SMTP · Hebcal
+
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/U5ice3pCdtNUEsU4LsTT63
+- 🌞 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/CvWsa7cPV7KZwcPJvUrez1
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+Start with **[`sunsuite/docs/README.md`](./sunsuite/docs/README.md)** for the full index, or jump to
+the **[case study](./sunsuite/docs/case-study.md)**.
+
+**📄 Project page (Hebrew):** [`sunsuite/site/index.html`](./sunsuite/site/index.html) — a designed,
+RTL Hebrew case-study page telling the project story, with a link to the live demo. Open it in a browser (no build).
+
+**🌞 Interactive UI demo:** [`sunsuite/demo/index.html`](./sunsuite/demo/index.html) — a faithful,
+self-contained reconstruction of the real system's screens in Hebrew (RTL) with demo data:
+admin overview, bookings, calendar (with Hebrew dates), cleanings, blocks, properties, customers,
+reports, settings, and the public booking site with an availability calendar and Shabbat mode.
+Open it in a browser (no build step). Uses example data only — no real customers.
+
+> ℹ️ These are portfolio materials describing a real client system. Before making anything
+> public, review the anonymization checklist in [`sunsuite/docs/README.md`](./sunsuite/docs/README.md).
+
+---
+
 ### 🌊 [Zramim (זרמים)](./zramim/) — studio-management platform with a self-service phone line
 
 A production, Hebrew-RTL management system for a swimming & water-aerobics studio:

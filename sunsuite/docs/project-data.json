@@ -1,0 +1,68 @@
+{
+  "slug": "sunsuite",
+  "name": "SUNSUITE",
+  "tagline_he": "מערכת ניהול הזמנות לנופש וספא",
+  "tagline_en": "Booking & operations platform for luxury vacation-rental and spa complexes",
+  "type": "Full-stack SaaS / booking & operations platform",
+  "status": "Production",
+  "language": "Hebrew (RTL)",
+  "audience": "Business owners running short-stay rental & spa complexes",
+  "year": 2026,
+  "summary_he": "אתר הזמנות ומערכת ניהול אחת למתחמי נופש וספא: בקשות אונליין, בדיקת זמינות עם זמן ניקיון, אישור בלחיצה, תזמון ניקיון אוטומטי, סנכרון ליומן והודעות לאורחים, כולל מצב שבת אוטומטי.",
+  "summary_en": "A public booking site plus a single admin panel for vacation-rental & spa complexes: online requests, availability that respects cleaning buffers, one-click approval, automatic cleaning scheduling, Google Calendar sync, guest notifications, and automatic Shabbat mode.",
+  "roles": ["Product design", "Frontend", "Backend", "Database design", "Integrations", "DevOps"],
+  "stack": {
+    "framework": ["TanStack Start (React 19)", "TanStack Router", "TanStack Query"],
+    "language": ["TypeScript"],
+    "styling": ["Tailwind CSS v4", "shadcn/ui (Radix UI)", "oklch design tokens", "Assistant + Rubik fonts", "RTL"],
+    "backend": ["Supabase server functions", "Zod validation", "requireAdmin middleware"],
+    "database": ["Supabase PostgreSQL", "Row-Level Security", "Realtime", "Auth", "Storage"],
+    "integrations": ["Google Calendar API", "Cloudinary", "Resend / SMTP", "Hebcal (Shabbat times)"],
+    "hosting": ["Cloudflare", "Vite", "@cloudflare/vite-plugin", "wrangler"],
+    "libraries": ["Recharts", "ExcelJS", "jsPDF", "date-fns", "react-hook-form", "framer-motion", "lucide-react", "sonner"]
+  },
+  "features": [
+    "Public booking site (hero, per-property showcases, gallery, FAQ, contact)",
+    "Overnight and by-the-hour booking in one model",
+    "Live availability that includes the required cleaning buffer",
+    "Server-side price calculation with extras and extra hours",
+    "Digital terms signature captured per booking",
+    "Admin overview dashboard with live updates",
+    "Bookings queue with filters, search, overlap detection and Excel export",
+    "Month calendar with color-coded stays, cleanings and blocks",
+    "Automatic cleaning windows sized by guest count",
+    "Manual blocks for maintenance or private use",
+    "Per-property editor: content, times, cleaning rules, pricing, media",
+    "Customers list built automatically from bookings",
+    "Reports with charts (by property, type and month) and KPIs",
+    "Two-way Google Calendar sync for stays, cleanings and blocks",
+    "Automatic email notifications to owner and guests",
+    "Automatic Shabbat mode based on real candle-lighting / havdalah times",
+    "Motzaei-Shabbat checkout times and weekly commitment-notice logic for spa"
+  ],
+  "highlights": [
+    "Availability engine treats the post-stay cleaning window as first-class 'busy' time, preventing an entire class of double-bookings.",
+    "One-click approval orchestrates cleaning + calendar + email, with best-effort side effects and an idempotent status guard.",
+    "Cleaning duration is policy-driven per property (guest-count bands stored as JSON) and applied automatically.",
+    "Shabbat mode closes the site automatically using Hebcal times for the property's location, failing open on error.",
+    "Realtime admin screens stay in sync via Supabase Postgres change subscriptions."
+  ],
+  "screens": [
+    "Overview (dashboard)",
+    "Bookings",
+    "Calendar",
+    "Cleanings",
+    "Blocks",
+    "Properties (types of stay)",
+    "Customers",
+    "Reports",
+    "Settings",
+    "Public booking site",
+    "Shabbat mode screen"
+  ],
+  "links": {
+    "project_page": "../site/index.html",
+    "interactive_demo": "../demo/index.html"
+  },
+  "privacy_note": "Demo and docs use example data only (example.com). No real guest data, business identifiers or secrets are included."
+}

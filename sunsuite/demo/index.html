@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUNSUITE · דמו מערכת ניהול</title>
+<meta name="description" content="תצוגת דמו אינטראקטיבית של מערכת הניהול וההזמנות של SUNSUITE — מתחמי נופש וספא. נתונים לדוגמה בלבד.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Rubik:wght@500;600;700;800;900&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap">
+<style>
+  /* ===== Design system extracted from the real app (src/styles.css, oklch → hex) ===== */
+  :root{
+    --bg:#faf6ec;         /* background — warm cream */
+    --card:#ffffff;
+    --ink:#2b2417;        /* foreground — dark warm brown */
+    --soft:#8a7e66;       /* muted-foreground */
+    --gold:#c99a4e;       /* primary */
+    --gold-deep:#a87d2e;  /* primary hover / gold-deep */
+    --accent:#e6bf72;     /* accent */
+    --sand:#f3ead5;       /* secondary */
+    --muted:#f6f1e5;
+    --line:#e7dfca;       /* border */
+    --primary-fg:#231d10;
+    /* status / calendar */
+    --ok:#10b981; --pend:#f59e0b; --clean:#cbd5e1; --block:#ef4444; --danger:#dc2626;
+    --radius:0.9rem;
+    --sans:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --head:"Rubik","Assistant",system-ui,sans-serif;
+    --shadow-soft:0 10px 40px -12px rgba(80,60,20,.18);
+    --shadow-card:0 1px 2px rgba(60,45,15,.06),0 1px 3px rgba(60,45,15,.05);
+  }
+  *{box-sizing:border-box}
+  html{direction:rtl}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:var(--head);letter-spacing:-.015em;font-weight:700;margin:0}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--gold-deep);outline-offset:2px;border-radius:6px}
+
+  /* ===== top app bar ===== */
+  .appbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);box-shadow:var(--shadow-card)}
+  .appbar-in{max-width:1180px;margin-inline:auto;height:64px;display:flex;align-items:center;justify-content:space-between;padding-inline:clamp(14px,4vw,26px);gap:12px}
+  .brand{display:flex;align-items:center;gap:.6rem;min-width:0}
+  .brand .mark{width:34px;height:34px;flex:none}
+  .brand .wm{font-family:"Frank Ruhl Libre",serif;font-weight:900;font-size:1.24rem;letter-spacing:.14em;color:var(--ink)}
+  .brand .sub{font-size:.66rem;font-weight:700;letter-spacing:.05em;color:var(--soft)}
+  .modeswitch{display:flex;background:var(--sand);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+  .modeswitch button{border:0;background:transparent;color:var(--soft);font-weight:700;font-size:.8rem;padding:.4rem .85rem;border-radius:999px}
+  .modeswitch button.on{background:var(--gold);color:#fff;box-shadow:0 2px 8px -2px rgba(160,120,40,.6)}
+
+  /* ===== admin tabs ===== */
+  .tabbar{position:sticky;top:64px;z-index:50;background:var(--sand);border-bottom:1px solid var(--line)}
+  .tabbar-in{max-width:1180px;margin-inline:auto;display:flex;gap:6px;padding:10px clamp(14px,4vw,26px);overflow-x:auto}
+  .tab{border:0;background:transparent;white-space:nowrap;color:var(--ink);font-size:.86rem;font-weight:600;padding:.5rem .9rem;border-radius:.55rem;transition:.15s}
+  .tab:hover{background:#fff}
+  .tab.on{background:var(--gold);color:#fff}
+
+  .wrap{max-width:1180px;margin-inline:auto;padding:clamp(18px,3.5vw,32px) clamp(14px,4vw,26px) 70px}
+  .page{display:none}
+  .page.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .h1{font-size:1.75rem;font-weight:800}
+  .pagehead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
+  .muted{color:var(--soft)}
+  .sub1{color:var(--soft);font-size:.9rem;margin-top:4px}
+
+  /* cards & grids */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-card)}
+  .pad{padding:20px}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+  @media(max-width:560px){.g3{grid-template-columns:1fr}}
+
+  .kpi{padding:20px;display:block}
+  .kpi .lbl{font-size:.85rem;color:var(--soft)}
+  .kpi .val{font-size:2.4rem;font-weight:800;margin-top:6px;line-height:1;font-family:var(--head)}
+  .kpi.link:hover{background:#fffdf7}
+  .val.pend{color:var(--gold-deep)} .val.ok{color:var(--gold)}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);background:var(--sand);color:var(--ink);font-weight:700;font-size:.82rem;padding:.5rem .85rem;border-radius:.6rem;transition:.15s}
+  .btn:hover{background:#fff}
+  .btn.pri{background:var(--gold);border-color:var(--gold);color:#fff}
+  .btn.pri:hover{background:var(--gold-deep);border-color:var(--gold-deep)}
+  .btn.sm{padding:.32rem .6rem;font-size:.75rem;border-radius:.5rem}
+  .btn.danger{background:#fdeaea;border-color:#f6cdcd;color:var(--danger)}
+  .btn.ghost{background:transparent}
+
+  /* pills / badges */
+  .pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;white-space:nowrap}
+  .pill.pend{background:rgba(230,191,114,.35);color:#8a6a1e}
+  .pill.ok{background:rgba(201,154,78,.2);color:var(--gold-deep)}
+  .pill.cxl{background:var(--muted);color:var(--soft)}
+  .pill.dot::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:currentColor;display:inline-block}
+
+  /* tables */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:720px}
+  thead{background:var(--sand)}
+  th{text-align:right;padding:.7rem .8rem;font-weight:700;color:#6f6247;white-space:nowrap}
+  td{padding:.7rem .8rem;border-top:1px solid var(--line);vertical-align:middle}
+  tbody tr:hover{background:#fffdf7}
+  .row-warn{background:#fff8ec}
+  .ltr{direction:ltr;unicode-bidi:isolate}
+  .small{font-size:.75rem;color:var(--soft)}
+
+  /* toolbar / inputs */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+  .input,select.input{border:1px solid var(--line);background:#fff;border-radius:.55rem;padding:.5rem .7rem;font-size:.83rem;font-family:inherit;color:var(--ink)}
+  .input::placeholder{color:#b3a98f}
+  .chipbtn{background:var(--sand);border:1px solid var(--line);border-radius:.5rem;padding:.35rem .7rem;font-size:.75rem;font-weight:600}
+
+  /* section title */
+  .sec-t{font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+  /* list rows */
+  .lrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:.6rem 0;border-top:1px solid var(--line)}
+  .lrow:first-child{border-top:0}
+
+  /* calendar */
+  .calhead{display:grid;grid-template-columns:repeat(7,1fr);background:var(--sand);text-align:center;font-size:.75rem;font-weight:700;color:#6f6247}
+  .calhead div{padding:.5rem 0}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr)}
+  .cell{min-height:96px;border-top:1px solid var(--line);border-inline-start:1px solid var(--line);padding:5px}
+  .cell.empty{background:#fbf7ee}
+  .cell .dnum{font-size:.72rem;color:var(--soft);display:flex;justify-content:space-between;margin-bottom:4px}
+  .cell.today .dnum{color:var(--gold-deep);font-weight:800}
+  .ev{font-size:.66rem;border-radius:.35rem;padding:.12rem .35rem;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}
+  .ev.ok{background:var(--ok);color:#fff}
+  .ev.pend{background:var(--pend);color:#3d2c05}
+  .ev.clean{background:var(--clean);color:#334155;border:1px solid #94a3b8}
+  .ev.block{background:var(--block);color:#fff}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .legkey{font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:999px}
+
+  /* charts (pure CSS/SVG) */
+  .bars{display:flex;align-items:flex-end;gap:14px;height:210px;padding-top:10px}
+  .bars .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+  .bars .bar{width:70%;max-width:52px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--accent),var(--gold))}
+  .bars .cval{font-size:.78rem;font-weight:700}
+  .bars .clbl{font-size:.72rem;color:var(--soft);text-align:center}
+  .barsH{display:flex;flex-direction:column;gap:12px}
+  .barH{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:10px;font-size:.82rem}
+  .barH .track{background:var(--muted);border-radius:999px;height:16px;overflow:hidden}
+  .barH .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--accent))}
+
+  /* property editor */
+  .propcard{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);overflow:hidden;box-shadow:var(--shadow-card)}
+  .prophead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;background:#fbf7ee;border-bottom:1px solid var(--line)}
+  .subtabs{display:flex;gap:4px;padding:10px 16px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .subtab{border:0;background:transparent;padding:.5rem .9rem;font-size:.82rem;font-weight:600;color:var(--soft);border-bottom:2px solid transparent}
+  .subtab.on{color:var(--gold-deep);border-color:var(--gold)}
+  .field{display:block}
+  .field span{display:block;font-size:.72rem;color:var(--soft);margin-bottom:4px}
+  .field .input{width:100%}
+  .formgrid{display:grid;gap:14px;grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:700px){.formgrid{grid-template-columns:1fr}}
+
+  /* settings */
+  .setgrid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+  @media(max-width:820px){.setgrid{grid-template-columns:1fr}}
+  .switch{width:42px;height:24px;border-radius:999px;background:var(--line);position:relative;transition:.2s;border:0;flex:none}
+  .switch::after{content:"";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .switch.on{background:var(--gold)}
+  .switch.on::after{right:21px}
+  .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:.7rem 0;border-top:1px solid var(--line)}
+  .setrow:first-child{border-top:0}
+
+  /* ===== PUBLIC SITE ===== */
+  .site{display:none}
+  .site.on{display:block}
+  .hero{position:relative;min-height:440px;border-radius:0;display:flex;align-items:flex-end;color:#fff;overflow:hidden;
+    background:linear-gradient(180deg,rgba(30,22,8,.15),rgba(30,22,8,.72)),
+    radial-gradient(120% 90% at 70% 15%,#e9c987 0%,#c98f43 42%,#7d5320 100%)}
+  .hero-in{position:relative;z-index:2;max-width:1180px;margin-inline:auto;width:100%;padding:clamp(30px,6vw,70px) clamp(16px,4vw,26px)}
+  .hero .eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.28em;opacity:.92}
+  .hero h2{font-family:"Frank Ruhl Libre",serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:900;margin:.4rem 0;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+  .hero p{max-width:52ch;font-size:1.05rem;opacity:.95}
+  .sun{position:absolute;top:8%;left:12%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#fff5dd,#f4c96b);box-shadow:0 0 90px 30px rgba(244,201,107,.55);z-index:1}
+  .site-nav{display:flex;gap:20px;align-items:center;font-size:.85rem;font-weight:600}
+  @media(max-width:640px){.site-nav{display:none}}
+  .booking-cta{background:var(--gold);color:#fff;border-radius:999px;padding:.55rem 1.1rem;font-weight:700}
+
+  .sitewrap{max-width:1180px;margin-inline:auto;padding:clamp(24px,4vw,44px) clamp(16px,4vw,26px)}
+  .prop-showcase{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;margin-bottom:34px}
+  @media(max-width:800px){.prop-showcase{grid-template-columns:1fr}}
+  .ph-img{border-radius:1.2rem;min-height:260px;box-shadow:var(--shadow-soft)}
+  .ph-1{background:linear-gradient(135deg,#dcb978,#b07e39),url('data:image/svg+xml;utf8,') }
+  .feat{display:flex;align-items:center;gap:.5rem;font-size:.9rem;padding:.3rem 0}
+  .feat .fi{width:26px;height:26px;border-radius:8px;background:var(--sand);display:grid;place-items:center;color:var(--gold-deep);flex:none}
+
+  .booking-box{border:1px solid var(--line);border-radius:1.2rem;background:var(--card);box-shadow:var(--shadow-soft);overflow:hidden}
+  .bb-head{background:#fbf7ee;padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .seg{display:flex;background:var(--sand);border:1px solid var(--line);border-radius:.7rem;padding:3px;gap:2px}
+  .seg button{border:0;background:transparent;padding:.45rem .9rem;border-radius:.55rem;font-weight:700;font-size:.82rem;color:var(--soft)}
+  .seg button.on{background:var(--gold);color:#fff}
+  .price-sum{background:#fbf7ee;border:1px dashed var(--line);border-radius:.9rem;padding:14px 16px}
+  .price-line{display:flex;justify-content:space-between;font-size:.85rem;padding:.2rem 0;color:var(--soft)}
+  .price-total{display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800;border-top:1px solid var(--line);margin-top:8px;padding-top:10px;color:var(--ink)}
+  .avail-ok{background:#eafaf2;border:1px solid #b6e6cf;color:#0f7a4f;border-radius:.7rem;padding:.6rem .8rem;font-size:.83rem;font-weight:600;display:flex;gap:.4rem;align-items:center}
+
+  /* shabbat screen */
+  .shabbat{display:none;min-height:70vh;place-items:center;text-align:center;padding:60px 20px;
+    background:radial-gradient(120% 90% at 50% 0%,#2a3550,#141b2c)}
+  .shabbat.on{display:grid}
+  .shabbat .box{color:#eef1f8;max-width:520px}
+  .shabbat h2{font-family:"Frank Ruhl Libre",serif;font-size:2.4rem;color:#f6d98a;margin-bottom:12px}
+  .shabbat p{opacity:.85;line-height:1.9}
+  .shabbat .cand{font-size:3rem;margin-bottom:10px}
+
+  /* demo badge */
+  .demobadge{position:fixed;bottom:14px;inset-inline-start:14px;z-index:80;background:rgba(43,36,23,.92);color:#fbf1d8;font-size:.72rem;font-weight:700;padding:.5rem .8rem;border-radius:999px;box-shadow:var(--shadow-soft);display:flex;align-items:center;gap:.4rem}
+  .demobadge .d{width:.5rem;height:.5rem;border-radius:50%;background:var(--gold);display:inline-block}
+  .dialog-note{font-size:.78rem;color:var(--soft);margin-top:6px}
+  .flash{position:fixed;top:76px;inset-inline-end:20px;z-index:90;background:var(--ink);color:#fff;padding:.7rem 1rem;border-radius:.7rem;font-size:.85rem;font-weight:600;box-shadow:var(--shadow-soft);opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none}
+  .flash.show{opacity:1;transform:none}
+
+  /* gallery */
+  .gallery-main{border-radius:1.1rem;min-height:280px;box-shadow:var(--shadow-soft)}
+  .gallery-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+  .th{height:60px;border-radius:.6rem;cursor:pointer;border:2px solid transparent;background:linear-gradient(135deg,#e6c98a,#8a6528)}
+  .th.on{border-color:var(--gold)}
+
+  /* range calendar (public availability) */
+  .rc{border:1px solid var(--line);border-radius:1rem;background:#fff;padding:12px;box-shadow:var(--shadow-card)}
+  .rc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;text-align:center}
+  .rc-nav{border:1px solid var(--line);background:var(--sand);border-radius:.5rem;width:32px;height:32px;font-size:.8rem}
+  .rc-dow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.7rem;font-weight:700;color:var(--soft);margin-bottom:4px}
+  .rc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .rc-day{aspect-ratio:1;border:0;background:transparent;border-radius:.5rem;font-size:.8rem;font-weight:600;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;gap:1px;position:relative}
+  .rc-day .g{font-size:.56rem;color:var(--soft);font-weight:500}
+  .rc-day:hover:not(.busy):not(.empty){background:var(--sand)}
+  .rc-day.busy{color:#c9bfa6;text-decoration:line-through;cursor:not-allowed;background:#f4f0e6}
+  .rc-day.busy .g{color:#cabfa6}
+  .rc-day.empty{visibility:hidden}
+  .rc-day.sel{background:var(--gold);color:#fff}
+  .rc-day.sel .g{color:#fff8e6}
+  .rc-day.inrange{background:rgba(201,154,78,.22)}
+  .dualdate{display:block;font-size:.72rem;color:var(--soft);margin-top:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chips button{border:1px solid var(--line);background:#fff;border-radius:.5rem;padding:.35rem .6rem;font-size:.78rem;font-weight:600}
+  .chips button.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .chips button.busy{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<!-- ============ SUN MARK (reusable svg symbol) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="sun-grad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#E0A640"/><stop offset="1" stop-color="#C36A2B"/>
+    </linearGradient>
+    <symbol id="sunmark" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="14" fill="url(#sun-grad)"/>
+      <g stroke="url(#sun-grad)" stroke-width="3" stroke-linecap="round">
+        <line x1="40" y1="8" x2="40" y2="18"/><line x1="40" y1="62" x2="40" y2="72"/>
+        <line x1="8" y1="40" x2="18" y2="40"/><line x1="62" y1="40" x2="72" y2="40"/>
+        <line x1="17" y1="17" x2="24" y2="24"/><line x1="56" y1="56" x2="63" y2="63"/>
+        <line x1="63" y1="17" x2="56" y2="24"/><line x1="24" y1="56" x2="17" y2="63"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ APP BAR ============ -->
+<header class="appbar">
+  <div class="appbar-in">
+    <div class="brand">
+      <svg class="mark"><use href="#sunmark"/></svg>
+      <div>
+        <div class="wm">SUNSUITE</div>
+        <div class="sub" id="brandsub">מערכת ניהול הזמנות</div>
+      </div>
+    </div>
+    <div class="modeswitch">
+      <button id="mode-admin" class="on" onclick="setMode('admin')">מערכת ניהול</button>
+      <button id="mode-site" onclick="setMode('site')">אתר ההזמנות</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ ADMIN TABS ============ -->
+<div class="tabbar" id="tabbar">
+  <div class="tabbar-in" id="tabs">
+    <button class="tab on" data-p="overview">סקירה</button>
+    <button class="tab" data-p="bookings">הזמנות</button>
+    <button class="tab" data-p="calendar">יומן</button>
+    <button class="tab" data-p="cleanings">נקיונות</button>
+    <button class="tab" data-p="blocks">חסימות</button>
+    <button class="tab" data-p="properties">סוגי נופש</button>
+    <button class="tab" data-p="customers">לקוחות</button>
+    <button class="tab" data-p="reports">דוחות</button>
+    <button class="tab" data-p="settings">הגדרות</button>
+  </div>
+</div>
+
+<!-- ============ ADMIN PAGES ============ -->
+<main class="wrap" id="admin-root">
+
+  <!-- ===== OVERVIEW ===== -->
+  <section class="page on" id="p-overview">
+    <div class="pagehead"><h1 class="h1">סקירה כללית</h1><span class="small">מתעדכן אוטומטית · לפני רגע</span></div>
+    <div class="grid g3" style="margin-bottom:18px">
+      <a class="card kpi link" onclick="goTab('bookings')"><div class="lbl">בקשות ממתינות</div><div class="val pend">3</div></a>
+      <a class="card kpi link" onclick="goTab('bookings')"><div class="lbl">הזמנות מאושרות</div><div class="val ok">18</div></a>
+      <div class="card kpi"><div class="lbl">צ'ק-אין היום</div><div class="val">2</div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card pad">
+        <div class="sec-t">צ'ק-אין השבוע</div>
+        <div class="lrow"><span>נועה כהן · SUNSUITE</span><span class="small ltr" style="text-align:left"><span style="display:block">18/09 – 20/09</span><span style="display:block">ז׳ – ט׳ תשרי</span></span></div>
+        <div class="lrow"><span>משפחת לוי · SUNSPA</span><span class="small ltr" style="text-align:left"><span style="display:block">19/09 15:00–19:00</span><span style="display:block">ח׳ תשרי</span></span></div>
+        <div class="lrow"><span>דניאל אברהם · טבריה</span><span class="small ltr" style="text-align:left"><span style="display:block">21/09 – 23/09</span><span style="display:block">י׳ – י״ב תשרי</span></span></div>
+        <div class="lrow"><span>שירה מזרחי · SUNSUITE</span><span class="small ltr" style="text-align:left"><span style="display:block">22/09 – 24/09</span><span style="display:block">י״א – י״ג תשרי</span></span></div>
+      </div>
+      <div class="card pad">
+        <div class="sec-t">נקיונות קרובים <a class="small" style="color:var(--gold-deep)" onclick="goTab('cleanings')">לכל הנקיונות</a></div>
+        <div class="lrow"><div><div style="font-weight:700">SUNSUITE</div><div class="small">נועה כהן · עד 12:30</div></div><span class="small ltr" style="text-align:left"><span style="display:block">20/09 11:00</span><span style="display:block">ט׳ תשרי תשפ״ז</span></span></div>
+        <div class="lrow"><div><div style="font-weight:700">SUNSPA</div><div class="small">משפחת לוי · עד 20:00</div></div><span class="small ltr" style="text-align:left"><span style="display:block">19/09 19:00</span><span style="display:block">ח׳ תשרי תשפ״ז</span></span></div>
+        <div class="lrow"><div><div style="font-weight:700">טבריה</div><div class="small">דניאל אברהם · עד 14:00</div></div><span class="small ltr" style="text-align:left"><span style="display:block">23/09 11:00</span><span style="display:block">י״ב תשרי תשפ״ז</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BOOKINGS ===== -->
+  <section class="page" id="p-bookings">
+    <div class="pagehead">
+      <h1 class="h1">הזמנות</h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="flash('הקובץ יוצא לפי הסינון הנוכחי')">⬇ ייצוא לאקסל</button>
+        <button class="btn pri" onclick="flash('טופס הזמנה ידנית נפתח')">+ הוספת הזמנה ידנית</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input class="input" style="flex:1;min-width:220px" placeholder="חיפוש לפי שם, טלפון, אימייל, מתחם או תוספת">
+      <select class="input"><option>כל סוגי הנופש</option><option>SUNSUITE</option><option>SUNSPA</option><option>טבריה</option></select>
+      <select class="input"><option>כל הסטטוסים</option><option>ממתין</option><option>אושר</option><option>בוטל</option></select>
+    </div>
+    <div class="toolbar">
+      <span class="small">מתאריך</span><input type="date" class="input" value="2026-09-01">
+      <span class="small">עד תאריך</span><input type="date" class="input" value="2026-09-30">
+      <div style="display:flex;gap:6px;margin-inline-start:auto">
+        <button class="chipbtn">היום</button><button class="chipbtn">השבוע</button><button class="chipbtn">החודש</button><button class="chipbtn">הכל</button>
+      </div>
+    </div>
+    <div class="small" style="margin-bottom:8px">מציג 1–6 מתוך 21 הזמנות</div>
+    <div class="tablewrap">
+      <table id="bktable">
+        <thead><tr>
+          <th style="width:32px"><input type="checkbox" onclick="toggleAll(this)"></th>
+          <th>סטטוס</th><th>סוג נופש</th><th>לקוח</th><th>תאריכים</th><th>סוג</th><th>תוספות</th><th>פעולות</th>
+        </tr></thead>
+        <tbody>
+          <tr class="row-warn">
+            <td><input type="checkbox"></td>
+            <td><span class="pill pend">ממתין</span><div style="margin-top:4px"><span class="pill" style="background:#fde9c8;color:#8a5a12;font-size:.62rem">! בקשה חופפת</span></div></td>
+            <td style="font-weight:700">SUNSPA</td>
+            <td>אבי פרידמן<div class="small">avi.f@example.com · 050-000-1122</div><div class="small" style="color:#a97316">חופף עם: רבקה שטרן</div></td>
+            <td class="ltr small">21/09 16:00–20:00<span style="display:block;color:var(--soft)">י׳ תשרי תשפ״ז</span></td><td>שעות</td>
+            <td><span class="pill ok">ספא זוגי</span></td>
+            <td><div style="display:flex;gap:5px"><button class="btn pri sm" onclick="approveRow(this)">אשר</button><button class="btn sm">בטל</button><button class="btn danger sm">מחק</button></div></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><span class="pill pend">ממתין</span></td>
+            <td style="font-weight:700">SUNSUITE</td>
+            <td>שירה מזרחי<div class="small">shira.m@example.com · 052-000-3344</div></td>
+            <td class="ltr small">22/09 – 24/09<span style="display:block;color:var(--soft)">י״א – י״ג תשרי</span></td><td>לילה</td>
+            <td><span class="pill ok">ארוחת בוקר</span></td>
+            <td><div style="display:flex;gap:5px"><button class="btn pri sm" onclick="approveRow(this)">אשר</button><button class="btn sm">בטל</button><button class="btn danger sm">מחק</button></div></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><span class="pill pend">ממתין</span></td>
+            <td style="font-weight:700">טבריה</td>
+            <td>משפחת ביטון<div class="small">biton@example.com · 054-000-5566</div></td>
+            <td class="ltr small">27/09 – 29/09<span style="display:block;color:var(--soft)">ט״ז – י״ח תשרי</span></td><td>לילה</td>
+            <td><span class="muted small">אין</span></td>
+            <td><div style="display:flex;gap:5px"><button class="btn pri sm" onclick="approveRow(this)">אשר</button><button class="btn sm">בטל</button><button class="btn danger sm">מחק</button></div></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><span class="pill ok">אושר</span></td>
+            <td style="font-weight:700">SUNSUITE</td>
+            <td>נועה כהן<div class="small">noa.c@example.com · 050-000-7788</div></td>
+            <td class="ltr small">18/09 – 20/09<span style="display:block;color:var(--soft)">ז׳ – ט׳ תשרי</span></td><td>לילה</td>
+            <td><span class="pill ok">מיטת תינוק</span></td>
+            <td><div style="display:flex;gap:5px"><button class="btn sm">בטל</button><button class="btn danger sm">מחק</button></div></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><span class="pill ok">אושר</span></td>
+            <td style="font-weight:700">SUNSPA</td>
+            <td>משפחת לוי<div class="small">levi@example.com · 053-000-9900</div></td>
+            <td class="ltr small">19/09 15:00–19:00<span style="display:block;color:var(--soft)">ח׳ תשרי תשפ״ז</span></td><td>שעות</td>
+            <td><span class="pill ok">עיסוי זוגי</span></td>
+            <td><div style="display:flex;gap:5px"><button class="btn sm">בטל</button><button class="btn danger sm">מחק</button></div></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><span class="pill cxl">בוטל</span></td>
+            <td style="font-weight:700">טבריה</td>
+            <td>יוסי דהן<div class="small">yossi@example.com · 058-000-2211</div></td>
+            <td class="ltr small">12/09 – 14/09<span style="display:block;color:var(--soft)">א׳ – ג׳ תשרי</span></td><td>לילה</td>
+            <td><span class="muted small">אין</span></td>
+            <td><div style="display:flex;gap:5px"><button class="btn danger sm">מחק</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== CALENDAR ===== -->
+  <section class="page" id="p-calendar">
+    <div class="pagehead">
+      <h1 class="h1">יומן</h1>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="input"><option>כל סוגי הנופש</option><option>SUNSUITE</option><option>SUNSPA</option><option>טבריה</option></select>
+        <button class="btn pri" onclick="flash('היומן סונכרן ל-Google Calendar')">סנכרן לגוגל</button>
+        <button class="btn">▶</button><span style="font-weight:700;min-width:150px;text-align:center;line-height:1.2">ספטמבר 2026<span class="small" style="display:block;font-weight:500">אלול–תשרי תשפ״ז</span></span><button class="btn">◀</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span class="legkey" style="background:var(--ok);color:#fff">מאושר</span>
+      <span class="legkey" style="background:var(--pend);color:#3d2c05">ממתין</span>
+      <span class="legkey" style="background:var(--clean);color:#334155;border:1px solid #94a3b8">ניקיון</span>
+      <span class="legkey" style="background:var(--block);color:#fff">חסום</span>
+    </div>
+    <div class="card" style="overflow:hidden;padding:0">
+      <div class="calhead"><div>א</div><div>ב</div><div>ג</div><div>ד</div><div>ה</div><div>ו</div><div>ש</div></div>
+      <div class="calgrid" id="calgrid"></div>
+    </div>
+    <p class="small ltr" style="margin-top:8px">01/09/2026 – 30/09/2026 · י״ט אלול – י״ט תשרי תשפ״ז</p>
+  </section>
+
+  <!-- ===== CLEANINGS ===== -->
+  <section class="page" id="p-cleanings">
+    <div class="pagehead"><h1 class="h1">נקיונות</h1><span class="small">נוצרים אוטומטית עם אישור כל הזמנה, לפי מספר האורחים</span></div>
+    <div class="tablewrap">
+      <table style="min-width:640px">
+        <thead><tr><th>סוג נופש</th><th>לקוח יוצא</th><th>התחלה</th><th>סיום</th><th>משך</th><th>מקור</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:700">SUNSUITE</td><td>נועה כהן</td><td class="ltr">20/09 11:00<span class="small" style="display:block">ט׳ תשרי תשפ״ז</span></td><td class="ltr">20/09 12:30</td><td>90 דק׳</td><td><span class="pill" style="background:var(--muted);color:var(--soft)">אוטומטי · 4 אורחים</span></td></tr>
+          <tr><td style="font-weight:700">SUNSPA</td><td>משפחת לוי</td><td class="ltr">19/09 19:00<span class="small" style="display:block">ח׳ תשרי תשפ״ז</span></td><td class="ltr">19/09 20:00</td><td>60 דק׳</td><td><span class="pill" style="background:var(--muted);color:var(--soft)">אוטומטי · 2 אורחים</span></td></tr>
+          <tr><td style="font-weight:700">טבריה</td><td>דניאל אברהם</td><td class="ltr">23/09 11:00<span class="small" style="display:block">י״ב תשרי תשפ״ז</span></td><td class="ltr">23/09 14:00</td><td>180 דק׳</td><td><span class="pill" style="background:var(--muted);color:var(--soft)">אוטומטי · 12 אורחים</span></td></tr>
+          <tr><td style="font-weight:700">SUNSUITE</td><td>שירה מזרחי</td><td class="ltr">24/09 11:00<span class="small" style="display:block">י״ג תשרי תשפ״ז</span></td><td class="ltr">24/09 12:30</td><td>90 דק׳</td><td><span class="pill" style="background:var(--muted);color:var(--soft)">אוטומטי · 5 אורחים</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card pad" style="margin-top:16px;background:#fbf7ee">
+      <div class="sec-t">איך נקבע משך הניקיון?</div>
+      <div class="barsH" style="max-width:520px">
+        <div class="barH"><span>1–2 אורחים</span><div class="track"><div class="fill" style="width:33%"></div></div><b>60 דק׳</b></div>
+        <div class="barH"><span>3–6 אורחים</span><div class="track"><div class="fill" style="width:50%"></div></div><b>90 דק׳</b></div>
+        <div class="barH"><span>7–10 אורחים</span><div class="track"><div class="fill" style="width:66%"></div></div><b>120 דק׳</b></div>
+        <div class="barH"><span>11+ אורחים</span><div class="track"><div class="fill" style="width:100%"></div></div><b>180 דק׳</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BLOCKS ===== -->
+  <section class="page" id="p-blocks">
+    <div class="pagehead"><h1 class="h1">חסימות</h1><button class="btn pri" onclick="flash('חלון הוספת חסימה נפתח')">+ הוספת חסימה</button></div>
+    <p class="sub1" style="margin-bottom:14px">חסימה ידנית שומרת תאריך פנוי לשימוש עצמי, תחזוקה או אירוע פרטי — בלי שייכנס להזמנות באתר.</p>
+    <div class="tablewrap">
+      <table style="min-width:600px">
+        <thead><tr><th>סוג נופש</th><th>סיבה</th><th>מתאריך</th><th>עד תאריך</th><th>פעולות</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:700">SUNSUITE</td><td>תחזוקת בריכה</td><td class="ltr">25/09 08:00<span class="small" style="display:block">י״ד תשרי תשפ״ז</span></td><td class="ltr">25/09 16:00</td><td><button class="btn danger sm">מחק</button></td></tr>
+          <tr><td style="font-weight:700">טבריה</td><td>אירוח פרטי</td><td class="ltr">30/09 15:00<span class="small" style="display:block">י״ט תשרי תשפ״ז</span></td><td class="ltr">02/10 11:00<span class="small" style="display:block">כ״א תשרי תשפ״ז</span></td><td><button class="btn danger sm">מחק</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== PROPERTIES ===== -->
+  <section class="page" id="p-properties">
+    <div class="pagehead"><div><h1 class="h1">סוגי נופש</h1><div class="sub1">ניהול תוכן, זמני אירוח, חוקי ניקיון, מחירונים ומדיה לכל מתחם.</div></div></div>
+
+    <div class="propcard" style="margin-bottom:16px">
+      <div class="prophead">
+        <div><h2 style="font-size:1.2rem">SUNSUITE</h2><div class="small">sunsuite</div></div>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem"><span class="switch on"></span> פעיל באתר</label>
+      </div>
+      <div class="subtabs">
+        <button class="subtab on" onclick="propTab(this,'gen')">כללי</button>
+        <button class="subtab" onclick="propTab(this,'clean')">חוקי ניקיון</button>
+        <button class="subtab" onclick="propTab(this,'media')">מדיה ומחירון</button>
+      </div>
+      <div class="pad prop-pane" data-pane="gen">
+        <div class="formgrid">
+          <label class="field"><span>שם</span><input class="input" value="SUNSUITE"></label>
+          <label class="field"><span>כותרת משנה</span><input class="input" value="אירוח משפחתי ברמה גבוהה"></label>
+          <label class="field"><span>מחיר בסיס (₪)</span><input class="input" value="1450"></label>
+        </div>
+        <div class="card pad" style="background:var(--muted);margin-top:14px">
+          <div class="sec-t" style="font-size:.95rem">הגדרות הזמנת לילה</div>
+          <div class="formgrid">
+            <label class="field"><span>שעת כניסה</span><input class="input" type="time" value="15:00"></label>
+            <label class="field"><span>שעת יציאה</span><input class="input" type="time" value="11:00"></label>
+            <label class="field"><span>שעת יציאה במוצאי שבת</span><input class="input" type="time" value="20:30"></label>
+          </div>
+        </div>
+        <button class="btn pri" style="margin-top:14px" onclick="flash('השינויים נשמרו')">שמור שינויים</button>
+      </div>
+      <div class="pad prop-pane" data-pane="clean" style="display:none">
+        <div class="sec-t" style="font-size:.95rem">חוקי ניקיון</div>
+        <p class="small" style="margin-bottom:12px">המערכת בוחרת את משך הניקיון לפי מספר האורחים בהזמנה המאושרת.</p>
+        <div class="tablewrap"><table style="min-width:420px"><thead><tr><th>מינ׳ אורחים</th><th>מקס׳ אורחים</th><th>משך (דקות)</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>2</td><td>60</td></tr><tr><td>3</td><td>6</td><td>90</td></tr>
+            <tr><td>7</td><td>10</td><td>120</td></tr><tr><td>11</td><td>ללא הגבלה</td><td>180</td></tr>
+          </tbody></table></div>
+        <button class="btn" style="margin-top:12px">+ הוסף כלל</button>
+      </div>
+      <div class="pad prop-pane" data-pane="media" style="display:none">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn pri">✦ ניהול מחירון</button><button class="btn">העלאת תמונה</button></div>
+        <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:8px">
+          <div style="height:88px;border-radius:.6rem;background:linear-gradient(135deg,#e6c98a,#b98a44)"></div>
+          <div style="height:88px;border-radius:.6rem;background:linear-gradient(135deg,#cfe3e6,#8fb9c0)"></div>
+          <div style="height:88px;border-radius:.6rem;background:linear-gradient(135deg,#e9d6bd,#c2a677)"></div>
+          <div style="height:88px;border-radius:.6rem;background:linear-gradient(135deg,#d7c1e0,#a884c0)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="propcard" style="margin-bottom:16px">
+      <div class="prophead">
+        <div><h2 style="font-size:1.2rem">SUNSPA</h2><div class="small">sunspa · השכרה לפי שעות או לילה</div></div>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem"><span class="switch on"></span> פעיל באתר</label>
+      </div>
+      <div class="pad"><div class="formgrid">
+        <label class="field"><span>שם</span><input class="input" value="SUNSPA"></label>
+        <label class="field"><span>כותרת משנה</span><input class="input" value="רוגע. פרטיות. חוויה אחרת."></label>
+        <label class="field"><span>מחיר בסיס לשעה (₪)</span><input class="input" value="320"></label>
+      </div></div>
+    </div>
+
+    <div class="propcard">
+      <div class="prophead">
+        <div><h2 style="font-size:1.2rem">טבריה</h2><div class="small">tiberias</div></div>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:.35rem .8rem"><span class="switch"></span> פעיל באתר</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CUSTOMERS ===== -->
+  <section class="page" id="p-customers">
+    <div class="pagehead"><h1 class="h1">לקוחות</h1><button class="btn" onclick="flash('הקובץ יוצא')">⬇ ייצוא לאקסל</button></div>
+    <p class="sub1" style="margin-bottom:14px">רשימת הלקוחות נבנית אוטומטית מכלל ההזמנות, לפי טלפון ואימייל.</p>
+    <div class="tablewrap">
+      <table style="min-width:640px">
+        <thead><tr><th style="width:32px"><input type="checkbox"></th><th>שם</th><th>טלפון</th><th>אימייל</th><th>סה״כ הזמנות</th><th>הזמנה אחרונה</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox"></td><td>נועה כהן</td><td class="ltr">050-000-7788</td><td>noa.c@example.com</td><td>4</td><td class="ltr">18/09/2026</td></tr>
+          <tr><td><input type="checkbox"></td><td>משפחת לוי</td><td class="ltr">053-000-9900</td><td>levi@example.com</td><td>3</td><td class="ltr">19/09/2026</td></tr>
+          <tr><td><input type="checkbox"></td><td>דניאל אברהם</td><td class="ltr">054-000-1234</td><td>daniel@example.com</td><td>2</td><td class="ltr">21/09/2026</td></tr>
+          <tr><td><input type="checkbox"></td><td>שירה מזרחי</td><td class="ltr">052-000-3344</td><td>shira.m@example.com</td><td>2</td><td class="ltr">22/09/2026</td></tr>
+          <tr><td><input type="checkbox"></td><td>אבי פרידמן</td><td class="ltr">050-000-1122</td><td>avi.f@example.com</td><td>1</td><td class="ltr">21/09/2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== REPORTS ===== -->
+  <section class="page" id="p-reports">
+    <div class="pagehead"><h1 class="h1">דוחות</h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select class="input"><option>שנה: 2026</option></select>
+        <select class="input"><option>כל החודשים</option></select>
+        <select class="input"><option>כל סוגי הנופש</option></select>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-bottom:16px">
+      <div class="card kpi"><div class="lbl">סה״כ הזמנות</div><div class="val">21</div></div>
+      <div class="card kpi"><div class="lbl">מאושרות</div><div class="val ok">18</div></div>
+      <div class="card kpi"><div class="lbl">אחוז אישור</div><div class="val" style="color:var(--gold-deep)">86%</div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card pad">
+        <div class="sec-t">הזמנות לפי מתחם</div>
+        <div class="bars">
+          <div class="col"><span class="cval">9</span><div class="bar" style="height:80%"></div><span class="clbl">SUNSUITE</span></div>
+          <div class="col"><span class="cval">7</span><div class="bar" style="height:62%"></div><span class="clbl">SUNSPA</span></div>
+          <div class="col"><span class="cval">5</span><div class="bar" style="height:45%"></div><span class="clbl">טבריה</span></div>
+        </div>
+      </div>
+      <div class="card pad">
+        <div class="sec-t">לפי סוג הזמנה</div>
+        <div style="display:flex;align-items:center;gap:20px;height:210px;justify-content:center">
+          <svg width="150" height="150" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--gold)" stroke-width="7" stroke-dasharray="62 38" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--clean)" stroke-width="7" stroke-dasharray="38 62" stroke-dashoffset="-37" transform="rotate(-90 21 21)"/>
+          </svg>
+          <div>
+            <div class="feat"><span style="width:12px;height:12px;border-radius:3px;background:var(--gold);display:inline-block"></span> לילה · 62%</div>
+            <div class="feat"><span style="width:12px;height:12px;border-radius:3px;background:var(--clean);display:inline-block"></span> שעות · 38%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card pad" style="margin-top:16px">
+      <div class="sec-t">הזמנות לפי חודש</div>
+      <div class="bars">
+        <div class="col"><span class="cval">2</span><div class="bar" style="height:22%"></div><span class="clbl">יונ׳</span></div>
+        <div class="col"><span class="cval">3</span><div class="bar" style="height:33%"></div><span class="clbl">יול׳</span></div>
+        <div class="col"><span class="cval">5</span><div class="bar" style="height:56%"></div><span class="clbl">אוג׳</span></div>
+        <div class="col"><span class="cval">9</span><div class="bar" style="height:100%"></div><span class="clbl">ספט׳</span></div>
+        <div class="col"><span class="cval">2</span><div class="bar" style="height:22%"></div><span class="clbl">אוק׳</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SETTINGS ===== -->
+  <section class="page" id="p-settings">
+    <div class="pagehead"><h1 class="h1">הגדרות</h1></div>
+    <div class="setgrid">
+      <div class="card pad">
+        <div class="sec-t">📅 יומן Google</div>
+        <p class="small" style="margin-bottom:10px">כל הזמנה מאושרת, ניקיון וחסימה מסתנכרנים אוטומטית ליומן שלך.</p>
+        <div class="setrow"><span>חשבון מחובר</span><span class="pill ok">studio@example.com</span></div>
+        <div class="setrow"><span>סנכרון אוטומטי</span><span class="switch on"></span></div>
+        <div class="setrow"><span>סנכרון ניקיונות</span><span class="switch on"></span></div>
+      </div>
+      <div class="card pad">
+        <div class="sec-t">✉️ הודעות ומיילים</div>
+        <div class="setrow"><span>מייל למנהל על בקשה חדשה</span><span class="switch on"></span></div>
+        <div class="setrow"><span>אישור אוטומטי ללקוח</span><span class="switch on"></span></div>
+        <div class="setrow"><span>הודעת ביטול ללקוח</span><span class="switch on"></span></div>
+        <div class="setrow" style="border-top:0"><button class="btn" onclick="flash('נשלח מייל בדיקה')">שליחת מייל בדיקה</button></div>
+      </div>
+      <div class="card pad">
+        <div class="sec-t">🕯️ מצב שבת</div>
+        <p class="small" style="margin-bottom:10px">האתר נסגר אוטומטית להזמנות בכניסת שבת ונפתח במוצאי שבת, לפי זמני בית שמש.</p>
+        <div class="setrow"><span>מצב שבת פעיל</span><span class="switch on"></span></div>
+        <div class="setrow"><span>מקור זמנים</span><span class="small">Hebcal · בית שמש</span></div>
+        <div class="setrow" style="border-top:0"><button class="btn" onclick="setMode('site');setShabbat(true)">תצוגה מקדימה של מסך שבת</button></div>
+      </div>
+      <div class="card pad">
+        <div class="sec-t">📄 תקנון ושאלות נפוצות</div>
+        <div class="setrow"><span>תקנון SUNSUITE</span><button class="btn sm">עריכה</button></div>
+        <div class="setrow"><span>תקנון SUNSPA</span><button class="btn sm">עריכה</button></div>
+        <div class="setrow"><span>תקנון טבריה</span><button class="btn sm">עריכה</button></div>
+        <div class="setrow"><span>שאלות נפוצות (8)</span><button class="btn sm">ניהול</button></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ PUBLIC SITE ============ -->
+<div class="site" id="site-root">
+  <!-- hero -->
+  <section class="hero">
+    <div class="sun"></div>
+    <div class="hero-in">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:auto">
+        <nav class="site-nav">
+          <a>SUNSPA</a><a>SUNSUITE</a><a>טבריה</a><a>גלריה</a><a>שאלות</a>
+          <a class="booking-cta">בדיקת זמינות</a>
+        </nav>
+      </div>
+      <div style="margin-top:120px">
+        <div class="eyebrow">SUNSUITE · בית שמש וטבריה</div>
+        <h2>חופשה יוקרתית, ברמה אחרת</h2>
+        <p>מתחמי נופש וספא עם בריכה פרטית מחוממת, לזוגות, למשפחות ולקבוצות. הזמנה אונליין, בכל שעה.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="shabbat" id="shabbatScreen">
+    <div class="box">
+      <div class="cand">🕯️🕯️</div>
+      <h2>שבת שלום</h2>
+      <p>האתר סגור להזמנות לכבוד השבת.<br>נשמח לראותכם שוב במוצאי שבת.<br><br>ניתן להשאיר הודעה ונחזור אליכם בהקדם.</p>
+      <button class="btn" style="margin-top:18px;background:#f6d98a;border-color:#f6d98a;color:#2a2410" onclick="setShabbat(false)">← חזרה לתצוגת האתר (דמו)</button>
+    </div>
+  </div>
+
+  <div id="siteBody">
+    <div class="sitewrap">
+      <!-- property showcase: gallery + info -->
+      <div class="prop-showcase">
+        <div>
+          <div class="gallery-main" id="galMain" style="background:linear-gradient(135deg,#e6c98a 0%,#b98a44 60%,#8a6528 100%)"></div>
+          <div class="gallery-thumbs">
+            <div class="th on" onclick="setThumb(this,'linear-gradient(135deg,#e6c98a,#8a6528)')"></div>
+            <div class="th" onclick="setThumb(this,'linear-gradient(135deg,#cfe3e6,#6f9aa2)')" style="background:linear-gradient(135deg,#cfe3e6,#8fb9c0)"></div>
+            <div class="th" onclick="setThumb(this,'linear-gradient(135deg,#e9d6bd,#a9895a)')" style="background:linear-gradient(135deg,#e9d6bd,#c2a677)"></div>
+            <div class="th" onclick="setThumb(this,'linear-gradient(160deg,#d7c1e0,#8a6aa6)')" style="background:linear-gradient(135deg,#d7c1e0,#a884c0)"></div>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow" style="color:var(--gold-deep);letter-spacing:.2em;font-size:.75rem;font-weight:800">SUNSUITE</div>
+          <h2 style="font-family:'Frank Ruhl Libre',serif;font-size:2rem;margin:.3rem 0 .6rem">אירוח משפחתי ברמה גבוהה</h2>
+          <p class="muted" style="margin:0 0 12px">סוויטה מרווחת ומעוצבת בקפידה, עם חצר גדולה, מטבח מאובזר, ופרטיות מלאה. כוללת גם את מתחם הספא SUNSPA.</p>
+          <div class="feat"><span class="fi">🏡</span> מתחם גדול ומרווח</div>
+          <div class="feat"><span class="fi">👨‍👩‍👧</span> מתאים למשפחות וקבוצות</div>
+          <div class="feat"><span class="fi">🌿</span> חצר גדולה ומושקעת</div>
+          <div class="feat"><span class="fi">✨</span> כולל את מתחם הספא SUNSPA</div>
+        </div>
+      </div>
+
+      <!-- STEP 1: availability checker -->
+      <div class="booking-box" id="book">
+        <div class="bb-head">
+          <h3 style="font-size:1.3rem;font-weight:800">בדיקת זמינות</h3>
+          <div class="seg">
+            <button class="on" id="bt-night" onclick="setBookType('night')">הזמנה ללילה</button>
+            <button id="bt-hour" onclick="setBookType('hour')">הזמנה לפי שעות</button>
+          </div>
+        </div>
+        <div class="pad grid g2" style="gap:24px">
+          <div>
+            <!-- range calendar -->
+            <div class="rc">
+              <div class="rc-head">
+                <button class="rc-nav" onclick="flash('חודש קודם')">▶</button>
+                <div><b>ספטמבר 2026</b><span class="small" style="display:block;margin-top:-2px">אלול–תשרי תשפ״ז</span></div>
+                <button class="rc-nav" onclick="flash('חודש הבא')">◀</button>
+              </div>
+              <div class="rc-dow"><span>א</span><span>ב</span><span>ג</span><span>ד</span><span>ה</span><span>ו</span><span>ש</span></div>
+              <div class="rc-grid" id="rcGrid"></div>
+            </div>
+            <p class="small" style="margin-top:8px">תאריכים אפורים = לא זמינים לכניסה. לחצו על תאריך כניסה ואז על תאריך עזיבה.</p>
+            <div class="grid g2" style="gap:12px;margin-top:12px">
+              <label class="field"><span id="lbl-start">כניסה</span>
+                <input type="date" class="input" id="inStart" value="2026-09-22" onchange="onDateInput()">
+                <span class="dualdate" id="dd-start">22/09/2026 · י״א תשרי תשפ״ז</span>
+              </label>
+              <label class="field"><span id="lbl-end">עזיבה</span>
+                <input type="date" class="input" id="inEnd" value="2026-09-24" onchange="onDateInput()">
+                <span class="dualdate" id="dd-end">24/09/2026 · י״ג תשרי תשפ״ז</span>
+              </label>
+            </div>
+            <div id="hourFields" style="display:none;margin-top:12px">
+              <label class="field"><span>שעת התחלה</span>
+                <div class="chips" id="timeChips"></div>
+              </label>
+            </div>
+            <button class="btn pri" style="width:100%;margin-top:16px;justify-content:center;padding:.7rem" onclick="checkAvail()">בדוק זמינות</button>
+          </div>
+
+          <!-- STEP 2: result + booking form (revealed) -->
+          <div>
+            <div id="availResult" class="avail-ok" style="display:none">✓ התאריכים פנויים, כולל זמן הניקיון שאחרי השהות</div>
+            <div id="bookForm" style="display:none;margin-top:14px">
+              <div class="grid g2" style="gap:12px">
+                <label class="field"><span>מבוגרים</span><select class="input" id="fAdults" onchange="recalc()"><option>2</option><option>3</option><option selected>4</option><option>6</option></select></label>
+                <label class="field"><span>ילדים</span><select class="input" id="fKids" onchange="recalc()"><option selected>0</option><option>1</option><option>2</option><option>3</option></select></label>
+              </div>
+              <label class="field" style="margin-top:12px"><span>תוספות</span>
+                <select class="input" id="extra" onchange="recalc()"><option value="0">ללא</option><option value="120">ארוחת בוקר · ₪120</option><option value="80">מיטת תינוק · ₪80</option><option value="200">כניסה מוקדמת · ₪200</option></select>
+              </label>
+              <label class="field" style="margin-top:12px"><span>שם מלא</span><input class="input" placeholder="לדוגמה: משפחת ישראלי"></label>
+              <label class="field" style="margin-top:12px"><span>טלפון</span><input class="input" placeholder="050-0000000"></label>
+
+              <div class="price-sum" style="margin-top:14px">
+                <div style="font-weight:800;margin-bottom:8px">סיכום מחיר</div>
+                <div class="price-line"><span id="pl-1">2 לילות × ₪1,450</span><span class="ltr" id="pv-1">₪2,900</span></div>
+                <div class="price-line"><span>תוספות</span><span class="ltr" id="pv-extra">₪0</span></div>
+                <div class="price-line"><span>ניקיון</span><span class="ltr">כלול</span></div>
+                <div class="price-total"><span>סה״כ</span><span class="ltr" id="pv-total">₪2,900</span></div>
+              </div>
+              <label style="display:flex;gap:.5rem;align-items:flex-start;margin-top:12px;font-size:.82rem">
+                <input type="checkbox" id="fTerms" style="margin-top:3px"> <span>קראתי ואני מאשר/ת את <a style="color:var(--gold-deep);font-weight:700">תקנון ההזמנה</a> וחתימה דיגיטלית.</span>
+              </label>
+              <button class="btn pri" style="width:100%;margin-top:14px;justify-content:center;padding:.75rem" onclick="submitBooking()">שליחת בקשת הזמנה</button>
+              <p class="dialog-note" style="text-align:center">הבקשה עוברת לאישור המנהל. לאחר האישור, יישלח מייל אישור אוטומטי.</p>
+            </div>
+            <div id="availHint" class="price-sum" style="color:var(--soft);font-size:.88rem">בחרו תאריכים ולחצו "בדוק זמינות" כדי להמשיך להזמנה.</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="small" style="text-align:center;margin-top:26px">SUNSPA · SUNSUITE · טבריה · מתחמי נופש וספא · דמו לתצוגה בלבד</p>
+    </div>
+  </div>
+</div>
+
+<!-- demo badge + flash -->
+<div class="demobadge"><span class="d"></span> תצוגת דמו · נתונים לדוגמה</div>
+<div class="flash" id="flash"></div>
+
+<script>
+  /* ---------- mode switch ---------- */
+  function setMode(m){
+    const admin = m==='admin';
+    document.getElementById('admin-root').style.display = admin?'block':'none';
+    document.getElementById('tabbar').style.display = admin?'block':'none';
+    document.getElementById('site-root').classList.toggle('on', !admin);
+    document.getElementById('mode-admin').classList.toggle('on', admin);
+    document.getElementById('mode-site').classList.toggle('on', !admin);
+    document.getElementById('brandsub').textContent = admin?'מערכת ניהול הזמנות':'אתר ההזמנות';
+    if(!admin) setShabbat(false);
+    window.scrollTo(0,0);
+  }
+  /* ---------- admin tabs ---------- */
+  const tabs=document.getElementById('tabs');
+  tabs.addEventListener('click',e=>{const b=e.target.closest('.tab');if(b)goTab(b.dataset.p);});
+  function goTab(p){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p===p));
+    document.querySelectorAll('.page').forEach(pg=>pg.classList.toggle('on',pg.id==='p-'+p));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  /* ---------- property subtabs ---------- */
+  function propTab(btn,pane){
+    const card=btn.closest('.propcard');
+    card.querySelectorAll('.subtab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');
+    card.querySelectorAll('.prop-pane').forEach(p=>p.style.display=p.dataset.pane===pane?'block':'none');
+  }
+  /* ---------- bookings interactions ---------- */
+  function toggleAll(box){document.querySelectorAll('#bktable tbody input[type=checkbox]').forEach(c=>c.checked=box.checked);}
+  function approveRow(btn){
+    const tr=btn.closest('tr');
+    tr.classList.remove('row-warn');
+    tr.children[1].innerHTML='<span class="pill ok">אושר</span>';
+    btn.closest('td').querySelector('div').innerHTML='<button class="btn sm">בטל</button><button class="btn danger sm">מחק</button>';
+    flash('ההזמנה אושרה · נוצר ניקיון אוטומטי · סונכרן ליומן · נשלח מייל ללקוח');
+  }
+  /* ---------- flash ---------- */
+  let ft;
+  function flash(msg){const f=document.getElementById('flash');f.textContent=msg;f.classList.add('show');clearTimeout(ft);ft=setTimeout(()=>f.classList.remove('show'),3200);}
+  /* ---------- shabbat ---------- */
+  function setShabbat(on){
+    document.getElementById('shabbatScreen').classList.toggle('on',on);
+    document.getElementById('siteBody').style.display=on?'none':'block';
+    if(on) window.scrollTo({top:0,behavior:'smooth'});
+  }
+  /* ---------- Hebrew gematria day-of-month for Sept 2026 (Elul/Tishrei) ---------- */
+  const GEM=["י״ט","כ׳","כ״א","כ״ב","כ״ג","כ״ד","כ״ה","כ״ו","כ״ז","כ״ח","כ״ט","א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ז׳","ח׳","ט׳","י׳","י״א","י״ב","י״ג","י״ד","ט״ו","ט״ז","י״ז","י״ח","י״ט"];
+  const FULLHEB={ // civil ISO day (Sept 2026) -> full Hebrew date
+    22:"י״א תשרי תשפ״ז",23:"י״ב תשרי תשפ״ז",24:"י״ג תשרי תשפ״ז",25:"י״ד תשרי תשפ״ז",
+    18:"ז׳ תשרי תשפ״ז",19:"ח׳ תשרי תשפ״ז",20:"ט׳ תשרי תשפ״ז",21:"י׳ תשרי תשפ״ז",
+    27:"ט״ז תשרי תשפ״ז",29:"י״ח תשרי תשפ״ז",30:"י״ט תשרי תשפ״ז"
+  };
+  const firstDay=2, DAYS=30, TODAY=16;           // Sept 1 2026 = Tuesday (getDay 2)
+  const BUSY=new Set([18,19,20,23,24,25,27,30]); // dates not available for check-in
+
+  /* ---------- public booking: gallery ---------- */
+  function setThumb(el,bg){document.querySelectorAll('.gallery-thumbs .th').forEach(t=>t.classList.remove('on'));el.classList.add('on');document.getElementById('galMain').style.background=bg;}
+
+  /* ---------- public booking type ---------- */
+  let bookType='night';
+  function setBookType(t){
+    bookType=t;
+    document.getElementById('bt-night').classList.toggle('on',t==='night');
+    document.getElementById('bt-hour').classList.toggle('on',t==='hour');
+    document.getElementById('hourFields').style.display = t==='hour'?'block':'none';
+    document.getElementById('lbl-end').parentElement.style.display = t==='hour'?'none':'block';
+    document.getElementById('lbl-start').textContent = t==='night'?'כניסה':'תאריך';
+    resetAvail(); recalc();
+  }
+
+  /* ---------- range calendar ---------- */
+  let selStart=22, selEnd=24;
+  function buildRC(){
+    const grid=document.getElementById('rcGrid');let html='';
+    for(let i=0;i<firstDay;i++)html+='<div class="rc-day empty"></div>';
+    for(let d=1;d<=DAYS;d++){
+      const busy=BUSY.has(d);
+      let cls='rc-day';
+      if(busy)cls+=' busy';
+      if(d===selStart||d===selEnd)cls+=' sel';
+      else if(selStart&&selEnd&&d>selStart&&d<selEnd)cls+=' inrange';
+      html+='<button class="'+cls+'" '+(busy?'':'onclick="pickDay('+d+')"')+'><span>'+d+'</span><span class="g">'+GEM[d-1]+'</span></button>';
+    }
+    grid.innerHTML=html;
+  }
+  function pad(n){return String(n).padStart(2,'0');}
+  function pickDay(d){
+    if(bookType==='hour'){selStart=d;selEnd=d;syncInputs();buildRC();resetAvail();return;}
+    if(!selStart||selEnd){selStart=d;selEnd=null;}      // start new range
+    else if(d>selStart){selEnd=d;}                       // complete range
+    else {selStart=d;selEnd=null;}
+    syncInputs();buildRC();resetAvail();
+  }
+  function syncInputs(){
+    document.getElementById('inStart').value='2026-09-'+pad(selStart);
+    document.getElementById('dd-start').textContent=pad(selStart)+'/09/2026 · '+(FULLHEB[selStart]||GEM[selStart-1]+' תשרי');
+    if(selEnd){
+      document.getElementById('inEnd').value='2026-09-'+pad(selEnd);
+      document.getElementById('dd-end').textContent=pad(selEnd)+'/09/2026 · '+(FULLHEB[selEnd]||GEM[selEnd-1]+' תשרי');
+    } else {document.getElementById('inEnd').value='';document.getElementById('dd-end').textContent='';}
+  }
+  function onDateInput(){
+    const s=Number((document.getElementById('inStart').value||'').slice(-2));
+    const e=Number((document.getElementById('inEnd').value||'').slice(-2));
+    if(s)selStart=s; selEnd=e||null; syncInputs(); buildRC(); resetAvail();
+  }
+
+  /* ---------- availability + booking ---------- */
+  function resetAvail(){
+    document.getElementById('availResult').style.display='none';
+    document.getElementById('bookForm').style.display='none';
+    document.getElementById('availHint').style.display='block';
+  }
+  function checkAvail(){
+    if(bookType==='night'&&(!selStart||!selEnd)){flash('נא לבחור תאריכי כניסה ועזיבה');return;}
+    // simulate the real stay + cleaning-buffer availability check
+    document.getElementById('availResult').style.display='flex';
+    document.getElementById('availHint').style.display='none';
+    document.getElementById('bookForm').style.display='block';
+    recalc();
+    flash('נבדק מול המערכת: התאריכים פנויים');
+  }
+  function fmt(n){return '₪'+n.toLocaleString('en-US');}
+  function recalc(){
+    const extra=Number((document.getElementById('extra')||{}).value||0);
+    let base,label;
+    if(bookType==='night'){const nights=Math.max(1,(selEnd||selStart+2)-selStart);base=nights*1450;label=nights+' לילות × ₪1,450';}
+    else {base=4*320;label='4 שעות × ₪320';}
+    const pl=document.getElementById('pl-1'); if(!pl)return;
+    pl.textContent=label;
+    document.getElementById('pv-1').textContent=fmt(base);
+    document.getElementById('pv-extra').textContent=fmt(extra);
+    document.getElementById('pv-total').textContent=fmt(base+extra);
+  }
+  function submitBooking(){
+    if(!document.getElementById('fTerms').checked){flash('יש לאשר את התקנון');return;}
+    flash('הבקשה נשלחה! המנהל קיבל התראה ויאשר בקרוב');
+  }
+
+  /* ---------- time chips (hourly) ---------- */
+  (function(){
+    const times=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+    const busyT=new Set(['12:00','13:00','18:00']);
+    document.getElementById('timeChips').innerHTML=times.map((t,i)=>
+      '<button class="'+(busyT.has(t)?'busy':(i===7?'on':''))+'" '+(busyT.has(t)?'':'onclick="pickTime(this)"')+'>'+t+'</button>').join('');
+  })();
+  function pickTime(el){document.querySelectorAll('#timeChips button').forEach(b=>b.classList.remove('on'));el.classList.add('on');resetAvail();}
+
+  /* ---------- build ADMIN calendar (September 2026) ---------- */
+  (function(){
+    const grid=document.getElementById('calgrid');
+    const ev={
+      18:[['ok','נועה כהן - כניסה']],19:[['ok','משפחת לוי'],['pend','אבי פ.']],
+      20:[['ok','נועה כהן - יציאה'],['clean','ניקיון']],
+      21:[['pend','משפ׳ ביטון'],['pend','אבי פ. - ספא']],
+      22:[['ok','שירה מ. - כניסה']],23:[['ok','דניאל א.'],['clean','ניקיון']],
+      24:[['ok','שירה מ. - יציאה'],['clean','ניקיון']],
+      25:[['block','תחזוקת בריכה']],27:[['pend','משפ׳ ביטון']],
+      30:[['block','אירוח פרטי']]
+    };
+    let html='';
+    for(let i=0;i<firstDay;i++)html+='<div class="cell empty"></div>';
+    for(let d=1;d<=DAYS;d++){
+      const evs=ev[d]||[];
+      let inner='<div class="dnum"><span>'+d+'</span><span style="font-size:.6rem">'+GEM[d-1]+'</span></div>';
+      evs.slice(0,3).forEach(e=>inner+='<div class="ev '+e[0]+'">'+e[1]+'</div>');
+      html+='<div class="cell'+(d===TODAY?' today':'')+'">'+inner+'</div>';
+    }
+    const total=firstDay+DAYS; const rem=(7-total%7)%7;
+    for(let i=0;i<rem;i++)html+='<div class="cell empty"></div>';
+    grid.innerHTML=html;
+  })();
+
+  buildRC(); syncInputs(); recalc();
+</script>
+</body>
+</html>

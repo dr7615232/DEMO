@@ -13,8 +13,8 @@ IVR phone line (registration, card clearing, automated Hebrew-TTS debt collectio
 **Stack:** Next.js 15 · React 19 · Supabase (PostgreSQL + RLS) · TypeScript · Tailwind ·
 Yemot HaMashiach (IVR) · Nedarim Plus · Resend/SMTP
 
-Start with **[`zramim/README.md`](./zramim/README.md)** for the full index, or jump to the
-**[case study](./zramim/case-study.md)**.
+Start with **[`zramim/docs/README.md`](./zramim/docs/README.md)** for the full index, or jump to
+the **[case study](./zramim/docs/case-study.md)**.
 
 **📄 Project page (Hebrew):** [`zramim/site/index.html`](./zramim/site/index.html) — a designed,
 RTL Hebrew case-study page telling the project story: the problem, the features, and the phone
@@ -27,4 +27,4 @@ reports, broadcast, finances, settings, phone-line settings, and logs. Open it i
 (no build step). Uses example data only — no real customers.
 
 > ℹ️ These are portfolio materials describing a real client system. Before making anything
-> public, review the anonymization checklist in [`zramim/README.md`](./zramim/README.md).
+> public, review the anonymization checklist in [`zramim/docs/README.md`](./zramim/docs/README.md).

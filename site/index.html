@@ -1,285 +1,177 @@
 <title>זרמים · הפרויקט</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;800;900&family=Heebo:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap">
 
 <style>
   :root{
-    --ground:#e9f2f7; --surface:#ffffff; --surface-2:#f3f9fc;
-    --ink:#0f2b38; --ink-soft:#4e6b78; --line:#d5e6ee;
-    --deep:#14597e; --soft:#3fa9dd; --soft-ink:#1f7fb3;
-    --accent:#e05a79; --accent-ink:#c0405f;
-    --shadow:0 22px 48px -34px rgba(11,58,82,.5);
-    --wrap:1080px;
-    --disp:"Frank Ruhl Libre", "Times New Roman", serif;
-    --body:"Heebo", system-ui, sans-serif;
+    --ground:#f3f4e7;      /* cream */
+    --surface:#fbfbf3;
+    --ink:#363a1f;         /* dark olive */
+    --ink-soft:#5f6440;    /* muted olive body */
+    --num:#a2a877;         /* light olive numbers */
+    --line:#d8dbbe;        /* pale olive hairline */
+    --line-strong:#c3c79f;
+    --lime:#bcd42e;        /* the single pop */
+    --lime-deep:#8f9f22;
+    --wrap:1000px;
+    --sans:"Assistant", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
   *{box-sizing:border-box}
   html{direction:rtl}
-  body{margin:0; background:var(--ground); color:var(--ink); font-family:var(--body); line-height:1.65; -webkit-font-smoothing:antialiased}
-  .wrap{max-width:var(--wrap); margin-inline:auto; padding-inline:clamp(16px,5vw,44px)}
-  section{padding-block:clamp(42px,7vw,84px)}
-  h1,h2,h3{font-family:var(--disp); line-height:1.15; text-wrap:balance; margin:0; font-weight:800}
-  p{margin:0}
-  a{color:var(--soft-ink); text-decoration:none}
-  :focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:6px}
-  .eyebrow{font-family:var(--body); font-size:.78rem; font-weight:700; letter-spacing:.14em; color:var(--accent-ink)}
+  body{margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-weight:400; line-height:1.75; font-size:16px; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--wrap); margin-inline:auto; padding-inline:clamp(20px,6vw,56px)}
+  a{color:inherit; text-decoration:none}
+  :focus-visible{outline:2px solid var(--lime-deep); outline-offset:3px; border-radius:4px}
+  h1,h2,h3{margin:0; font-weight:800; line-height:1.15; text-wrap:balance; color:var(--ink)}
 
-  /* lane-rope divider */
-  .lane{height:10px; border:0; margin:0;
-    background:
-      radial-gradient(circle at 6px 50%, var(--accent) 0 3px, transparent 3.5px) 0 0/24px 100%,
-      linear-gradient(var(--soft),var(--soft)) 0 50%/100% 2px no-repeat;
-    opacity:.5}
+  /* ---- masthead ---- */
+  .top{padding-block:clamp(40px,7vw,72px) clamp(20px,3vw,28px)}
+  .wordmark{display:flex; align-items:baseline; gap:.6rem; margin-bottom:1.6rem}
+  .wordmark b{font-size:1.15rem; font-weight:800; letter-spacing:.02em}
+  .wordmark span{font-size:.72rem; font-weight:600; letter-spacing:.16em; color:var(--num); text-transform:uppercase}
+  h1{font-size:clamp(2.4rem,7vw,4rem); letter-spacing:-.02em}
+  .lead{margin-top:1rem; max-width:60ch; font-size:clamp(1.05rem,2.4vw,1.28rem); font-weight:500; color:var(--ink-soft)}
 
-  /* hero */
-  .hero{position:relative; overflow:hidden; border-bottom:1px solid var(--line);
-    background:
-      radial-gradient(120% 85% at 90% -10%, color-mix(in srgb,var(--soft) 32%, transparent), transparent 60%),
-      radial-gradient(90% 80% at 5% 0%, color-mix(in srgb,var(--deep) 20%, transparent), transparent 55%),
-      var(--surface)}
-  .hero .wrap{position:relative; z-index:2; padding-block:clamp(48px,8vw,92px) clamp(72px,10vw,120px)}
-  .brandrow{display:flex; align-items:center; gap:12px; margin-bottom:24px}
-  .brandrow img{height:44px; width:auto}
-  .brandrow .tag{font-size:.78rem; letter-spacing:.12em; color:var(--ink-soft); font-weight:600}
-  h1{font-size:clamp(2.8rem,9vw,5rem); font-weight:900; color:var(--deep); letter-spacing:-.01em}
-  .sub{margin-top:14px; font-family:var(--disp); font-weight:700; font-size:clamp(1.2rem,3.4vw,1.9rem); color:var(--accent-ink)}
-  .lede{margin-top:22px; max-width:60ch; font-size:clamp(1.02rem,2.3vw,1.2rem); color:var(--ink)}
-  .chips{margin-top:26px; display:flex; flex-wrap:wrap; gap:8px}
-  .chip{font-size:.82rem; font-weight:500; padding:5px 12px; border-radius:999px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink-soft)}
-  .cta{margin-top:30px; display:flex; flex-wrap:wrap; gap:12px}
-  .btn{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:.7rem 1.4rem; font-weight:700; font-size:.95rem; cursor:pointer; border:1px solid transparent; transition:transform .15s ease}
-  .btn:hover{transform:translateY(-2px); text-decoration:none}
-  .btn-primary{background:linear-gradient(135deg,#ef5d80,#d43e64); color:#fff; box-shadow:0 12px 24px -12px rgba(224,90,121,.8)}
-  .btn-ghost{background:var(--surface); color:var(--deep); border-color:var(--line)}
-  .waves{position:absolute; left:0; right:0; bottom:-1px; height:110px; z-index:1; opacity:.45}
-  .waves path{animation:drift 16s ease-in-out infinite alternate}
-  .waves path:nth-child(2){animation-duration:22s; opacity:.6}
-  @keyframes drift{from{transform:translateX(-36px)}to{transform:translateX(36px)}}
+  /* ---- demo bar ---- */
+  .demobar{display:flex; align-items:center; justify-content:center; gap:.9rem; position:relative;
+    width:100%; border:1px solid var(--line-strong); border-radius:14px; background:var(--surface);
+    padding:1.05rem 1.5rem; margin-top:2rem; font-weight:700; font-size:1.02rem; color:var(--ink);
+    transition:border-color .15s ease, transform .15s ease}
+  .demobar:hover{border-color:var(--lime-deep); transform:translateY(-1px)}
+  .demobar .rec{position:absolute; inset-inline-start:1.25rem; top:50%; transform:translateY(-50%)}
+  .demobar .play{width:18px;height:18px;flex:none;color:var(--lime-deep)}
 
-  /* metrics */
-  .metrics{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
-  .metric{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px 14px; text-align:center; box-shadow:var(--shadow)}
-  .metric b{display:block; font-weight:800; font-size:clamp(1.4rem,4vw,2rem); color:var(--deep); font-variant-numeric:tabular-nums}
-  .metric b em{font-style:normal; color:var(--accent)}
-  .metric small{display:block; margin-top:5px; font-size:.74rem; color:var(--ink-soft); line-height:1.35}
+  /* ---- numbered sections ---- */
+  .num-wrap{padding-block:clamp(28px,5vw,48px)}
+  .grid{display:grid; grid-template-columns:1fr 1fr; column-gap:clamp(28px,6vw,72px); row-gap:0}
+  @media(max-width:720px){ .grid{grid-template-columns:1fr} }
+  .item{border-top:1px solid var(--line); padding-block:clamp(24px,3.5vw,38px)}
+  .ihead{display:flex; align-items:baseline; gap:.6rem; margin-bottom:.6rem}
+  .ihead h3{font-size:1.15rem}
+  .ihead .n{font-family:var(--sans); font-weight:600; font-size:.82rem; letter-spacing:.08em; color:var(--num); font-variant-numeric:tabular-nums}
+  .item p{margin:0; color:var(--ink-soft); font-size:1rem; max-width:46ch}
+  .item .chips{margin-top:.7rem; display:flex; flex-wrap:wrap; gap:.4rem}
+  .item .chips span{font-size:.8rem; font-weight:600; color:var(--lime-deep); border:1px solid var(--line-strong); border-radius:999px; padding:.15rem .7rem; background:var(--ground)}
 
-  .head{max-width:66ch; margin-bottom:34px}
-  .head h2{font-size:clamp(1.7rem,4.5vw,2.5rem); color:var(--deep)}
-  .head p{margin-top:12px; color:var(--ink-soft); font-size:1.05rem}
+  /* result — spans full width, emphasized */
+  .item.result{grid-column:1 / -1; border-top:2px solid var(--ink)}
+  .item.result p{max-width:70ch; font-size:1.12rem; font-weight:500; color:var(--ink)}
 
-  .cols3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
-  .cols2{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
-  .card{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:var(--shadow)}
+  /* ---- metrics ---- */
+  .metrics{border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); overflow:hidden}
+  @media(max-width:560px){ .metrics{grid-template-columns:repeat(2,1fr)} }
+  .metrics .m{background:var(--ground); padding:1.4rem 1rem; text-align:center}
+  .metrics .m b{display:block; font-size:1.7rem; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums}
+  .metrics .m b em{font-style:normal; color:var(--lime-deep)}
+  .metrics .m small{display:block; margin-top:.25rem; font-size:.76rem; color:var(--ink-soft)}
 
-  .fail h3{font-family:var(--body); font-weight:700; font-size:1.1rem; color:var(--accent-ink)}
-  .fail p{margin-top:8px; color:var(--ink-soft); font-size:.96rem}
-
-  .feat{transition:transform .16s ease, border-color .16s ease}
-  .feat:hover{transform:translateY(-4px); border-color:var(--soft)}
-  .feat .ic{width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:color-mix(in srgb,var(--soft) 16%, transparent); color:var(--deep)}
-  .feat .ic svg{width:23px; height:23px}
-  .feat h3{font-family:var(--body); font-weight:700; font-size:1.12rem; color:var(--ink); margin-top:15px}
-  .feat p{margin-top:7px; color:var(--ink-soft); font-size:.95rem}
-
-  /* phone highlight */
-  .phone{background:linear-gradient(135deg, color-mix(in srgb,var(--deep) 94%, #000), var(--deep)); color:#eaf6fc; border-radius:24px; overflow:hidden; position:relative}
-  .phone .inner{padding:clamp(28px,5vw,52px)}
-  .phone .eyebrow{color:#8fd0ea}
-  .phone h2{color:#fff; font-size:clamp(1.6rem,4vw,2.3rem); margin-top:10px; max-width:22ch}
-  .phone p.intro{margin-top:14px; color:#cbe6f2; max-width:56ch}
-  .phone .list{margin-top:24px; display:grid; grid-template-columns:repeat(2,1fr); gap:14px 26px}
-  .phone .li{display:flex; gap:12px; align-items:flex-start}
-  .phone .li .k{flex:none; width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(255,255,255,.14); color:#bfe6f5; font-size:.8rem; font-weight:700; font-variant-numeric:tabular-nums}
-  .phone .li b{color:#fff; font-weight:700; font-size:.98rem; display:block}
-  .phone .li span{color:#bcdcea; font-size:.86rem}
-  .phone::after{content:""; position:absolute; inset-inline-start:-40px; bottom:-60px; width:220px; height:220px; border-radius:50%; background:rgba(224,90,121,.28); filter:blur(20px)}
-
-  .stack{display:grid; grid-template-columns:repeat(3,1fr); gap:24px 30px}
-  .stack h4{font-family:var(--body); font-size:.74rem; letter-spacing:.1em; color:var(--accent-ink); margin:0 0 12px; font-weight:700}
-  .stack ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px}
-  .stack li{display:flex; gap:10px; font-size:.95rem; color:var(--ink)}
-  .stack li::before{content:"▸"; color:var(--soft); flex:none}
-
-  .quote{background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:clamp(28px,5vw,48px); box-shadow:var(--shadow); position:relative; overflow:hidden}
-  .quote blockquote{margin:0; font-family:var(--disp); font-weight:700; font-size:clamp(1.25rem,3vw,1.7rem); line-height:1.4; color:var(--deep); max-width:44ch}
-  .quote .by{margin-top:16px; font-size:.85rem; color:var(--ink-soft)}
-  .quote::before{content:"„"; position:absolute; top:-.1em; inset-inline-start:.2em; font-family:var(--disp); font-weight:900; font-size:11rem; color:color-mix(in srgb,var(--soft) 14%, transparent); line-height:1}
-
-  footer{background:var(--surface); border-top:1px solid var(--line)}
-  footer .wrap{padding-block:36px; display:flex; flex-wrap:wrap; gap:16px 28px; align-items:center; justify-content:space-between}
-  footer .note{font-size:.85rem; color:var(--ink-soft); max-width:52ch}
-  footer .links{display:flex; gap:10px; flex-wrap:wrap}
-
-  @media(max-width:820px){ .metrics{grid-template-columns:repeat(2,1fr)} .cols3,.cols2,.stack{grid-template-columns:1fr} .phone .list{grid-template-columns:1fr} }
-  @media(prefers-reduced-motion:reduce){ .waves path{animation:none} .feat,.btn{transition:none} }
+  /* ---- footer ---- */
+  footer{border-top:2px solid var(--ink); padding-block:2.2rem 3rem}
+  .foot-cta{display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; justify-content:space-between}
+  .foot-cta .links{display:flex; gap:.6rem; flex-wrap:wrap}
+  .lk{border:1px solid var(--line-strong); border-radius:999px; padding:.55rem 1.2rem; font-weight:700; font-size:.9rem; color:var(--ink); background:var(--surface); transition:border-color .15s ease}
+  .lk.lime{background:var(--lime); border-color:var(--lime); color:#2c3410}
+  .lk:hover{border-color:var(--lime-deep)}
+  .foot-note{margin-top:1.4rem; font-size:.82rem; color:var(--num)}
 </style>
 
-<!-- ================= HERO ================= -->
-<header class="hero">
+<!-- ===== masthead ===== -->
+<header class="top">
   <div class="wrap">
-    <div class="brandrow">
-      <img src="logo.png" alt="זרמים">
-      <span class="tag">פרויקט · פיתוח Full-Stack</span>
-    </div>
-    <h1>מערכת זרמים</h1>
-    <div class="sub">ניהול סטודיו שחייה והתעמלות מים — עם קו טלפוני לשירות עצמי</div>
-    <p class="lede">מערכת פרודקשן בעברית (RTL) לניהול לקוחות, מנויים ושיבוץ שיעורים, עם
-      פנקס כספי שמסתדר עד השקל — ו<strong>קו טלפוני מלא</strong> שבו לקוחות נרשמות, משלמות
-      ומקבלות שירות בעצמן, בלי מזכירה.</p>
-    <div class="chips">
-      <span class="chip">Next.js 15</span>
-      <span class="chip">Supabase · PostgreSQL</span>
-      <span class="chip">Row-Level Security</span>
-      <span class="chip">TypeScript</span>
-      <span class="chip">ימות המשיח · IVR</span>
-      <span class="chip">נדרים פלוס</span>
-    </div>
-    <div class="cta">
-      <a class="btn btn-primary" href="https://claude.ai/artifact/18W19Dv89LWLWV4A2rrtuM" target="_blank" rel="noopener">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 5v14l11-7z"/></svg>
-        לצפייה בדמו החי
-      </a>
-      <a class="btn btn-ghost" href="https://github.com/dr7615232/DEMO" target="_blank" rel="noopener">הקוד וחומרי הפרויקט</a>
-    </div>
+    <div class="wordmark"><b>זרמים</b><span>Case Study · Full-Stack</span></div>
+    <h1>מערכת ניהול לסטודיו שחייה, עם קו טלפוני לשירות עצמי</h1>
+    <p class="lead">מערכת פרודקשן לניהול סטודיו שחייה והתעמלות מים: לקוחות, מנויים, כספים וקו
+      טלפוני — חוויית ניהול פשוטה למנהלת ולמזכירה, ושירות עצמאי ונעים ללקוחה, בכל שעה, גם בטלפון.</p>
+
+    <a class="demobar" href="https://claude.ai/artifact/18W19Dv89LWLWV4A2rrtuM" target="_blank" rel="noopener">
+      <span class="rec" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#bcd42e"/><circle cx="13" cy="13" r="4.5" fill="#363a1f"/></svg>
+      </span>
+      <svg class="play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      צפייה בדמו החי של המערכת
+    </a>
   </div>
-  <svg class="waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0,64 C240,110 480,20 720,52 C960,84 1200,116 1440,72 L1440,120 L0,120 Z" fill="#3fa9dd"/>
-    <path d="M0,86 C260,50 520,118 780,88 C1040,58 1240,96 1440,80 L1440,120 L0,120 Z" fill="#14597e"/>
-  </svg>
 </header>
 
-<!-- ================= METRICS ================= -->
-<section aria-label="היקף הפרויקט">
+<!-- ===== numbered sections ===== -->
+<section class="num-wrap">
+  <div class="wrap">
+    <div class="grid">
+
+      <div class="item">
+        <div class="ihead"><h3>הבעיה</h3><span class="n">01</span></div>
+        <p>עסק שמנהל מאות מנויות בשתי מחלקות נזקק בו-זמנית לקטלוג מנויים, שיבוץ שיעורים, פנקס
+          כספי ותפעול טלפוני. כשכל אלה מפוזרים — תשלומים משתבשים, קבוצות חורגות מהמכסה, ואותה
+          לקוחה נכנסת פעמיים.</p>
+      </div>
+
+      <div class="item">
+        <div class="ihead"><h3>לפני</h3><span class="n">02</span></div>
+        <p>הכול נוהל ב-23 אוטומציות באיירטייבל, גיליונות אקסל ושיחות טלפון. אין מקור אמת אחד;
+          כל רישום, הקפאה או "כמה שיעורים נשארו לי" חייב מזכירה בשעות המשרד בלבד.</p>
+      </div>
+
+      <div class="item">
+        <div class="ihead"><h3>הפתרון</h3><span class="n">03</span></div>
+        <p>מערכת אחת בעברית עם מסד נתונים יחסי שאוכף שלמות: רישום מנוי אטומי (מנוי + שיבוץ +
+          חיוב בטרנזקציה אחת), פנקס כספי ברמת לקוחה שמסתדר עד השקל, ובקרת תפוסה בטריגר —
+          במסכים אחודים למנהלת ולמזכירה.</p>
+      </div>
+
+      <div class="item">
+        <div class="ihead"><h3>הקו הטלפוני</h3><span class="n">04</span></div>
+        <p>קו שירות עצמי מלא על ימות המשיח: זיהוי לפי מספר, בדיקת סטטוס, רישום ותשלום באשראי,
+          החלפת שיעור בחוק 24 שעות, הפשרה, רשימת המתנה וקודי קבוצה — הכול בעברית מנוקדת, בלי
+          מזכירה.</p>
+      </div>
+
+      <div class="item">
+        <div class="ihead"><h3>האוטומציה</h3><span class="n">05</span></div>
+        <p>מתזמן שעתי מריץ התראות חוב (מתוזמנות מהשיעור הראשון בפועל), תזכורות חידוש ודוחות
+          שבועיים וחודשיים — במייל או דרך הקו, לפי בחירת הלקוחה. כל שליחה מתועדת.</p>
+      </div>
+
+      <div class="item">
+        <div class="ihead"><h3>הטכנולוגיה</h3><span class="n">06</span></div>
+        <p>הרשאות בשתי שכבות (אפליקציה + RLS), אדפטרים מוחלפים למייל, סליקה והקראה, ושעון
+          ירושלים מדויק לאורך שעון קיץ.</p>
+        <div class="chips"><span>Next.js 15</span><span>Supabase · RLS</span><span>TypeScript</span><span>ימות המשיח</span><span>נדרים פלוס</span></div>
+      </div>
+
+      <div class="item result">
+        <div class="ihead"><h3>התוצאה</h3><span class="n">07</span></div>
+        <p>מערכת מושלמת לניהול הסטודיו — חיסכון בזמן, במשאבים ובמאמץ למנהלת ולמזכירה, וחוויית
+          שירות עצמאית ונעימה ללקוחה, בכל שעה, גם בטלפון.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== metrics ===== -->
+<section>
   <div class="wrap">
     <div class="metrics">
-      <div class="metric"><b>26.5<em>k</em></b><small>שורות קוד TypeScript</small></div>
-      <div class="metric"><b>71</b><small>מיגרציות מסד נתונים</small></div>
-      <div class="metric"><b>~24</b><small>טבלאות</small></div>
-      <div class="metric"><b>~48</b><small>מדיניות RLS</small></div>
-      <div class="metric"><b>9</b><small>משימות מתוזמנות</small></div>
-    </div>
-  </div>
-</section>
-<hr class="lane">
-
-<!-- ================= OVERVIEW / PROBLEM ================= -->
-<section>
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">הרקע</span>
-      <h2>סטודיו שלם שרץ על גיליונות ושיחות טלפון</h2>
-      <p>מאות מנויות בשתי מחלקות — שחייה והתעמלות מים — נוהלו ב־23 אוטומציות באיירטייבל ובגיליונות
-        ידניים. שלוש תקלות חזרו שוב ושוב:</p>
-    </div>
-    <div class="cols3">
-      <div class="card fail"><h3>הכסף לא הסתדר</h3><p>תשלומים שויכו פעמיים, נרשמו כפול, או יצרו יתרות זכות שגויות. אי אפשר היה לענות "כמה כבר הרווחנו החודש מול כמה שולם מראש".</p></div>
-      <div class="card fail"><h3>המזכירה — צוואר בקבוק</h3><p>כל רישום, הקפאה, החלפת שיעור ו"כמה שיעורים נשארו לי" חייבו מזכירה על הטלפון בשעות המשרד בלבד.</p></div>
-      <div class="card fail"><h3>שגיאות הזנה</h3><p>מנוי יכול היה להתקיים בלי שיבוץ לשיעורים; קבוצה יכלה לחרוג מהמכסה; אותה לקוחה נכנסה פעמיים.</p></div>
-    </div>
-  </div>
-</section>
-<hr class="lane">
-
-<!-- ================= WHAT I BUILT ================= -->
-<section>
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">מה נבנה</span>
-      <h2>משרד אחורי וקו טלפוני — נכונים כבר בבנייה</h2>
-      <p>במקומות שבהם השלמות המידע קריטית, מסד הנתונים עצמו אוכף אותה — לא קוד אפליקציה מקווה.</p>
-    </div>
-    <div class="cols3">
-      <article class="card feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2.4"/></svg></div>
-        <h3>רישום אטומי</h3><p>רכישת מנוי יוצרת את המנוי, משבצת אותו ל־N מופעי שיעור, ורושמת חיוב בפנקס — הכל בטרנזקציה אחת. אין מצב חצי־כתוב.</p>
-      </article>
-      <article class="card feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg></div>
-        <h3>פנקס שמסתדר</h3><p>הכסף מנוהל ברמת לקוחה, ולכן לא נשייך אותו בטעות. תשלום עודף הופך אוטומטית ליתרת זכות, וכל שקל "מוסבר" מול המזומן בבנק.</p>
-      </article>
-      <article class="card feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5c0 9 6 15 15 15l1.5-3.5-4-2-2 2a11 11 0 0 1-5-5l2-2-2-4L5 4 4 5Z"/></svg></div>
-        <h3>קו טלפוני לשירות עצמי</h3><p>זיהוי לפי מספר, בדיקת יתרת שיעורים, רישום ותשלום באשראי, החלפת שיעור, הפשרה, רשימת המתנה ואישור חוב — הכל בעברית, בלי מזכירה.</p>
-      </article>
-      <article class="card feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4Z"/><path d="M9 12l2 2 4-4"/></svg></div>
-        <h3>הרשאות בשתי שכבות</h3><p>מנהלת ומזכירה. אותם כללים נאכפים גם באפליקציה וגם ב־RLS של מסד הנתונים — מזכירה פשוט לא רואה את טבלת ההוצאות.</p>
-      </article>
-      <article class="card feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M17 8a5 5 0 0 1 0 8"/></svg></div>
-        <h3>הקראה בעברית עם ניקוד</h3><p>התפריטים מנוקדים ידנית; שמות ותאריכים מנוקדים בזמן אמת בעזרת טבלאות ו־Dicta Nakdan — עם בדיקה שלא תשבש הגייה.</p>
-      </article>
-      <article class="card feat">
-        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
-        <h3>אוטומציות מתוזמנות</h3><p>מתזמן שעתי מריץ התראות חוב (מתוזמנות מהשיעור הראשון בפועל), תזכורות חידוש ודוחות — במייל או דרך הקו.</p>
-      </article>
-    </div>
-  </div>
-</section>
-<hr class="lane">
-
-<!-- ================= PHONE HIGHLIGHT ================= -->
-<section>
-  <div class="wrap">
-    <div class="phone"><div class="inner">
-      <span class="eyebrow">הלב של הפרויקט</span>
-      <h2>קו טלפוני שבו לקוחה מסדרת הכול לבד</h2>
-      <p class="intro">כל תפריט הקו רץ באפליקציה עצמה כנקודת קצה חסרת־מצב (stateless) מול פלטפורמת
-        ימות המשיח. כדי לתת לפרוטוקול חסר־זיכרון ניווט אמיתי אחורה, המערכת שומרת מחסנית ניווט
-        לכל שיחה לפי מזהה השיחה.</p>
-      <div class="list">
-        <div class="li"><span class="k">1</span><span><b>זיהוי ובדיקת סטטוס</b>לפי המספר המתקשר, עם שמיעת יתרת השיעורים והמועדים הקרובים</span></div>
-        <div class="li"><span class="k">2</span><span><b>רישום ותשלום מלאים</b>בחירת מנוי וקבוצה, תקנון והצהרת בריאות, וסליקת אשראי דרך נדרים פלוס</span></div>
-        <div class="li"><span class="k">3</span><span><b>החלפת שיעור וחוק 24 שעות</b>החלפה חד־פעמית לפי מקום פנוי, חסומה פחות מ־24 שעות לפני</span></div>
-        <div class="li"><span class="k">4</span><span><b>הפשרה ורשימת המתנה</b>שחרור מנוי מוקפא והצטרפות לתור — הכול עצמאי</span></div>
-        <div class="li"><span class="k">5</span><span><b>קודי קבוצה מאורגנים</b>רישום קבוצתי בקוד ייחודי, עם כללים ייעודיים לכל קבוצה</span></div>
-        <div class="li"><span class="k">6</span><span><b>הודעת חוב ואישור "הקש 1"</b>שמיעת החוב ואישור קבלה שמונע הסלמה מיותרת</span></div>
-      </div>
-    </div></div>
-  </div>
-</section>
-<hr class="lane">
-
-<!-- ================= STACK ================= -->
-<section>
-  <div class="wrap">
-    <div class="head">
-      <span class="eyebrow">הטכנולוגיה</span>
-      <h2>בנוי כדי לרוץ לפני שכל אינטגרציה מוכנה</h2>
-      <p>מייל, סליקה והקראה הם אדפטרים נבחרים בזמן ריצה עם ברירת מחדל בטוחה — כל המערכת רצה מקצה
-        לקצה, והחלפת ספק אמיתי היא שינוי הגדרה.</p>
-    </div>
-    <div class="stack">
-      <div><h4>צד לקוח</h4><ul><li>Next.js 15 · App Router</li><li>React 19 · Server Actions</li><li>TypeScript</li><li>Tailwind CSS · RTL</li></ul></div>
-      <div><h4>נתונים</h4><ul><li>Supabase / PostgreSQL</li><li>Row-Level Security</li><li>פונקציות RPC (PL/pgSQL)</li><li>Supabase Auth</li></ul></div>
-      <div><h4>טלפוניה</h4><ul><li>ימות המשיח · IVR</li><li>Dicta Nakdan · ניקוד</li><li>צינתוקים וקמפיינים קוליים</li></ul></div>
-      <div><h4>אינטגרציות</h4><ul><li>נדרים פלוס · סליקה</li><li>Resend / SMTP · מייל</li></ul></div>
-      <div><h4>תפעול</h4><ul><li>Vercel / Render</li><li>GitHub Actions · Cron</li></ul></div>
-      <div><h4>נכונות</h4><ul><li>טרנזקציות ב־DB</li><li>אזור זמן ירושלים (כולל שעון קיץ)</li><li>טיפול שגיאות בעברית</li></ul></div>
-    </div>
-  </div>
-</section>
-<hr class="lane">
-
-<!-- ================= QUOTE ================= -->
-<section>
-  <div class="wrap">
-    <div class="quote">
-      <blockquote>שני דברים הפכו את זה למערכת ולא לעוד אוסף מסכים: הכסף חייב היה להסתדר מול הבנק,
-        וקו טלפוני חסר־זיכרון היה צריך להתנהג כמו אפליקציה עם מצב.</blockquote>
-      <div class="by">— על מה שהיה חשוב באמת</div>
+      <div class="m"><b>26.5<em>k</em></b><small>שורות קוד</small></div>
+      <div class="m"><b>71</b><small>מיגרציות מסד נתונים</small></div>
+      <div class="m"><b>~24</b><small>טבלאות</small></div>
+      <div class="m"><b>~48</b><small>מדיניות RLS</small></div>
     </div>
   </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
+<!-- ===== footer ===== -->
 <footer>
   <div class="wrap">
-    <p class="note">עמוד פרויקט לתיק העבודות. הדמו מציג את מסכי המערכת עם נתונים לדוגמה בלבד — ללא לקוחות אמיתיים.</p>
-    <div class="links">
-      <a class="btn btn-primary" href="https://claude.ai/artifact/18W19Dv89LWLWV4A2rrtuM" target="_blank" rel="noopener">לצפייה בדמו החי</a>
-      <a class="btn btn-ghost" href="https://github.com/dr7615232/DEMO" target="_blank" rel="noopener">GitHub</a>
+    <div class="foot-cta">
+      <p style="margin:0;font-weight:700;font-size:1.05rem">רוצה לראות את זה עובד?</p>
+      <div class="links">
+        <a class="lk lime" href="https://claude.ai/artifact/18W19Dv89LWLWV4A2rrtuM" target="_blank" rel="noopener">▶ לדמו החי</a>
+        <a class="lk" href="https://github.com/dr7615232/DEMO" target="_blank" rel="noopener">GitHub</a>
+      </div>
     </div>
+    <p class="foot-note">הדמו מציג את מסכי המערכת עם נתונים לדוגמה בלבד — ללא לקוחות אמיתיים.</p>
   </div>
 </footer>

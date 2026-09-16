@@ -16,11 +16,11 @@ Yemot HaMashiach (IVR) · Nedarim Plus · Resend/SMTP
 Start with **[`zramim/README.md`](./zramim/README.md)** for the full index, or jump to the
 **[case study](./zramim/case-study.md)**.
 
-**📄 Project page (Hebrew):** [`site/index.html`](./site/index.html) — a designed, RTL
-Hebrew case-study page telling the project story: the problem, the features, the phone
-system, and the tech stack, with a link to the live demo. Open it in a browser (no build).
+**📄 Project page (Hebrew):** [`zramim/site/index.html`](./zramim/site/index.html) — a designed,
+RTL Hebrew case-study page telling the project story: the problem, the features, and the phone
+system, with a link to the live demo. Open it in a browser (no build).
 
-**🌊 Interactive UI demo:** [`demo-app/index.html`](./demo-app/index.html) — a faithful,
+**🌊 Interactive UI demo:** [`zramim/demo/index.html`](./zramim/demo/index.html) — a faithful,
 self-contained reconstruction of the real system's screens in Hebrew (RTL) with demo data:
 dashboard, lessons, customers, customer card, groups, products, debts, payments, calls,
 reports, broadcast, finances, settings, phone-line settings, and logs. Open it in a browser

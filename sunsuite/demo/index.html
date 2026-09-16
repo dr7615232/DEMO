@@ -175,14 +175,13 @@
   /* ===== PUBLIC SITE ===== */
   .site{display:none}
   .site.on{display:block}
-  .hero{position:relative;min-height:440px;border-radius:0;display:flex;align-items:flex-end;color:#fff;overflow:hidden;
-    background:linear-gradient(180deg,rgba(30,22,8,.15),rgba(30,22,8,.72)),
-    radial-gradient(120% 90% at 70% 15%,#e9c987 0%,#c98f43 42%,#7d5320 100%)}
+  .hero{position:relative;min-height:520px;border-radius:0;display:flex;align-items:flex-end;color:#fff;overflow:hidden;
+    background:linear-gradient(180deg,rgba(20,14,4,.30),rgba(20,14,4,.78)),url(img/6.webp) center/cover}
   .hero-in{position:relative;z-index:2;max-width:1180px;margin-inline:auto;width:100%;padding:clamp(30px,6vw,70px) clamp(16px,4vw,26px)}
   .hero .eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.28em;opacity:.92}
   .hero h2{font-family:"Frank Ruhl Libre",serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:900;margin:.4rem 0;text-shadow:0 2px 18px rgba(0,0,0,.35)}
   .hero p{max-width:52ch;font-size:1.05rem;opacity:.95}
-  .sun{position:absolute;top:8%;left:12%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#fff5dd,#f4c96b);box-shadow:0 0 90px 30px rgba(244,201,107,.55);z-index:1}
+  .sun{display:none;position:absolute;top:8%;left:12%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#fff5dd,#f4c96b);box-shadow:0 0 90px 30px rgba(244,201,107,.55);z-index:1}
   .site-nav{display:flex;gap:20px;align-items:center;font-size:.85rem;font-weight:600}
   @media(max-width:640px){.site-nav{display:none}}
   .booking-cta{background:var(--gold);color:#fff;border-radius:999px;padding:.55rem 1.1rem;font-weight:700}
@@ -794,7 +793,7 @@
     <section class="section" id="sunsuite" style="padding-top:0">
       <div class="container">
         <div class="prop">
-          <div class="media"><div class="photo ph-suite"><span class="cap">סוויטת האירוח · SUNSUITE</span></div><div class="pbadge">SUNSUITE</div></div>
+          <div class="media"><div class="photo" style="background-image:url(img/SUNSUITE.webp)"><span class="cap">סוויטת האירוח · SUNSUITE</span></div><div class="pbadge">SUNSUITE</div></div>
           <div>
             <span style="display:block;font-weight:800;letter-spacing:.34em;color:var(--gold);font-size:1.3rem">SUNSUITE</span>
             <span class="loc">📍 בית שמש</span>
@@ -818,7 +817,7 @@
     <section class="section" id="sunspa" style="padding-top:0">
       <div class="container">
         <div class="prop rev">
-          <div class="media"><div class="photo ph-spa"><span class="cap">בריכה מקורה ומחוממת · SUNSPA</span></div><div class="pbadge" style="inset-inline:-18px auto">SUNSPA</div></div>
+          <div class="media"><div class="photo" style="background-image:url(img/SUNSPA.webp)"><span class="cap">בריכה מקורה ומחוממת · SUNSPA</span></div><div class="pbadge" style="inset-inline:-18px auto">SUNSPA</div></div>
           <div>
             <span style="display:block;font-weight:800;letter-spacing:.34em;color:var(--gold);font-size:1.3rem">SUNSPA</span>
             <span class="loc">📍 בית שמש</span>
@@ -842,7 +841,7 @@
     <section class="section" id="tiberias" style="padding-top:0">
       <div class="container">
         <div class="prop">
-          <div class="media"><div class="photo ph-lake"><span class="cap">נוף לכנרת · טבריה</span></div><div class="pbadge">טבריה</div></div>
+          <div class="media"><div class="photo" style="background-image:url(img/4.webp)"><span class="cap">נוף לכנרת · טבריה</span></div><div class="pbadge">טבריה</div></div>
           <div>
             <span style="display:block;font-weight:800;letter-spacing:.34em;color:var(--gold);font-size:1.3rem">טבריה</span>
             <span class="loc">📍 קריית שמואל, טבריה</span>
@@ -869,9 +868,9 @@
         <h2 class="sec-title">בחרו את החוויה שלכם</h2>
         <p class="sec-sub">בחרו מתחם כדי לבדוק זמינות בתאריכים שלכם ולהמשיך להזמנה.</p>
         <div class="propcards">
-          <div class="pcard photo ph-suite" onclick="document.getElementById('bookbox').scrollIntoView({behavior:'smooth'})"><div class="txt"><span class="eb">sunsuite · בית שמש</span><h3>SUNSUITE</h3><span class="go">בדיקת זמינות ←</span></div></div>
-          <div class="pcard photo ph-jacuzzi" onclick="setBookType('hour');document.getElementById('bookbox').scrollIntoView({behavior:'smooth'})"><div class="txt"><span class="eb">sunspa · בית שמש</span><h3>SUNSPA</h3><span class="go">בדיקת זמינות ←</span></div></div>
-          <div class="pcard photo ph-lake" onclick="document.getElementById('bookbox').scrollIntoView({behavior:'smooth'})"><div class="txt"><span class="eb">tiberias · טבריה</span><h3>טבריה</h3><span class="go">בדיקת זמינות ←</span></div></div>
+          <div class="pcard photo" style="background-image:url(img/2.webp)" onclick="document.getElementById('bookbox').scrollIntoView({behavior:'smooth'})"><div class="txt"><span class="eb">sunsuite · בית שמש</span><h3>SUNSUITE</h3><span class="go">בדיקת זמינות ←</span></div></div>
+          <div class="pcard photo" style="background-image:url(img/3.webp)" onclick="setBookType('hour');document.getElementById('bookbox').scrollIntoView({behavior:'smooth'})"><div class="txt"><span class="eb">sunspa · בית שמש</span><h3>SUNSPA</h3><span class="go">בדיקת זמינות ←</span></div></div>
+          <div class="pcard photo" style="background-image:url(img/tiberias.webp)" onclick="document.getElementById('bookbox').scrollIntoView({behavior:'smooth'})"><div class="txt"><span class="eb">tiberias · טבריה</span><h3>טבריה</h3><span class="go">בדיקת זמינות ←</span></div></div>
         </div>
 
         <!-- availability checker + booking -->
@@ -969,18 +968,18 @@
         <h2 class="sec-title">האווירה מתחילה כאן</h2>
         <p class="sec-sub">הצצה למתחמי האירוח, הספא והחוויות שמחכות לכם ב־SUNSUITE.</p>
         <div class="gallery2">
-          <div class="gitem tall photo ph-suite"></div>
-          <div class="gitem wide photo ph-spa"></div>
-          <div class="gitem sq photo ph-garden"></div>
-          <div class="gitem wide photo ph-lake"></div>
-          <div class="gitem tall photo ph-jacuzzi"></div>
-          <div class="gitem sq photo ph-sunset"></div>
-          <div class="gitem wide photo ph-sauna"></div>
-          <div class="gitem tall photo ph-pool"></div>
-          <div class="gitem sq photo ph-suite"></div>
-          <div class="gitem wide photo ph-spa"></div>
-          <div class="gitem tall photo ph-lake"></div>
-          <div class="gitem sq photo ph-jacuzzi"></div>
+          <div class="gitem tall photo" style="background-image:url(img/1.webp)"></div>
+          <div class="gitem wide photo" style="background-image:url(img/2.webp)"></div>
+          <div class="gitem sq photo" style="background-image:url(img/5.webp)"></div>
+          <div class="gitem wide photo" style="background-image:url(img/4.webp)"></div>
+          <div class="gitem tall photo" style="background-image:url(img/SUNSUITE.webp)"></div>
+          <div class="gitem sq photo" style="background-image:url(img/8.webp)"></div>
+          <div class="gitem wide photo" style="background-image:url(img/SUNSPA.webp)"></div>
+          <div class="gitem tall photo" style="background-image:url(img/6.webp)"></div>
+          <div class="gitem sq photo" style="background-image:url(img/3.webp)"></div>
+          <div class="gitem wide photo" style="background-image:url(img/tiberias.webp)"></div>
+          <div class="gitem tall photo" style="background-image:url(img/8.webp)"></div>
+          <div class="gitem sq photo" style="background-image:url(img/2.webp)"></div>
         </div>
       </div>
     </section>

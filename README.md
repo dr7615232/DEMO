@@ -13,6 +13,12 @@ IVR phone line (registration, card clearing, automated Hebrew-TTS debt collectio
 **Stack:** Next.js 15 · React 19 · Supabase (PostgreSQL + RLS) · TypeScript · Tailwind ·
 Yemot HaMashiach (IVR) · Nedarim Plus · Resend/SMTP
 
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/P5vpD3q4C5aaeQJw3VJ8KK
+- 🌊 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/18W19Dv89LWLWV4A2rrtuM
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
 Start with **[`zramim/docs/README.md`](./zramim/docs/README.md)** for the full index, or jump to
 the **[case study](./zramim/docs/case-study.md)**.
 

@@ -61,10 +61,24 @@
 
 **פרסם כ־Artifact** (title בעברית), ושמור עותק ב־repo תחת `SLUG/site/index.html`.
 
-## 4. שמירה ל־repo
+## 4. תוצר ג׳ — חבילת תיעוד (docs)
+הכן חבילת תיעוד מעמיקה של הפרויקט (זו החבילה הטכנית לתיק העבודות; אפשר באנגלית), ושמור אותה תחת `SLUG/docs/`:
+- `README.md` — אינדקס לחבילה + צ'קליסט הסרת פרטים מזהים לפני פרסום.
+- `case-study.md` — סיפור המקרה: בעיה, פתרון, תפקיד, תוצאה.
+- `architecture.md` — ארכיטקטורה עם דיאגרמות Mermaid (הקשר מערכת, מודל נתונים, זרימות מפתח).
+- `technical-deep-dives.md` — 3–4 צלילות הנדסיות עם קטעי קוד אמיתיים.
+- `code-snippets.md` — קטעי קוד נבחרים עם הסבר, בטוחים לפרסום (בלי סודות).
+- `project-data.json` — מטא-דאטה מובנה של הפרויקט (stack, features, metrics, highlights).
+- `seo-metadata.md` — כותרות, תיאורים, תגי OG/Twitter, JSON-LD, מילות מפתח.
+- `suggested-components.md` — קומפוננטות React/Next מוכנות להצגת הפרויקט באתר תיק עבודות.
+- `demo-instructions.md` + `integration-instructions.md` — איך להריץ/להדגים ואיך לפרסם, מחוץ ל־repo המקורי.
+- `assets/` — לוגו וכל נכס גרפי (מועתק מה־repo המקורי, לא נוצר יש מאין).
+כל טענה טכנית מבוססת על קריאה בפועל בקוד; היכן שהפרויקט חלקי/מתוכנן — לא להציג כמומש.
+
+## 5. שמירה ל־repo
 בתיקיית הקלון של `dr7615232/DEMO`:
-- שמור: `SLUG/site/index.html`, `SLUG/demo/index.html` (+ assets), ועדכן את `README.md` הראשי בשורה לפרויקט החדש.
+- שמור: `SLUG/site/index.html`, `SLUG/demo/index.html` (+ assets), ו־`SLUG/docs/` (חבילת התיעוד). ועדכן את `README.md` הראשי בשורה לפרויקט החדש (עם קישור ל־`SLUG/docs/README.md`).
 - commit ו־`push -u origin main` (עם retry על כשל רשת). ודא שה־repo של הפרויקט המקורי נשאר נקי לחלוטין.
 
-## 5. דיווח סיום
-בסוף דווח: שני קישורי ה־Artifact (עמוד + דמו), נתיבי הקבצים ב־repo, ואישור: "ה־repo המקורי לא שונה — לא בוצע commit/push אליו."
+## 6. דיווח סיום
+בסוף דווח: שני קישורי ה־Artifact (עמוד + דמו), נתיבי הקבצים ב־repo (`SLUG/site`, `SLUG/demo`, `SLUG/docs`), ואישור: "ה־repo המקורי לא שונה — לא בוצע commit/push אליו."

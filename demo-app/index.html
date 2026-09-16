@@ -1,0 +1,677 @@
+<title>מערכת זרמים · דמו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap">
+
+<style>
+  :root{
+    --brand:#1B6E9B; --soft:#3FA9DD; --accent:#E05A79;
+    --bg:#f7f9fa; --line:#e3edf2; --ink:#1a2b36; --muted:#6b7f8a;
+    --card-shadow:0 18px 40px -34px rgba(6,58,82,.45);
+  }
+  *{box-sizing:border-box}
+  html{direction:rtl}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Heebo",system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"kern"}
+  a{color:inherit;text-decoration:none} button{font-family:inherit}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px}
+
+  .shell{display:flex; min-height:100vh; flex-direction:column}
+  @media(min-width:900px){ .shell{flex-direction:row} }
+
+  /* sidebar */
+  .side{position:relative; overflow:hidden; color:#fff; background:linear-gradient(to bottom,#0e7ea6,#1B6E9B,#0a3d56); box-shadow:0 10px 30px -12px rgba(0,0,0,.4)}
+  @media(min-width:900px){ .side{position:sticky; top:0; height:100vh; width:16rem; flex:none; display:flex; flex-direction:column} }
+  .bubbles{position:absolute; inset:0; overflow:hidden; pointer-events:none; opacity:.4}
+  .bubbles i{position:absolute; bottom:-24px; border-radius:9999px; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.75), rgba(255,255,255,.04)); animation:rise linear infinite}
+  @keyframes rise{to{transform:translateY(-100vh); opacity:0}}
+  .side-head{position:relative; z-index:10; border-bottom:1px solid rgba(255,255,255,.1); padding:1.25rem}
+  .side-head img{height:3.5rem; width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+  .who{margin-top:.75rem; font-size:.75rem; color:rgba(255,255,255,.7)}
+  .deptsw{margin-top:.75rem; display:flex; gap:.25rem; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.1); border-radius:9999px; padding:.25rem}
+  .deptsw button{flex:1; border:0; cursor:pointer; border-radius:9999px; padding:.375rem .5rem; font-size:.75rem; font-weight:700; color:rgba(255,255,255,.7); background:transparent; transition:.15s}
+  .deptsw button.on-wa{background:var(--accent); color:#fff}
+  .deptsw button.on-sw{background:var(--soft); color:#fff}
+  .nav{position:relative; z-index:10; flex:1; overflow-y:auto; padding:.5rem}
+  .nav ul{list-style:none; margin:0; padding:.25rem .75rem .75rem; display:flex; gap:.25rem; overflow-x:auto}
+  @media(min-width:900px){ .nav ul{flex-direction:column; overflow:visible} }
+  .nav a{display:flex; align-items:center; gap:.625rem; white-space:nowrap; border-radius:.5rem; padding:.5rem .75rem; font-size:.875rem; color:rgba(255,255,255,.8); transition:.15s; cursor:pointer}
+  .nav a:hover{background:rgba(255,255,255,.1)}
+  .nav a.active{background:#fff; color:var(--brand); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .nav a svg{width:1.25rem; height:1.25rem; flex:none}
+  .side-foot{position:relative; z-index:10; border-top:1px solid rgba(255,255,255,.1); padding:.75rem}
+  .side-foot button{width:100%; border:1px solid rgba(255,255,255,.25); background:transparent; cursor:pointer; border-radius:.5rem; padding:.5rem 1rem; font-size:.875rem; font-weight:500; color:rgba(255,255,255,.9); transition:.15s}
+  .side-foot button:hover{background:rgba(255,255,255,.15)}
+
+  main{flex:1; background:linear-gradient(to bottom left,#f5fafc,#eaf3f7); padding:1.25rem}
+  @media(min-width:900px){ main{padding:2rem} }
+  .screen[hidden]{display:none}
+
+  .pagehead{margin-bottom:1.5rem; display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap}
+  .pagehead h1{margin:0; font-size:1.6rem; font-weight:800; letter-spacing:-.01em; color:var(--brand)}
+  .pagehead p{margin:.25rem 0 0; font-size:.875rem; color:#7c8b95; max-width:60ch}
+  .btn{border:0; cursor:pointer; border-radius:9999px; padding:.5rem 1.1rem; font-size:.85rem; font-weight:600; color:#fff; background:linear-gradient(135deg,#ef5d80,#d43e64); box-shadow:0 10px 22px -10px rgba(239,93,128,.8); transition:.15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn.ghost{background:#fff; color:var(--brand); border:1px solid var(--line); box-shadow:none}
+  .btn.blue{background:linear-gradient(135deg,#0e7ea6,#0a5570); box-shadow:0 8px 18px -10px rgba(10,85,112,.8)}
+
+  .grid{display:grid; gap:1rem}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1100px){ .g4{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:760px){ .g2,.g3,.g4{grid-template-columns:1fr} }
+  .card{background:#fff; border:1px solid var(--line); border-radius:1rem; padding:1.25rem; box-shadow:var(--card-shadow)}
+
+  .stat{position:relative; overflow:hidden; border-radius:1rem; border:1px solid; padding:1.25rem; box-shadow:0 18px 40px -32px rgba(6,58,82,.6)}
+  .stat .lab{font-size:.75rem; font-weight:500; opacity:.8}
+  .stat .val{margin-top:.25rem; font-weight:800; font-variant-numeric:tabular-nums; font-size:1.6rem}
+  .stat .val.big{font-size:2.25rem}
+  .stat .wbar{position:absolute; inset-inline:0; bottom:0; height:.375rem; background:currentColor; opacity:.5}
+  .t-accent{border-color:rgba(224,90,121,.3); background:rgba(224,90,121,.1); color:var(--accent)}
+  .t-soft{border-color:rgba(63,169,221,.3); background:rgba(63,169,221,.1); color:var(--soft)}
+  .t-brand{border-color:rgba(27,110,155,.2); background:rgba(27,110,155,.05); color:var(--brand)}
+  .t-amber{border-color:#fde68a; background:#fffbeb; color:#b45309}
+  .t-green{border-color:#bbf7d0; background:#f0fdf4; color:#15803d}
+
+  h3.sec{margin:0 0 .75rem; font-weight:600; color:var(--brand)}
+  h2.sec{margin:2rem 0 .25rem; font-size:1.15rem; font-weight:700; color:var(--brand)}
+  h2.sec:first-child{margin-top:0}
+  .subtle{font-size:.85rem; color:#7c8b95; margin:0 0 .75rem}
+
+  .alert{border-radius:1rem; border:1px solid #fde68a; background:#fffbeb; padding:1rem; margin-bottom:1.5rem}
+  .alert h4{margin:0 0 .5rem; font-weight:600; color:#78350f}
+  .alert .row{display:flex; align-items:center; justify-content:space-between; border-radius:.5rem; background:#fff; padding:.5rem .75rem; font-size:.875rem; margin-top:.375rem}
+  .alert .row b{color:#78350f} .alert .row span{color:#92400e}
+
+  .gcard{position:relative; height:100%; background:#fff; border:1px solid var(--line); border-right:4px solid var(--brand); border-radius:1rem; padding:1.25rem; box-shadow:var(--card-shadow); transition:.15s; cursor:pointer}
+  .gcard:hover{box-shadow:0 22px 44px -30px rgba(6,58,82,.5)}
+  .gcard .top{display:flex; align-items:flex-start; justify-content:space-between; gap:.5rem}
+  .gcard h4{margin:0; font-weight:600; display:flex; align-items:center; gap:.375rem}
+  .dot{display:inline-block; width:.625rem; height:.625rem; border-radius:9999px}
+  .pill{border-radius:.375rem; padding:.05rem .5rem; font-size:.72rem; white-space:nowrap}
+  .pill.free{background:rgba(63,169,221,.2); color:var(--brand)} .pill.full{background:rgba(224,90,121,.2); color:var(--accent)}
+  .pill.future{background:rgba(63,169,221,.2); color:var(--brand)}
+  .gcard .line1{margin-top:.5rem; font-size:.875rem; color:#4b5b64}
+  .gcard .line2{font-size:.75rem; color:#9aa8b1}
+  .meter{margin-top:.5rem; height:.625rem; overflow:hidden; border-radius:9999px; background:#eef1f3}
+  .meter i{display:block; height:100%; border-radius:9999px}
+  .gcard .next{margin-top:.5rem; font-size:.72rem; color:#9aa8b1}
+  .gcard .wait{margin-top:.25rem; font-size:.72rem; color:#6b7f8a}
+  .gcard .lk{margin-top:.5rem; font-size:.85rem; color:var(--brand)}
+
+  .mini{border-radius:1rem; border:1px solid #e5e7eb; border-right:4px solid var(--brand); background:#fff; padding:1rem}
+  .mini .n{font-size:.72rem; color:#6b7f8a; display:flex; align-items:center; gap:.375rem}
+  .mini .v{margin-top:.25rem; font-size:1.5rem; font-weight:700}
+
+  .bars{display:flex; height:12rem; align-items:flex-end; gap:1rem}
+  .bars .col{flex:1; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:.25rem}
+  .bars .col b{font-size:.72rem; font-weight:600; color:var(--brand)}
+  .bars .col i{width:100%; border-radius:.25rem .25rem 0 0; background:linear-gradient(to top,#0a5570,#1B6E9B,#3FA9DD)}
+  .xlabels{margin-top:.5rem; display:flex; gap:1rem; border-top:1px solid #eef1f3; padding-top:.5rem}
+  .xlabels span{flex:1; text-align:center; font-size:.72rem; color:#6b7f8a}
+
+  .filters{margin-bottom:1rem; display:grid; gap:.75rem; grid-template-columns:repeat(5,1fr)}
+  @media(max-width:1100px){ .filters{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:600px){ .filters{grid-template-columns:1fr} }
+  .field label{display:block; font-size:.8rem; font-weight:500; margin-bottom:.25rem}
+  .field .hint{font-size:.72rem; color:#9aa8b1; margin-top:.2rem}
+  .inp,.sel,.ta{width:100%; border:1px solid #cbd5db; border-radius:.75rem; padding:.5rem .75rem; font-family:inherit; font-size:.9rem; background:#fff; color:var(--ink)}
+  .ta{line-height:1.6; resize:vertical}
+  .inp:focus,.sel:focus,.ta:focus{outline:none; border-color:var(--soft); box-shadow:0 0 0 3px rgba(63,169,221,.25)}
+  .clr{align-self:flex-end; border:1px solid #cbd5db; border-radius:.5rem; padding:.5rem 1rem; font-size:.85rem; color:#556; background:#fff; cursor:pointer}
+
+  .addpanel{margin-bottom:1rem; border:1px dashed rgba(63,169,221,.5); border-radius:1rem; background:rgba(63,169,221,.05)}
+  .addpanel>button{width:100%; text-align:right; border:0; background:transparent; cursor:pointer; padding:.9rem 1.25rem; font-weight:600; color:var(--brand); display:flex; align-items:center; gap:.5rem}
+
+  .ccard{display:flex; align-items:center; gap:.75rem; background:#fff; border:1px solid var(--line); border-radius:1rem; padding:1rem; box-shadow:var(--card-shadow); transition:.15s; cursor:pointer}
+  .ccard:hover{transform:translateY(-2px); border-color:var(--soft)}
+  .ava{display:grid; place-items:center; height:2.75rem; width:2.75rem; flex:none; border-radius:.9rem; font-size:1.1rem; font-weight:700; color:#fff}
+  .ccard .nm{font-weight:600; display:flex; align-items:center; gap:.375rem}
+  .ccard .ph{font-size:.75rem; color:#9aa8b1}
+  .badge{border-radius:9999px; padding:.1rem .6rem; font-size:.72rem; font-weight:600; white-space:nowrap}
+  .b-active{background:#dcfce7; color:#15803d} .b-frozen{background:rgba(63,169,221,.2); color:var(--brand)} .b-inactive{background:#f3f4f6; color:#6b7280}
+  .b-review{background:#fef3c7; color:#b45309; font-size:.68rem}
+  .b-health-ok{background:#dcfce7;color:#15803d} .b-health-no{background:#fef3c7;color:#b45309}
+
+  .tabs{margin-bottom:1rem; display:inline-flex; flex-wrap:wrap; gap:.25rem; border:1px solid var(--line); background:rgba(255,255,255,.7); border-radius:9999px; padding:.25rem; box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .tabs button{border:0; cursor:pointer; border-radius:9999px; padding:.375rem 1rem; font-size:.875rem; color:#556; background:transparent; transition:.15s}
+  .tabs button.on{background:linear-gradient(135deg,#0e7ea6,#0a5570); color:#fff; font-weight:600; box-shadow:0 6px 14px -8px rgba(10,85,112,.8)}
+
+  .dcard{background:#fff; border:1px solid var(--line); border-radius:1rem; padding:1rem; box-shadow:var(--card-shadow)}
+  .dcard>button{width:100%; display:flex; align-items:center; justify-content:space-between; gap:.5rem; text-align:right; border:0; background:transparent; cursor:pointer}
+  .dcard .nm{font-weight:500; display:flex; align-items:center; gap:.375rem}
+  .dcard .ph{font-size:.72rem; color:#9aa8b1; display:block}
+  .owed{font-weight:700; color:var(--accent)}
+  .escal{border-radius:.25rem; background:#fee2e2; color:#b91c1c; padding:.05rem .4rem; font-size:.62rem; font-weight:700}
+  .ddetail{margin-top:.5rem; border-top:1px solid #eef1f3; padding-top:.5rem; font-size:.75rem; color:#6b7f8a}
+  .ddetail .r{display:flex; justify-content:space-between}
+  .ddetail .lk{display:block; padding-top:.375rem; color:var(--brand); cursor:pointer}
+
+  .table{width:100%; border-collapse:collapse; font-size:.85rem}
+  .table th{background:#f8fafc; text-align:right; font-size:.72rem; color:#6b7f8a; font-weight:500; padding:.5rem 1rem; white-space:nowrap}
+  .table td{padding:.5rem 1rem; border-top:1px solid #eef1f3; white-space:nowrap; vertical-align:top}
+  .table td.acc{color:var(--accent)} .table td.grn{color:#15803d; font-weight:500} .table td.sft{color:var(--soft)} .table td.b{font-weight:500} .table td.brand{color:var(--brand);font-weight:500}
+  .table tr:hover td{background:#f8fbfd}
+  .tablewrap{overflow-x:auto; border:1px solid #e5e7eb; border-radius:1rem; background:#fff}
+
+  .ivchart{position:relative; height:16rem; padding-inline-start:3.5rem}
+  .ivbars{position:absolute; inset:0; display:flex; align-items:flex-end; gap:.5rem; padding-inline-start:3.5rem}
+  .ivbars .c{flex:1; min-width:34px; height:100%; display:flex; align-items:flex-end; justify-content:center; gap:.25rem}
+  .ivbars .c i{width:45%; border-radius:.25rem .25rem 0 0}
+  .ivbars .inc{background:linear-gradient(to top,#1B6E9B,#3FA9DD)} .ivbars .exp{background:linear-gradient(to top,#d43e64,#f4a0b4)}
+  .tick{position:absolute; inset-inline:0; border-top:1px dashed #eef1f3}
+  .tick span{position:absolute; top:-.6rem; inset-inline-start:0; background:#fff; padding-inline-end:.25rem; font-size:.62rem; color:#9aa8b1; font-variant-numeric:tabular-nums}
+  .legend{display:flex; gap:1rem; font-size:.72rem; color:#6b7f8a}
+  .legend i{display:inline-block; width:.75rem; height:.75rem; border-radius:.2rem; vertical-align:middle; margin-inline-end:.25rem}
+  .sbar{margin-bottom:.75rem}
+  .sbar .t{display:flex; justify-content:space-between; font-size:.85rem}
+  .sbar .track{margin-top:.25rem; height:.5rem; border-radius:.25rem; background:#eef1f3}
+  .sbar .track i{display:block; height:100%; border-radius:.25rem}
+
+  /* week calendar */
+  .wknav{display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; flex-wrap:wrap; gap:.5rem}
+  .wknav .navbtns{display:flex; gap:.5rem}
+  .navbtn{border-radius:9999px; border:1px solid var(--line); background:#fff; padding:.35rem 1rem; font-size:.85rem; color:var(--brand); cursor:pointer; transition:.15s}
+  .navbtn:hover{transform:translateY(-2px); border-color:var(--soft)}
+  .weekwrap{overflow-x:auto; padding-bottom:.5rem}
+  .week{display:grid; grid-template-columns:repeat(7,minmax(115px,1fr)); gap:.75rem; min-width:820px}
+  .daycol{display:flex; flex-direction:column}
+  .dayhead{margin-bottom:.5rem; border-radius:.5rem; padding:.5rem; text-align:center; background:#fff}
+  .dayhead.today{background:var(--brand); color:#fff}
+  .dayhead .wd{font-weight:600} .dayhead .dt{font-size:.72rem; color:#9aa8b1} .dayhead.today .dt{color:rgba(255,255,255,.8)}
+  .dayhead .heb{font-size:.68rem; color:var(--soft)} .dayhead.today .heb{color:rgba(255,255,255,.7)}
+  .lcard{display:block; border-radius:.5rem; border:1px solid #e5e7eb; border-right:4px solid var(--brand); background:#fff; padding:.5rem; font-size:.85rem; margin-bottom:.5rem}
+  .lcard .lt{display:flex; align-items:center; gap:.375rem; font-weight:500; color:#374151}
+  .lcard .lb{margin-top:.15rem; display:flex; justify-content:space-between; font-size:.72rem; color:#6b7f8a}
+  .lcard .lb .full{color:var(--accent); font-weight:600}
+  .empty-day{border-radius:.5rem; border:1px dashed #e5e7eb; padding:1.2rem 0; text-align:center; color:#d1d5db; font-size:.8rem}
+
+  /* actions bar */
+  .actbar{display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1.5rem}
+  .actbar button{border-radius:9999px; border:1px solid var(--line); background:#fff; padding:.45rem 1rem; font-size:.85rem; color:var(--brand); cursor:pointer; transition:.15s; font-weight:500}
+  .actbar button:hover{border-color:var(--soft); transform:translateY(-1px)}
+  .actbar button.on{background:linear-gradient(135deg,#0e7ea6,#0a5570); color:#fff; border-color:transparent}
+  .actpanel{background:#fff; border:1px solid var(--line); border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem; box-shadow:var(--card-shadow)}
+
+  .subrow{display:flex; align-items:center; justify-content:space-between; gap:.75rem; background:#fff; border:1px solid var(--line); border-radius:1rem; padding:.75rem 1rem; box-shadow:var(--card-shadow)}
+  .subrow .nm{font-weight:500} .subrow .meta{font-size:.72rem; color:#6b7f8a; margin-top:.15rem}
+  .lesscard{display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid var(--line); border-right:4px solid var(--brand); border-radius:1rem; padding:.5rem .9rem; box-shadow:var(--card-shadow)}
+  .lesscard .d1{font-size:.85rem} .lesscard .d2{font-size:.72rem; color:#9aa8b1}
+  .lstate{border-radius:9999px; padding:.05rem .5rem; font-size:.68rem; font-weight:500}
+  .ls-future{background:rgba(63,169,221,.2); color:var(--brand)} .ls-past{background:#f3f4f6; color:#6b7280} .ls-cancel{background:#fee2e2; color:#dc2626}
+
+  /* phone settings accordion */
+  .acc{border:1px solid #e2e8f0; border-radius:.75rem; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05); margin-bottom:1rem; overflow:hidden}
+  .acc>summary{cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:1rem 1.25rem}
+  .acc>summary::-webkit-details-marker{display:none}
+  .acc .stitle{font-size:1rem; font-weight:700; color:#1e293b; display:block}
+  .acc .sdesc{font-size:.72rem; color:#64748b; display:block; margin-top:.15rem}
+  .acc .chev{color:#94a3b8; transition:transform .2s}
+  .acc[open] .chev{transform:rotate(180deg)}
+  .acc .body{border-top:1px solid #f1f5f9; padding:1rem 1.25rem 1.25rem; display:flex; flex-direction:column; gap:1rem}
+  .chk{display:flex; align-items:center; gap:.5rem; font-size:.875rem; color:#334155}
+  .g2f{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+  @media(max-width:600px){ .g2f{grid-template-columns:1fr} }
+  .nikud{position:relative}
+  .nikud .np{position:absolute; inset-inline-end:.5rem; top:.4rem; font-size:.68rem; color:var(--soft); background:#eaf6fc; border-radius:.5rem; padding:.1rem .5rem; cursor:pointer}
+  .rec{display:flex; align-items:center; justify-content:space-between; gap:.75rem; border:1px solid #eef1f3; border-radius:.75rem; padding:.6rem .9rem; font-size:.85rem}
+  .rec .st{font-size:.72rem; color:#64748b}
+  .rec .st.human{color:#15803d;font-weight:500}
+  .rec .acts{display:flex; gap:.4rem}
+  .rec .acts button{border:1px solid var(--line); background:#fff; border-radius:.5rem; padding:.2rem .6rem; font-size:.72rem; cursor:pointer; color:var(--brand)}
+
+  .setgrid{display:grid; gap:1rem; grid-template-columns:repeat(2,1fr)}
+  @media(max-width:760px){ .setgrid{grid-template-columns:1fr} }
+  .setcard{cursor:pointer; height:100%}
+  .setcard h3{margin:0; font-weight:600; color:var(--brand)} .setcard p{margin:.25rem 0 0; font-size:.85rem; color:#6b7f8a}
+
+  .callrow{display:flex; align-items:center; gap:.75rem; background:#fff; border:1px solid var(--line); border-radius:1rem; padding:.75rem 1rem; box-shadow:var(--card-shadow)}
+  .callrow .cnt{display:grid;place-items:center;height:2rem;width:2rem;border-radius:9999px;background:rgba(224,90,121,.12);color:var(--accent);font-weight:700;font-size:.85rem;flex:none}
+  .vm{font-size:.72rem;color:var(--brand);background:rgba(63,169,221,.15);border-radius:9999px;padding:.05rem .5rem}
+  .backbtn{border:1px solid var(--line); background:#fff; border-radius:9999px; padding:.4rem 1rem; font-size:.85rem; color:var(--brand); cursor:pointer}
+
+  .demo-tag{position:fixed; z-index:50; bottom:12px; inset-inline-start:12px; background:rgba(26,43,54,.9); color:#cfe6f0; font-size:.7rem; padding:.4rem .7rem; border-radius:9999px; box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <div class="bubbles" aria-hidden="true">
+      <i style="left:12%;width:12px;height:12px;animation-duration:13s"></i>
+      <i style="left:34%;width:7px;height:7px;animation-duration:9s;animation-delay:1s"></i>
+      <i style="left:62%;width:15px;height:15px;animation-duration:15s;animation-delay:.5s"></i>
+      <i style="left:83%;width:9px;height:9px;animation-duration:10s;animation-delay:2s"></i>
+    </div>
+    <div class="side-head">
+      <img src="logo.png" alt="זרמים">
+      <p class="who">משתמשת דמו · מנהלת</p>
+      <div class="deptsw" id="deptsw">
+        <button data-dep="water_aerobics" class="on-wa">התעמלות מים</button>
+        <button data-dep="swimming">שחייה</button>
+      </div>
+    </div>
+    <div class="nav"><ul id="nav"></ul></div>
+    <div class="side-foot"><button type="button">← יציאה מהמערכת</button></div>
+  </aside>
+
+  <main>
+    <section class="screen" id="s-dashboard"></section>
+    <section class="screen" id="s-lessons" hidden></section>
+    <section class="screen" id="s-customers" hidden></section>
+    <section class="screen" id="s-customer" hidden></section>
+    <section class="screen" id="s-groups" hidden></section>
+    <section class="screen" id="s-products" hidden></section>
+    <section class="screen" id="s-debts" hidden></section>
+    <section class="screen" id="s-payments" hidden></section>
+    <section class="screen" id="s-calls" hidden></section>
+    <section class="screen" id="s-reports" hidden></section>
+    <section class="screen" id="s-broadcast" hidden></section>
+    <section class="screen" id="s-finances" hidden></section>
+    <section class="screen" id="s-settings" hidden></section>
+    <section class="screen" id="s-phone" hidden></section>
+    <section class="screen" id="s-logs" hidden></section>
+  </main>
+</div>
+<div class="demo-tag">תצוגת דמו · שחזור נאמן של מערכת זרמים · נתונים לדוגמה</div>
+
+<script>
+(function(){
+  "use strict";
+  var money = function(n){ return "₪" + Math.round(n).toLocaleString("he-IL"); };
+  var esc = function(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+
+  var IC={dashboard:'<path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6V11h-6v9Zm0-16v5h6V4h-6Z"/>',calendar:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M17 5a3 3 0 0 1 0 6M22 20a6 6 0 0 0-4-5.7"/>',groups:'<circle cx="7" cy="9" r="2.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2 19a5 5 0 0 1 10 0M12 19a5 5 0 0 1 10 0"/>',bag:'<path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/>',alert:'<path d="M12 3 2 20h20L12 3Z"/><path d="M12 9v5M12 17h.01"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',phone:'<path d="M4 5c0 9 6 15 15 15l1.5-3.5-4-2-2 2a11 11 0 0 1-5-5l2-2-2-4L5 4 4 5Z"/>',document:'<path d="M6 2h8l4 4v16H6V2Z"/><path d="M14 2v4h4M9 13h6M9 17h6"/>',wallet:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h4M3 9h13a2 2 0 0 1 0 4"/>',cog:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7Z"/><path d="M10 20a2 2 0 0 0 4 0"/>'};
+  function icon(n){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||"")+'</svg>'; }
+
+  var NAV=[{h:"dashboard",l:"לוח מצב",i:"dashboard"},{h:"lessons",l:"שיעורים",i:"calendar"},{h:"customers",l:"לקוחות",i:"users"},{h:"groups",l:"קבוצות",i:"groups"},{h:"products",l:"מכירת מוצרים",i:"bag"},{h:"debts",l:"חובות",i:"alert"},{h:"payments",l:"תשלומים",i:"card"},{h:"calls",l:"שיחות",i:"phone"},{h:"reports",l:"דוחות",i:"document"},{h:"broadcast",l:"שליחת הודעה",i:"phone"},{h:"finances",l:"כספים",i:"wallet"},{h:"settings",l:"הגדרות",i:"cog"},{h:"logs",l:"לוגים",i:"bell"}];
+
+  var COL={center:"#1B6E9B",north:"#7C5CBF",sea:"#0EA5A5",coral:"#E05A79"};
+  var AVA=["#1B6E9B","#3FA9DD","#E05A79","#7C5CBF","#0EA5A5","#2FA37A","#E08A3F"];
+
+  var DASH={
+    water_aerobics:{deptLabel:"התעמלות מים",kpi:{active:47,groups:6,waiting:7,newMonth:9},
+      low:[{name:"צהריים · יום ד׳",n:4},{name:"בוקר · יום ה׳",n:5}],
+      groups:[
+        {name:"בוקר · יום א׳",c:COL.center,cap:12,booked:9,active:11,wait:2,next:"ראשון · כ״ז באלול תשפ״ו · 21.09.2026 · 09:00"},
+        {name:"ערב · יום ג׳",c:COL.center,cap:12,booked:12,active:12,wait:3,next:"שלישי · כ״ט באלול תשפ״ו · 23.09.2026 · 19:00"},
+        {name:"בוקר · יום ג׳",c:COL.north,cap:12,booked:7,active:8,wait:0,next:"שלישי · כ״ט באלול תשפ״ו · 23.09.2026 · 08:30"},
+        {name:"צהריים · יום ד׳",c:COL.north,cap:10,booked:4,active:4,wait:0,next:"רביעי · ל׳ באלול תשפ״ו · 24.09.2026 · 12:30"},
+        {name:"בוקר · יום ה׳",c:COL.center,cap:10,booked:5,active:5,wait:1,next:"חמישי · א׳ בתשרי תשפ״ז · 25.09.2026 · 09:00"},
+        {name:"ערב · יום ה׳",c:COL.north,cap:12,booked:10,active:10,wait:1,next:"חמישי · א׳ בתשרי תשפ״ז · 25.09.2026 · 19:30"}
+      ],
+      months:[["אפר׳ 26",4],["מאי 26",6],["יונ׳ 26",5],["יול׳ 26",8],["אוג׳ 26",7],["ספט׳ 26",9]]},
+    swimming:{deptLabel:"שחייה",kpi:{active:22,groups:4,waiting:3,newMonth:3},low:[],
+      groups:[
+        {name:"קבוצת ילדות א׳",c:COL.sea,cap:8,booked:6,active:7,wait:1,next:"ראשון · כ״ז באלול תשפ״ו · 21.09.2026 · 16:00"},
+        {name:"קבוצת נשים ב׳",c:COL.sea,cap:8,booked:8,active:8,wait:2,next:"שני · כ״ח באלול תשפ״ו · 22.09.2026 · 20:00"},
+        {name:"שיעור פרטי — רבקה",c:COL.center,cap:1,booked:1,active:1,wait:0,next:"שלישי · כ״ט באלול תשפ״ו · 23.09.2026 · 17:15"},
+        {name:"קבוצת מתחילות",c:COL.coral,cap:6,booked:4,active:5,wait:0,next:"רביעי · ל׳ באלול תשפ״ו · 24.09.2026 · 16:45"}
+      ],
+      months:[["אפר׳ 26",2],["מאי 26",3],["יונ׳ 26",1],["יול׳ 26",4],["אוג׳ 26",2],["ספט׳ 26",3]]}
+  };
+  var GROUPS_META={ // for groups screen (day/time/kind)
+    water_aerobics:[
+      {name:"בוקר · יום א׳",c:COL.center,cap:12,enr:11,day:"ראשון",time:"09:00",kind:"קבוצתי"},
+      {name:"ערב · יום ג׳",c:COL.center,cap:12,enr:12,day:"שלישי",time:"19:00",kind:"קבוצתי"},
+      {name:"בוקר · יום ג׳",c:COL.north,cap:12,enr:8,day:"שלישי",time:"08:30",kind:"קבוצתי"},
+      {name:"צהריים · יום ד׳",c:COL.north,cap:10,enr:4,day:"רביעי",time:"12:30",kind:"קבוצתי"},
+      {name:"בוקר · יום ה׳",c:COL.center,cap:10,enr:5,day:"חמישי",time:"09:00",kind:"קבוצתי"},
+      {name:"ערב · יום ה׳",c:COL.north,cap:12,enr:10,day:"חמישי",time:"19:30",kind:"קבוצתי"},
+      {name:"קבוצה חדשה · אחה״צ",c:COL.coral,cap:12,enr:5,day:null,time:null,kind:"קבוצתי",future:true}
+    ],
+    swimming:[
+      {name:"קבוצת ילדות א׳",c:COL.sea,cap:8,enr:7,day:"ראשון",time:"16:00",kind:"קבוצתי"},
+      {name:"קבוצת נשים ב׳",c:COL.sea,cap:8,enr:8,day:"שני",time:"20:00",kind:"קבוצתי"},
+      {name:"קבוצת מתחילות",c:COL.coral,cap:6,enr:5,day:"רביעי",time:"16:45",kind:"קבוצתי"},
+      {name:"שיעור פרטי — רבקה",c:COL.center,cap:1,enr:1,day:"שלישי",time:"17:15",kind:"פרטי (1:1)"}
+    ]
+  };
+
+  var CUSTOMERS=[
+    {n:"שרה כהן",p:"050-1234567",s:"active",health:true,owed:0,credit:0,paid:1080},
+    {n:"רבקה לוי",p:"052-9876543",s:"active",health:true,owed:0,credit:340,paid:1340},
+    {n:"מרים פרידמן",p:"054-3216549",s:"frozen",health:true,owed:520,paid:0},
+    {n:"חנה גולדברג",p:"053-7778889",s:"active",health:true,owed:0,credit:0,paid:260},
+    {n:"לאה שוורץ",p:"050-4445556",s:"inactive",health:false,owed:1040,paid:360},
+    {n:"אסתר ברגר",p:"058-1112223",s:"active",health:false,review:true,owed:0,credit:0,paid:360},
+    {n:"דבורה כ״ץ",p:"052-3334445",s:"active",health:true,owed:0,credit:240,paid:600},
+    {n:"יעל רוזנברג",p:"054-9990001",s:"frozen",health:true,owed:0,credit:0,paid:720},
+    {n:"מלכה וייס",p:"050-6667778",s:"active",health:true,owed:0,credit:600,paid:1200},
+    {n:"טובה הורוביץ",p:"053-2223334",s:"active",health:false,owed:180,paid:0},
+    {n:"ברכה אדלר",p:"058-8889990",s:"inactive",health:false,owed:0,credit:0,paid:0},
+    {n:"נחמה שטרן",p:"052-1231234",s:"active",health:true,owed:2300,paid:700}
+  ];
+  var CST={active:{l:"פעיל",c:"b-active"},frozen:{l:"בהקפאה",c:"b-frozen"},inactive:{l:"לא פעיל",c:"b-inactive"}};
+
+  var DEBTORS=[
+    {n:"מרים פרידמן",p:"054-3216549",owed:520,paid:0,charge:"חיוב מנוי: מנוי חודשי התעמלות מים",cdate:"01.09.2026",reminder:"12.09.2026",ack:null,escalate:true},
+    {n:"לאה שוורץ",p:"050-4445556",owed:1040,paid:360,charge:"חיוב מנוי: מנוי תלת-חודשי",cdate:"20.08.2026",reminder:"05.09.2026",ack:null,escalate:true},
+    {n:"חנה גולדברג",p:"053-7778889",owed:260,paid:260,charge:"חיוב מנוי: מנוי חודשי",cdate:"08.09.2026",reminder:"15.09.2026",ack:"16.09.2026",escalate:false},
+    {n:"טובה הורוביץ",p:"053-2223334",owed:180,paid:0,charge:"מכירת מוצר: משקפת שחייה",cdate:"11.09.2026",reminder:null,ack:null,escalate:false},
+    {n:"נחמה שטרן",p:"052-1231234",owed:2300,paid:700,charge:"חיוב מנוי: מנוי תלת-חודשי שחייה",cdate:"02.08.2026",reminder:"09.09.2026",ack:null,escalate:true}
+  ];
+  var CREDITORS=[{n:"רבקה לוי",p:"052-9876543",credit:340},{n:"מלכה וייס",p:"050-6667778",credit:600},{n:"דבורה כ״ץ",p:"052-3334445",credit:240}];
+
+  var PAYMENTS=[
+    ["16.09.2026","דבורה כ״ץ",840,"אשראי","מנוי תלת-חודשי"],
+    ["15.09.2026","חנה גולדברג",260,"מזומן",""],
+    ["14.09.2026","מלכה וייס",1200,"אשראי","מנוי + יתרת זכות"],
+    ["12.09.2026","שרה כהן",360,"העברה בנקאית","מנוי חודשי"],
+    ["11.09.2026","רבקה לוי",680,"אשראי",""],
+    ["09.09.2026","נחמה שטרן",700,"מזומן","תשלום חלקי"],
+    ["07.09.2026","יעל רוזנברג",720,"אשראי","מנוי תלת-חודשי"],
+    ["03.09.2026","לאה שוורץ",360,"מזומן","מקדמה"]
+  ];
+
+  var PRODUCTS=[{n:"משקפת שחייה",price:50,cost:30},{n:"כובע ים",price:10,cost:6}];
+  var SALES=[
+    ["15.09.2026","משקפת שחייה","שרה כהן",50,"מזומן"],
+    ["14.09.2026","כובע ים","—",10,"מזומן"],
+    ["11.09.2026","משקפת שחייה","טובה הורוביץ",50,"אשראי"],
+    ["08.09.2026","כובע ים","דבורה כ״ץ",10,"מזומן"]
+  ];
+
+  var CALLS=[
+    {p:"050-7654321",name:"—",count:3,last:"היום · 11:20",vm:false,handled:false},
+    {p:"052-1231234",name:"נחמה שטרן",count:1,last:"היום · 09:05",vm:true,handled:false},
+    {p:"054-8887766",name:"—",count:2,last:"אתמול · 18:42",vm:true,handled:false},
+    {p:"053-2223334",name:"טובה הורוביץ",count:1,last:"22.09.2026 · 14:10",vm:false,handled:true}
+  ];
+
+  var FIN={scope:"ספטמבר 2026",
+    tiles:[{k:"subs",l:"הכנסות ממנויים (שולם בפועל)",v:24680,t:"t-brand"},{k:"accrual",l:"הכנסה בצבירה (פר-שיעור)",v:19420,t:"t-soft"},{k:"products",l:"הכנסות ממוצרים",v:1730,t:"t-soft"},{k:"expenses",l:"הוצאות",v:14260,t:"t-accent"},{k:"net",l:"רווח נקי (מזומן)",v:12150,t:"t-green",big:true},{k:"netacc",l:"רווח בצבירה (פר-שיעור)",v:6890,t:"t-green",big:true}],
+    months:[["אפר׳",21300,13800],["מאי",23900,14100],["יונ׳",22450,13600],["יול׳",25800,15200],["אוג׳",24100,14000],["ספט׳",26410,14260]],
+    breakdown:[["אפריל 2026",21300,13800,7500,18900,5100],["מאי 2026",23900,14100,9800,19100,5000],["יוני 2026",22450,13600,8850,18600,5000],["יולי 2026",25800,15200,10600,19700,4500],["אוגוסט 2026",24100,14000,10100,18900,4900],["ספטמבר 2026",26410,14260,12150,19420,5160]],
+    sources:[["מנויים",24680,"#1B6E9B"],["מוצרים",1730,"#3FA9DD"]],
+    categories:[["שכר מדריכות",8200],["שכירות בריכה",4100],["רכישת מלאי",1160],["אחזקה וציוד",800]]};
+
+  var WEEK=[
+    {wd:"ראשון",dt:"21/09",heb:"כ״ז אלול",today:true,lessons:[["09:00","בוקר · יום א׳",9,12,COL.center]]},
+    {wd:"שני",dt:"22/09",heb:"כ״ח אלול",lessons:[["20:00","קבוצת נשים ב׳",8,8,COL.sea]]},
+    {wd:"שלישי",dt:"23/09",heb:"כ״ט אלול",lessons:[["08:30","בוקר · יום ג׳",7,12,COL.north],["19:00","ערב · יום ג׳",12,12,COL.center]]},
+    {wd:"רביעי",dt:"24/09",heb:"ל׳ אלול",lessons:[["12:30","צהריים · יום ד׳",4,10,COL.north]]},
+    {wd:"חמישי",dt:"25/09",heb:"א׳ תשרי",lessons:[["09:00","בוקר · יום ה׳",5,10,COL.center],["19:30","ערב · יום ה׳",10,12,COL.north]]},
+    {wd:"שישי",dt:"26/09",heb:"ב׳ תשרי",lessons:[]},
+    {wd:"שבת",dt:"27/09",heb:"ג׳ תשרי",lessons:[]}
+  ];
+
+  var PHONE={secretary_phone:"050-111-2222",voicemail_email:"studio.zramim@gmail.com",manager_phone:"054-777-8888",answer_start:"09:00",answer_end:"15:00",sabbath:true,
+    info_mayim:"שלום וברוכה הבאה למוקד ההרשמה להתעמלות מים. חודש ניסיון בעלות מאה שקלים; מנוי תלת חודשי בעלות שלוש מאות שישים שקלים, הכולל שנים עשר שיעורים.",
+    info_shiya:"למידע על קורסי השחייה: קבוצות ילדות ונשים, ושיעורים פרטיים. לפרטים ומחירים לפי רמה, המתיני להמשך ההודעה.",
+    info_addresses:"בריכת מרכז ברחוב הרצל שתים עשרה; בריכת צפון ברחוב האלון חמש.",
+    terms:"ההרשמה מותנית בתשלום מראש. אין ביטול והחזר לאחר תחילת המנוי. החלפת שיעור אפשרית עד עשרים וארבע שעות לפני מועד השיעור.",
+    health:"אני מצהירה כי מצב בריאותי תקין וכי אין מניעה רפואית מהשתתפותי בפעילות במים.",
+    esc_days:2,esc_on:true,esc_attempts:3,esc_interval:24,report_email:"studio.zramim@gmail.com",report_freq:"יומי"};
+  var RECS=[{k:"פתיח הקו",st:"הקראה אוטומטית",human:false},{k:"תפריט ראשי",st:"הקראה אוטומטית",human:false},{k:"מידע — התעמלות מים",st:"הקלטה אנושית · 24.08.2026",human:true},{k:"תקנון (לא ניתן לדילוג)",st:"הקראה אוטומטית",human:false},{k:"הצהרת בריאות (לא ניתן לדילוג)",st:"הקראה אוטומטית",human:false}];
+
+  var currentDep="water_aerobics";
+
+  /* ---------- shared ---------- */
+  function stat(t){ return '<div class="stat '+t.t+'"><div class="lab">'+esc(t.l)+'</div><div class="val'+(t.big?" big":"")+'">'+t.v+'</div><span class="wbar"></span></div>'; }
+  function head(title,desc,action){ return '<div class="pagehead"><div><h1>'+esc(title)+'</h1>'+(desc?'<p>'+esc(desc)+'</p>':'')+'</div>'+(action||'')+'</div>'; }
+  function set(id,html){ document.getElementById(id).innerHTML=html; }
+
+  /* ---------- dashboard ---------- */
+  function renderDashboard(dep){
+    var d=DASH[dep], h=head("לוח מצב",d.deptLabel);
+    h+='<div class="grid g4" style="margin-bottom:1.5rem">'+stat({t:"t-accent",l:"מנויים פעילים",v:d.kpi.active,big:true})+stat({t:"t-soft",l:"קבוצות פעילות",v:d.kpi.groups})+stat({t:"t-amber",l:"בהמתנה",v:d.kpi.waiting})+stat({t:"t-green",l:"מנויים חדשים החודש",v:d.kpi.newMonth})+'</div>';
+    if(d.low.length){ h+='<div class="alert"><h4>שימי לב · קבוצות התעמלות מים עם מעט מנויות</h4>'; d.low.forEach(function(g){ h+='<div class="row"><b>קבוצה '+esc(g.name)+'</b><span>'+g.n+' '+(g.n===1?"מנויה":"מנויות")+' בלבד</span></div>'; }); h+='</div>'; }
+    h+='<h3 class="sec">תפוסה בשיעור הקרוב לפי קבוצה</h3><div style="margin-bottom:2rem"><div class="grid g3">';
+    d.groups.forEach(function(g){ var free=Math.max(0,g.cap-g.booked),full=free===0,pct=Math.min(100,g.cap?(g.booked/g.cap)*100:0);
+      h+='<div class="gcard" data-go="groups" style="border-right-color:'+g.c+'"><div class="top"><h4><span class="dot" style="background:'+g.c+'"></span>'+esc(g.name)+'</h4><span class="pill '+(full?"full":"free")+'">'+(full?"מלא":(free+" פנויים"))+'</span></div><div class="line1">'+g.booked+' / '+g.cap+' בשיעור הקרוב</div><div class="line2">'+g.active+' מנויות פעילות</div><div class="meter"><i style="width:'+pct+'%;background-image:linear-gradient(90deg,rgba(255,255,255,.35) 0 8px,transparent 8px 16px),linear-gradient('+g.c+','+g.c+')"></i></div>'+(g.wait>0?'<div class="wait">'+g.wait+' בהמתנה</div>':'')+'<div class="next">שיעור קרוב: '+esc(g.next)+'</div></div>'; });
+    h+='</div></div>';
+    h+='<h3 class="sec">מנויים פעילים לפי קבוצה</h3><div class="grid g4" style="margin-bottom:2rem">';
+    d.groups.slice().sort(function(a,b){return b.active-a.active;}).forEach(function(g){ h+='<div class="mini" style="border-right-color:'+g.c+'"><div class="n"><span class="dot" style="width:.5rem;height:.5rem;background:'+g.c+'"></span>'+esc(g.name)+'</div><div class="v" style="color:'+g.c+'">'+g.active+'</div></div>'; });
+    h+='</div>';
+    var max=Math.max.apply(null,d.months.map(function(m){return m[1];}).concat([1]));
+    h+='<h3 class="sec">מנויים חדשים לפי חודש</h3><div class="card"><div class="bars">'+d.months.map(function(m){return '<div class="col"><b>'+m[1]+'</b><i style="height:'+Math.max(3,(m[1]/max)*100)+'%"></i></div>';}).join("")+'</div><div class="xlabels">'+d.months.map(function(m){return '<span>'+esc(m[0])+'</span>';}).join("")+'</div></div>';
+    set("s-dashboard",h);
+  }
+
+  /* ---------- lessons (week) ---------- */
+  function renderLessons(dep){
+    var h=head("שיעורים",DASH[dep].deptLabel+" · תצוגה לפי שבוע, חודש או תאריך");
+    h+='<div class="tabs"><button class="on">שבועי</button><button>חודשי</button><button>לפי תאריך</button></div>';
+    h+='<div class="wknav"><span style="font-size:.85rem;color:#6b7f8a">21/09 – 27/09</span><div class="navbtns"><button class="navbtn">→ שבוע קודם</button><button class="navbtn">השבוע</button><button class="navbtn">שבוע הבא ←</button></div></div>';
+    h+='<div class="weekwrap"><div class="week">';
+    WEEK.forEach(function(day){
+      h+='<div class="daycol"><div class="dayhead'+(day.today?" today":"")+'"><div class="wd">'+day.wd+'</div><div class="dt">'+day.dt+'</div><div class="heb">'+day.heb+'</div></div><div>';
+      if(!day.lessons.length){ h+='<div class="empty-day">—</div>'; }
+      else day.lessons.forEach(function(l){ var full=l[2]>=l[3]; h+='<div class="lcard" style="border-right-color:'+l[4]+';background:'+l[4]+'14"><div class="lt"><span class="dot" style="width:.5rem;height:.5rem;background:'+l[4]+'"></span>'+l[0]+'</div><div class="lb"><span>'+esc(l[1])+'</span><span class="'+(full?"full":"")+'">'+l[2]+'/'+l[3]+'</span></div></div>'; });
+      h+='</div></div>';
+    });
+    h+='</div></div>';
+    set("s-lessons",h);
+  }
+
+  /* ---------- customers ---------- */
+  function renderCustomers(){
+    var h=head("לקוחות","רשימה מאוחדת לכל המחלקות",'<button class="btn ghost">⭳ ייצוא</button>');
+    h+='<div class="filters"><div class="field"><label>חיפוש</label><input class="inp" placeholder="שם או טלפון…"></div><div class="field"><label>סטטוס</label><select class="sel"><option>— הכול —</option><option>פעיל</option><option>בהקפאה</option><option>לא פעיל</option></select></div><div class="field"><label>אימות שם</label><select class="sel"><option>— הכול —</option><option>רק לאימות שם</option></select></div><div class="field"><label>מיון</label><select class="sel"><option>שם: א׳–ת׳</option><option>הצטרפות: מהחדש לישן</option></select></div><button class="clr">ניקוי</button></div>';
+    h+='<div class="addpanel"><button type="button">＋ הוספת לקוחה חדשה</button></div>';
+    h+='<div class="grid g4">';
+    CUSTOMERS.forEach(function(c,i){ var st=CST[c.s]; h+='<div class="ccard" data-cust="'+i+'"><span class="ava" style="background:'+AVA[i%AVA.length]+'">'+esc(c.n.charAt(0))+'</span><div style="min-width:0;flex:1"><div class="nm"><span>'+esc(c.n)+'</span>'+(c.review?'<span class="badge b-review">לאימות שם</span>':'')+'</div><div class="ph" dir="ltr">'+esc(c.p)+'</div></div><span class="badge '+st.c+'">'+st.l+'</span></div>'; });
+    h+='</div>';
+    set("s-customers",h);
+  }
+
+  /* ---------- customer detail ---------- */
+  function renderCustomer(i){
+    var c=CUSTOMERS[i], st=CST[c.s];
+    var owed=c.owed||0, credit=c.credit||0, paid=c.paid||0;
+    var h='<div class="pagehead"><div><h1>'+esc(c.n)+'</h1><p dir="ltr" style="text-align:right">'+esc(c.p)+' · התראות: מייל</p></div><button class="backbtn" data-back="customers">→ חזרה ללקוחות</button></div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin:-.5rem 0 1.5rem"><span class="badge '+st.c+'">'+st.l+'</span><span class="badge '+(c.health?"b-health-ok":"b-health-no")+'">'+(c.health?"הצהרת בריאות ✓":"הצהרת בריאות חסרה")+'</span>'+(c.review?'<span class="badge b-review">לאימות שם</span>':'')+'</div>';
+    h+='<div class="grid g3" style="margin-bottom:1.5rem">'+stat({t:owed>0?"t-accent":"t-brand",l:"יתרת חוב",v:money(owed)})+stat({t:"t-soft",l:"יתרת זכות",v:money(credit)})+stat({t:"t-green",l:"סך שולם",v:money(paid)})+'</div>';
+    h+='<div class="actbar"><button class="on">רישום מנוי</button><button>רישום תשלום</button><button>רשימת המתנה</button><button>שיחת גבייה</button><button>שליחת מייל</button><button>עריכת פרטים</button></div>';
+    h+='<div class="actpanel"><h3 class="sec">רישום מנוי</h3><div class="filters" style="grid-template-columns:1fr 1fr 1fr"><div class="field"><label>סוג מנוי</label><select class="sel"><option>מנוי חודשי · 4 שיעורים · ₪260</option><option>מנוי תלת-חודשי · 12 שיעורים · ₪720</option><option>חודש ניסיון · ₪100</option></select></div><div class="field"><label>קבוצה</label><select class="sel"><option>בוקר · יום א׳ (11/12)</option><option>בוקר · יום ג׳ (8/12)</option></select></div><div class="field" style="display:flex;align-items:flex-end"><button class="btn" style="width:100%">שמור ותשלום</button></div></div></div>';
+    // tabs
+    h+='<div class="tabs" id="custTabs"><button class="on" data-t="up">שיעורים (5)</button><button data-t="subs">מנויים (1)</button><button data-t="stmt">כרטסת (3)</button></div>';
+    // upcoming lessons
+    var lessons=[["ראשון · 07.09.2026 · 09:00","בוקר · יום א׳","past"],["ראשון · 14.09.2026 · 09:00","בוקר · יום א׳","past"],["ראשון · 21.09.2026 · 09:00","בוקר · יום א׳","future"],["ראשון · 28.09.2026 · 09:00","בוקר · יום א׳","future"],["ראשון · 05.10.2026 · 09:00","בוקר · יום א׳","future"]];
+    var LS={future:{l:"עתידי",c:"ls-future",b:"#1B6E9B"},past:{l:"עבר",c:"ls-past",b:"#cbd5e1"},cancelled:{l:"בוטל",c:"ls-cancel",b:"#f0b4b4"}};
+    h+='<div id="ct-up"><div style="display:flex;gap:1rem;font-size:.72rem;color:#6b7f8a;margin-bottom:.75rem"><span><span class="dot" style="background:#1B6E9B;width:.6rem;height:.6rem"></span> עתידי</span><span><span class="dot" style="background:#cbd5e1;width:.6rem;height:.6rem"></span> עבר</span></div><div class="grid g3">';
+    lessons.forEach(function(l){ var s=LS[l[2]]; h+='<div class="lesscard" style="border-right-color:'+s.b+(l[2]==="past"?";background:#fafbfc":"")+'"><div><div class="d1"'+(l[2]==="past"?' style="color:#6b7280"':'')+'>'+esc(l[0])+'</div><div class="d2">'+esc(l[1])+'</div></div><span class="lstate '+s.c+'">'+s.l+'</span></div>'; });
+    h+='</div></div>';
+    // subs
+    h+='<div id="ct-subs" hidden><div class="subrow"><div><div class="nm">מנוי חודשי · בוקר · יום א׳</div><div class="meta">פעיל · נותרו 3 מתוך 4 שיעורים · רכישה 01.09.2026 · סיום 28.09.2026</div></div><div style="display:flex;align-items:center;gap:.75rem"><span style="font-size:.9rem;color:#4b5b64">₪260</span><button class="clr" style="align-self:auto">פעולות ▾</button></div></div></div>';
+    // statement
+    h+='<div id="ct-stmt" hidden><div class="tablewrap"><table class="table"><thead><tr><th>תאריך</th><th>תנועה</th><th>סכום</th><th>יתרה</th></tr></thead><tbody>'
+      +'<tr><td>12.09.2026</td><td>תשלום · העברה בנקאית</td><td class="grn">₪360</td><td>₪0</td></tr>'
+      +'<tr><td>01.09.2026</td><td>חיוב מנוי: מנוי חודשי</td><td class="acc">₪260</td><td>₪260</td></tr>'
+      +'<tr><td>01.08.2026</td><td>תשלום · אשראי</td><td class="grn">₪820</td><td>₪0</td></tr>'
+      +'</tbody></table></div></div>';
+    set("s-customer",h);
+  }
+
+  /* ---------- groups ---------- */
+  function renderGroups(dep){
+    var list=GROUPS_META[dep];
+    var h=head("קבוצות",DASH[dep].deptLabel+" · ניהול רשימות המתנה וקבוצות עתידיות");
+    h+='<div class="filters" style="grid-template-columns:1fr 1fr auto"><div class="field"><label>חיפוש</label><input class="inp" placeholder="חיפוש לפי שם קבוצה…"></div><div class="field"><label>מיון</label><select class="sel"><option>שם: א׳–ת׳</option><option>לפי יום ושעה</option><option>תפוסה: מהמלא לפנוי</option></select></div><button class="clr">ניקוי</button></div>';
+    h+='<div class="grid g3">';
+    list.slice().sort(function(a,b){return (a.future?1:0)-(b.future?1:0);}).forEach(function(g){ var full=g.enr>=g.cap;
+      h+='<div class="gcard" style="border-right-color:'+g.c+';cursor:pointer"><div><div class="top"><h4><span class="dot" style="background:'+g.c+'"></span>'+esc(g.name)+(g.future?' <span class="pill future">עתידית</span>':'')+'</h4><span class="pill '+(full?"full":"free")+'">'+g.enr+'/'+g.cap+' מנויים</span></div><div class="line2" style="margin-top:.35rem">'+DASH[dep].deptLabel+' · '+g.kind+(g.day?' · יום '+g.day+' '+g.time:'')+'</div></div><div class="lk">רשימת המתנה ←</div></div>'; });
+    h+='</div>';
+    set("s-groups",h);
+  }
+
+  /* ---------- products ---------- */
+  function renderProducts(){
+    var h=head("מכירת מוצרים","מכירה ישירה בקופה · הרווח נכנס לדוח ההכנסות");
+    h+='<div class="card" style="margin-bottom:1.5rem"><h3 class="sec">מכירה חדשה</h3><div class="filters" style="grid-template-columns:1.4fr .6fr 1fr 1fr auto"><div class="field"><label>מוצר</label><select class="sel">'+PRODUCTS.map(function(p){return '<option>'+esc(p.n)+' · '+money(p.price)+'</option>';}).join("")+'</select></div><div class="field"><label>כמות</label><input class="inp" value="1"></div><div class="field"><label>אמצעי תשלום</label><select class="sel"><option>מזומן</option><option>אשראי</option><option>העברה בנקאית</option></select></div><div class="field"><label>לקוחה (רשות)</label><input class="inp" placeholder="שם / טלפון…"></div><div class="field" style="display:flex;align-items:flex-end"><button class="btn">מכירה</button></div></div></div>';
+    h+='<div class="grid g2" style="margin-bottom:1.5rem">'+PRODUCTS.map(function(p){return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600">'+esc(p.n)+'</div><div style="font-size:.75rem;color:#9aa8b1">עלות לעסק '+money(p.cost)+'</div></div><div style="text-align:left"><div style="font-size:1.4rem;font-weight:700;color:var(--brand)">'+money(p.price)+'</div><div style="font-size:.72rem;color:#15803d">רווח '+money(p.price-p.cost)+'</div></div></div></div>';}).join("")+'</div>';
+    h+='<h3 class="sec">מכירות אחרונות</h3><div class="tablewrap"><table class="table"><thead><tr><th>תאריך</th><th>מוצר</th><th>לקוחה</th><th>סכום</th><th>אמצעי</th></tr></thead><tbody>'+SALES.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td class="b">'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td class="brand">'+money(r[3])+'</td><td>'+esc(r[4])+'</td></tr>';}).join("")+'</tbody></table></div>';
+    set("s-products",h);
+  }
+
+  /* ---------- debts ---------- */
+  function renderDebts(){
+    var owed=DEBTORS.reduce(function(s,d){return s+d.owed;},0), credit=CREDITORS.reduce(function(s,c){return s+c.credit;},0), net=owed-credit;
+    var h=head("חובות ויתרות","כל המחלקות · חוב ברמת לקוחה");
+    h+='<div class="grid g3" style="margin-bottom:1.5rem">'+stat({t:net>=0?"t-accent":"t-green",l:"חוב נטו",v:money(net),big:true})+stat({t:"t-amber",l:"יתרות חובה ("+DEBTORS.length+")",v:money(owed)})+stat({t:"t-soft",l:"יתרות זכות ("+CREDITORS.length+")",v:money(credit)})+'</div>';
+    h+='<div class="tabs" id="debtTabs"><button class="on" data-t="debts">יתרות חובה ('+DEBTORS.length+')</button><button data-t="credits">יתרות זכות ('+CREDITORS.length+')</button></div>';
+    h+='<div id="tab-debts"><div class="filters" style="grid-template-columns:1fr auto;margin-bottom:1rem"><input class="inp" placeholder="חיפוש חייבת לפי שם או טלפון…" style="max-width:20rem"><select class="sel" style="max-width:16rem"><option>להסלמה קודם</option><option>חוב: מהגבוה לנמוך</option><option>שם: א׳–ת׳</option></select></div><div class="grid g3">';
+    DEBTORS.slice().sort(function(a,b){return (b.escalate-a.escalate)||(b.owed-a.owed);}).forEach(function(d,i){
+      h+='<div class="dcard"><button type="button" data-d="'+i+'"><span style="min-width:0"><span class="nm"><span>'+esc(d.n)+'</span>'+(d.escalate?'<span class="escal">להסלמה</span>':'')+'</span><span class="ph" dir="ltr">'+esc(d.p)+'</span></span><span style="display:flex;align-items:center;gap:.25rem"><span class="owed">'+money(d.owed)+'</span><span style="font-size:.7rem;color:#9aa8b1" class="chev">▾</span></span></button><div class="ddetail" hidden id="dd-'+i+'"><div style="font-weight:500;color:#556">על מה החוב:</div><div class="r"><span>'+esc(d.charge)+' <span style="color:#9aa8b1">· '+d.cdate+'</span></span></div><div class="r" style="padding-top:.25rem"><span>שולם בסך הכל</span><span>'+money(d.paid)+'</span></div><div style="padding-top:.25rem">'+(d.reminder?"תזכורת אחרונה נשלחה: "+d.reminder:"טרם נשלחה תזכורת אוטומטית")+(d.ack?" · הלקוחה אישרה קבלה בטלפון: "+d.ack:" · לא אישרה קבלה בטלפון")+'</div>'+(d.escalate?'<div style="font-weight:600;color:#b91c1c;padding-top:.25rem">להסלמה — נשלחה תזכורת ולא התקבל אישור בזמן שהוגדר. מומלץ להתקשר.</div>':'')+'<span class="lk">לכרטיס הלקוחה ←</span></div></div>';
+    });
+    h+='</div></div>';
+    h+='<div id="tab-credits" hidden><div class="grid g3">'+CREDITORS.map(function(c){return '<div class="dcard"><div style="display:flex;align-items:center;justify-content:space-between"><span><span class="nm">'+esc(c.n)+'</span><span class="ph" dir="ltr">'+esc(c.p)+'</span></span><span class="owed" style="color:var(--soft)">'+money(c.credit)+'</span></div><div style="font-size:.72rem;color:#9aa8b1;margin-top:.25rem">יתרת זכות לשימוש עתידי</div></div>';}).join("")+'</div></div>';
+    set("s-debts",h);
+  }
+
+  /* ---------- payments ---------- */
+  function renderPayments(){
+    var total=PAYMENTS.reduce(function(s,r){return s+r[2];},0);
+    var h=head("תיעוד תשלומים",PAYMENTS.length+" תשלומים · סך "+money(total),'<button class="btn ghost">⭳ ייצוא</button>');
+    h+='<div class="card" style="margin-bottom:1.5rem"><div class="filters" style="grid-template-columns:repeat(4,1fr)"><div class="field"><label>חיפוש לקוחה</label><input class="inp" placeholder="שם או טלפון…"></div><div class="field"><label>מתאריך</label><input class="inp" type="date"></div><div class="field"><label>עד תאריך</label><input class="inp" type="date"></div><div class="field"><label>אמצעי תשלום</label><select class="sel"><option>— הכול —</option><option>אשראי</option><option>מזומן</option><option>העברה בנקאית</option></select></div></div></div>';
+    h+='<div class="tablewrap"><table class="table"><thead><tr><th>תאריך</th><th>לקוחה</th><th>סכום</th><th>אמצעי</th><th>הערה</th></tr></thead><tbody>'+PAYMENTS.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td class="brand">'+esc(r[1])+'</td><td class="brand">'+money(r[2])+'</td><td>'+esc(r[3])+'</td><td style="color:#6b7f8a">'+esc(r[4])+'</td></tr>';}).join("")+'</tbody></table></div>';
+    set("s-payments",h);
+  }
+
+  /* ---------- calls ---------- */
+  function renderCalls(){
+    var h=head("פניות שלא נענו","למי צריך לחזור: שיחות שהגיעו למזכירה ולא נענו, והודעות שהושארו בתא הקולי. מקובץ לפי מספר וחלון זמן.");
+    h+='<div class="filters" style="grid-template-columns:repeat(6,1fr)"><div class="field"><label>טלפון</label><input class="inp" placeholder="מספר…"></div><div class="field"><label>סוג</label><select class="sel"><option>— הכול —</option><option>שיחות ללא מענה</option><option>הודעות קוליות</option></select></div><div class="field"><label>מתאריך</label><input class="inp" type="date"></div><div class="field"><label>עד תאריך</label><input class="inp" type="date"></div><div class="field"><label>זיהוי</label><select class="sel"><option>— הכול —</option><option>לקוחה מזוהה</option><option>לא מזוהה</option></select></div><button class="clr">ניקוי</button></div>';
+    h+='<div style="display:flex;flex-direction:column;gap:.5rem">';
+    CALLS.forEach(function(c){ h+='<div class="callrow"><span class="cnt">'+c.count+'</span><div style="flex:1;min-width:0"><div style="font-weight:600">'+(c.name==="—"?'<span style="color:#9aa8b1">לא מזוהה</span>':esc(c.name))+(c.vm?' <span class="vm">הודעה קולית ▶</span>':'')+'</div><div style="font-size:.75rem;color:#9aa8b1" dir="ltr">'+esc(c.p)+'</div></div><div style="text-align:left;font-size:.72rem;color:#6b7f8a">'+esc(c.last)+'<div style="margin-top:.25rem"><label class="chk" style="font-size:.72rem"><input type="checkbox"'+(c.handled?" checked":"")+'> טופל</label></div></div></div>'; });
+    h+='</div>';
+    set("s-calls",h);
+  }
+
+  /* ---------- reports ---------- */
+  function renderReports(){
+    var reports=[
+      {t:"דוח חמישי — ניסיון ומסתיימים",d:"מנויות שהיו בשיעור ניסיון השבוע + מנויות שמסתיימות בשבוע הקרוב",freq:"כל יום חמישי · 07:00"},
+      {t:"סיכום חובות שבועי",d:"כל החייבות הפתוחות ממוינות לפי גובה החוב",freq:"כל יום ראשון · 07:00"},
+      {t:"דוח הכנסות חודשי",d:"הכנסות, הוצאות ורווח — מנהלת בלבד",freq:"ב-1 לכל חודש · 07:00"},
+      {t:"דוח שיחות",d:"שיחות נכנסות מאוחדות לפי מספר, עם מונה 'כמה פעמים'",freq:"יומי · 08:00"}
+    ];
+    var h=head("דוחות","הפקה ושליחה של דוחות תפעוליים · נמענים מוגדרים בהגדרות");
+    h+='<div class="grid g2">'+reports.map(function(r){return '<div class="card"><h3 style="margin:0;font-weight:600;color:var(--brand)">'+esc(r.t)+'</h3><p style="margin:.35rem 0 .75rem;font-size:.85rem;color:#6b7f8a">'+esc(r.d)+'</p><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:.72rem;color:#9aa8b1">'+esc(r.freq)+'</span><button class="btn blue">שליחה עכשיו</button></div></div>';}).join("")+'</div>';
+    set("s-reports",h);
+  }
+
+  /* ---------- broadcast ---------- */
+  function renderBroadcast(){
+    var h=head("שליחת הודעה טלפונית לקבוצה","הודעה קולית לכל חברות הקבוצה, עם בקשת 'הקש 1 לאישור' ומעקב מי אישרה");
+    h+='<div class="card" style="margin-bottom:1.5rem"><div class="filters" style="grid-template-columns:1fr 1fr"><div class="field"><label>קבוצה</label><select class="sel"><option>בוקר · יום א׳ (11 מנויות)</option><option>ערב · יום ג׳ (12 מנויות)</option><option>קבוצת נשים ב׳ (8 מנויות)</option></select></div><div class="field"><label>אופן השליחה</label><select class="sel"><option>שיחה יוצאת (כיסוי מלא · צורך יחידות)</option><option>צינתוק (חסכוני · רק למי שחוזרת ומקישה)</option></select></div></div><div class="field" style="margin-top:1rem"><label>תוכן ההודעה</label><textarea class="ta" rows="3">שלום, מזכירת הסטודיו. שיעור יום ראשון הקרוב יתקיים כרגיל בשעה תשע בבוקר. להמשך יום נעים.</textarea><div class="hint">ההודעה תנוקד אוטומטית להקראה נכונה בקו</div></div><label class="chk" style="margin-top:1rem"><input type="checkbox" checked> לבקש "הקש 1 לאישור קבלה" ולנהל דוח מי אישרה</label><div style="margin-top:1rem"><button class="btn">שליחה לקבוצה</button></div></div>';
+    h+='<h3 class="sec">היסטוריית שליחות</h3><div class="tablewrap"><table class="table"><thead><tr><th>תאריך</th><th>קבוצה</th><th>אופן</th><th>נשלחו</th><th>אישרו</th></tr></thead><tbody><tr><td>14.09.2026</td><td class="b">בוקר · יום א׳</td><td>שיחה יוצאת</td><td>11</td><td class="grn">9</td></tr><tr><td>02.09.2026</td><td class="b">ערב · יום ג׳</td><td>צינתוק</td><td>12</td><td class="grn">7</td></tr></tbody></table></div>';
+    set("s-broadcast",h);
+  }
+
+  /* ---------- finances ---------- */
+  function renderFinances(){
+    var h=head("כספים","הכנסות, הוצאות ורווחיות · "+FIN.scope+" — מנהלת בלבד",'<button class="btn ghost">⭳ ייצוא</button>');
+    h+='<div class="card" style="margin-bottom:1.5rem"><div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:.75rem"><div class="field"><label>שנה</label><select class="sel"><option>2026</option><option>כל הזמן</option></select></div><div class="field"><label>חודש</label><select class="sel"><option>ספטמבר</option><option>כל השנה</option></select></div><button class="btn">הצגה</button></div></div>';
+    h+='<div class="tabs"><button class="on">תצוגת מצב</button><button>תזרים — כסף שמור לעתיד</button><button>הוצאות</button><button>הכנסות</button></div>';
+    h+='<div class="grid g3" style="margin-bottom:2rem">'+FIN.tiles.map(function(t){return stat({t:t.t,l:t.l,v:money(t.v),big:t.big});}).join("")+'</div>';
+    h+='<div class="card" style="margin-bottom:2rem"><h3 class="sec">פילוח לפי חודש</h3><div style="overflow-x:auto"><table class="table"><thead><tr><th>תקופה</th><th>הכנסות (מזומן)</th><th>הוצאות</th><th>רווח (מזומן)</th><th>הכנסה פר-שיעור</th><th>רווח פר-שיעור</th></tr></thead><tbody>'+FIN.breakdown.map(function(r){return '<tr><td class="b">'+esc(r[0])+'</td><td class="sft">'+money(r[1])+'</td><td class="acc">'+money(r[2])+'</td><td class="grn">'+money(r[3])+'</td><td class="sft">'+money(r[4])+'</td><td class="grn">'+money(r[5])+'</td></tr>';}).join("")+'</tbody></table></div></div>';
+    var max=Math.max.apply(null,FIN.months.map(function(m){return Math.max(m[1],m[2]);})),pow=Math.pow(10,Math.floor(Math.log10(max))),niceMax=Math.ceil(max/pow)*pow||1;
+    h+='<div class="card" style="margin-bottom:2rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h3 class="sec" style="margin:0">הכנסות מול הוצאות לפי חודש</h3><div class="legend"><span><i style="background:#3FA9DD"></i>הכנסות</span><span><i style="background:#E05A79"></i>הוצאות</span></div></div><div class="ivchart">';
+    [1,.75,.5,.25].forEach(function(f){ h+='<div class="tick" style="bottom:'+(f*100)+'%"><span>₪'+Math.round(niceMax*f).toLocaleString("he-IL")+'</span></div>'; });
+    h+='<div class="ivbars">'+FIN.months.map(function(m){return '<div class="c"><i class="inc" style="height:'+(m[1]/niceMax*100)+'%"></i><i class="exp" style="height:'+(m[2]/niceMax*100)+'%"></i></div>';}).join("")+'</div></div><div style="display:flex;gap:.5rem;border-top:1px solid #e5e7eb;padding-top:.25rem;padding-inline-start:3.5rem;margin-top:.25rem">'+FIN.months.map(function(m){return '<span style="flex:1;min-width:34px;text-align:center;font-size:.62rem;color:#9aa8b1">'+esc(m[0])+'</span>';}).join("")+'</div></div>';
+    var totalIncome=FIN.sources.reduce(function(s,x){return s+x[1];},0),maxCat=Math.max.apply(null,FIN.categories.map(function(c){return c[1];}));
+    h+='<div class="grid g2"><div class="card"><h3 class="sec">הכנסות לפי מקור</h3>'+FIN.sources.map(function(x){var pct=totalIncome?Math.round(x[1]/totalIncome*100):0;return '<div class="sbar"><div class="t"><span>'+esc(x[0])+'</span><span style="color:#6b7f8a">'+money(x[1])+' · '+pct+'%</span></div><div class="track"><i style="width:'+pct+'%;background:'+x[2]+'"></i></div></div>';}).join("")+'</div><div class="card"><h3 class="sec">הוצאות לפי קטגוריה</h3>'+FIN.categories.map(function(c){return '<div class="sbar"><div class="t"><span>'+esc(c[0])+'</span><span style="color:#6b7f8a">'+money(c[1])+'</span></div><div class="track"><i style="width:'+(c[1]/maxCat*100)+'%;background:var(--accent)"></i></div></div>';}).join("")+'</div></div>';
+    set("s-finances",h);
+  }
+
+  /* ---------- settings hub ---------- */
+  function renderSettings(){
+    var freq=[["בריכות ומיקומים","שמות הבריכות שבהן מתקיימים השיעורים"],["קטלוג מנויים","סוגי מנוי: מספר שיעורים, מחיר ומחלקה"],["קבוצות","קבוצות ושיעורים פרטיים: מחלקה, בריכה, יום ושעה, תפוסה"],["קודי קבוצה","קודים לרישום שחייה מאורגן דרך הקו הטלפוני"],["מוצרים נלווים","משקפת, כובע ים וכו׳: מחיר מכירה ועלות"],["זמני חופשות","טווחי תאריכים שבהם לא נרשמים שיעורים"]];
+    var sys=[["הגדרות טלפון","הקו הטלפוני: תכני מידע, הקלטות, תקנון, הצהרת בריאות, מספר מזכירה ומדיניות גבייה",true],["משתמשי צוות","מנהלת ומזכירות; חסימה ופתיחת משתמשים"],["הגדרות מייל","בחירת ספק שליחה: Gmail, Resend, או ללא"],["תבניות מייל אוטומטי","נוסח ועיצוב המיילים שנשלחים אוטומטית ללקוחות"],["אוטומציות","מתי כל משימה אוטומטית רצה — יום ושעה, הפעלה/כיבוי, הרצה ידנית"],["הגדרות מערכת","נמעני דוחות, ספקים ומשימות מתוזמנות"]];
+    var h=head("הגדרות","הגדרות מבנה שהמנהלת מנהלת. הנתונים כאן מזינים את כל שאר המערכת.");
+    h+='<h2 class="sec">הגדרות שימושיות</h2><p class="subtle">מה שמעדכנים לאורך הזמן — תכנים, מחירים, קבוצות והקו הטלפוני.</p><div class="setgrid">'+freq.map(function(s){return '<div class="card setcard"><h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p></div>';}).join("")+'</div>';
+    h+='<h2 class="sec">הגדרות מערכת</h2><p class="subtle">מגדירים פעם אחת בהקמה, ובדרך כלל לא נוגעים שוב.</p><div class="setgrid">'+sys.map(function(s){return '<div class="card setcard"'+(s[2]?' data-openphone="1" style="border-color:var(--soft)"':'')+'><h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p></div>';}).join("")+'</div>';
+    set("s-settings",h);
+  }
+
+  /* ---------- phone settings ---------- */
+  function field(label,hint,control){ return '<div class="field"><label>'+esc(label)+'</label>'+control+(hint?'<div class="hint">'+esc(hint)+'</div>':'')+'</div>'; }
+  function nikudTa(label,hint,val){ return '<div class="field"><label>'+esc(label)+'</label><div class="nikud"><textarea class="ta" rows="3">'+esc(val)+'</textarea><span class="np">ניקוד אוטומטי ✎</span></div>'+(hint?'<div class="hint">'+esc(hint)+'</div>':'')+'</div>'; }
+  function section(title,desc,body,open){ return '<details class="acc"'+(open?" open":"")+'><summary><span><span class="stitle">'+esc(title)+'</span><span class="sdesc">'+esc(desc)+'</span></span><span class="chev">▾</span></summary><div class="body">'+body+'</div></details>'; }
+  function renderPhone(){
+    var p=PHONE;
+    var h='<div class="pagehead"><div><h1>הגדרות טלפון</h1><p>ניהול הקו הטלפוני — תכנים, מספרים ומדיניות. התוכן נקרא בקו בזמן אמת.</p></div><button class="backbtn" data-back="settings">→ חזרה להגדרות</button></div>';
+    h+=section("ניתוב ושעות מענה","מספר המזכירה, תא קולי, שעות פעילות ושבת",
+      field("מספר המזכירה (העברת שיחה)","מתעדכן אוטומטית בשלוחה 7 בימות",'<input class="inp" dir="ltr" value="'+p.secretary_phone+'">')
+      +field("מייל לתא הקולי","הודעות מחוץ לשעות נשלחות לכאן · שלוחה 8",'<input class="inp" dir="ltr" value="'+p.voicemail_email+'">')
+      +field("טלפון מנהלת (להקלטה בקו)","רק מהמספר הזה תיפתח שלוחת הקלטת התכנים (מקש 9)",'<input class="inp" dir="ltr" value="'+p.manager_phone+'">')
+      +'<div class="g2f">'+field("תחילת שעות מענה","",'<input class="inp" type="time" value="'+p.answer_start+'">')+field("סוף שעות מענה","",'<input class="inp" type="time" value="'+p.answer_end+'">')+'</div>'
+      +'<label class="chk"><input type="checkbox"'+(p.sabbath?" checked":"")+'> בשבת וחג הקו אינו פעיל (הודעת סגירה בלבד)</label>', true);
+    h+=section("תכני מידע","נקראים בשלוחות המידע — מנוקד ל-TTS. אפשר להציע ניקוד אוטומטי ולתקן אותו ידנית",
+      nikudTa("מידע — התעמלות מים","שעות ומחירים; שלוחה 1 › מידע",p.info_mayim)
+      +nikudTa("מידע — שחייה","קורסים ומחירים; שלוחה 2 › מידע",p.info_shiya)
+      +nikudTa("כתובות הבריכות","שלוחת מידע › כתובות",p.info_addresses));
+    h+=section("הרשמה","נוסח התקנון והצהרת הבריאות בהרשמה הטלפונית",
+      nikudTa("תקנון (אישור בהרשמה)","",p.terms)+nikudTa("הצהרת בריאות","",p.health));
+    h+=section("גבייה","הסלמה: סימון ידני וחיוג אוטומטי בתשלום",
+      field("ימים מהתזכורת להסלמה","אחרי כמה ימים בלי אישור/תשלום הלקוחה מסומנת 'להסלמה'",'<input class="inp" type="number" value="'+p.esc_days+'">')
+      +'<label class="chk"><input type="checkbox"'+(p.esc_on?" checked":"")+'> להפעיל חיוג אוטומטי בתשלום ללקוחה שלא אישרה/שילמה</label>'
+      +'<div class="g2f">'+field("מספר נסיונות חיוג","עד כמה פעמים לחייג",'<input class="inp" type="number" value="'+p.esc_attempts+'">')+field("מרווח בין חיוגים (שעות)","כל כמה שעות לחייג שוב",'<input class="inp" type="number" value="'+p.esc_interval+'">')+'</div>');
+    h+=section("דוח שיחות","מייל יעד ותדירות של דוח השיחות",
+      '<div class="g2f">'+field("מייל לדוח שיחות","",'<input class="inp" dir="ltr" value="'+p.report_email+'">')+field("תדירות הדוח","",'<select class="sel"><option>יומי</option><option>שבועי</option></select>')+'</div>');
+    // recordings (separate)
+    var recBody='';
+    RECS.forEach(function(r){ recBody+='<div class="rec"><span>'+esc(r.k)+'</span><span style="display:flex;align-items:center;gap:.75rem"><span class="st'+(r.human?" human":"")+'">'+esc(r.st)+'</span><span class="acts"><button>העלאת הקלטה</button>'+(r.human?'<button>מחיקה</button>':'')+'</span></span></div>'; });
+    recBody+='<p class="hint" style="margin-top:.25rem">פורמט: mp3/wav · הקלטה גוברת על הטקסט; מחיקה מחזירה להקראה אוטומטית. התקנון והצהרת הבריאות יישארו לא ניתנים לדילוג גם כהקלטה.</p>';
+    h+=section("הקלטות קול לתפריטים","אפשר להחליף את ההקראה האוטומטית בהקלטה אנושית לכל קטע. אפשר גם להקליט בטלפון: חייגי לקו ממספר המנהלת והקישי 9",recBody);
+    h+='<div style="margin-top:1.5rem"><button class="btn">שמירת הגדרות</button></div>';
+    set("s-phone",h);
+  }
+
+  /* ---------- logs ---------- */
+  function renderLogs(){
+    var h=head("לוגים","מעקב תקלות והתראות · מפתחת בלבד");
+    h+='<div class="tabs" id="logTabs"><button class="on" data-t="err">שגיאות פתוחות (1)</button><button data-t="notif">היסטוריית התראות</button><button data-t="dev">כלים למפתחת</button></div>';
+    h+='<div id="lt-err"><div class="card" style="border-color:#fde68a;background:#fffbeb"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap"><div><div style="font-weight:600;color:#78350f">שליחת מייל נכשלה · קוד 535</div><div style="font-size:.85rem;color:#92400e;margin-top:.25rem">שם המשתמש או הסיסמה של המייל שגויים.</div><div style="font-size:.85rem;color:#a16207;margin-top:.35rem">💡 ב-Gmail יש ליצור "סיסמת אפליקציה" ולהזין אותה בהגדרות המייל.</div></div><button class="clr" style="align-self:flex-start">סמני כטופל</button></div></div></div>';
+    h+='<div id="lt-notif" hidden><div class="tablewrap"><table class="table"><thead><tr><th>מתי</th><th>סוג</th><th>נמענת</th><th>נושא</th><th>סטטוס</th></tr></thead><tbody>'
+      +'<tr><td>16.09 08:02</td><td>תזכורת חוב</td><td>מרים פרידמן</td><td>תזכורת תשלום</td><td class="grn">✓ נשלח</td></tr>'
+      +'<tr><td>15.09 07:00</td><td>דוח חמישי</td><td>מנהלת</td><td>ניסיון ומסתיימים</td><td class="grn">✓ נשלח</td></tr>'
+      +'<tr><td>14.09 06:00</td><td>תזכורת חידוש</td><td>יעל רוזנברג</td><td>המנוי שלך מסתיים בקרוב</td><td class="grn">✓ נשלח</td></tr>'
+      +'<tr><td>12.09 06:00</td><td>תזכורת חוב</td><td>לאה שוורץ</td><td>תזכורת תשלום</td><td class="acc">✗ לא נשלח</td></tr>'
+      +'</tbody></table></div></div>';
+    h+='<div id="lt-dev" hidden><div class="tablewrap"><table class="table"><thead><tr><th>מתי</th><th>מקור</th><th>רמה</th><th>הודעה</th></tr></thead><tbody>'
+      +'<tr><td>16.09 03:00</td><td>cron:dispatch</td><td class="sft">info</td><td>ran: expire-freezes; skipped: weekly-debts</td></tr>'
+      +'<tr><td>16.09 08:02</td><td>email:smtp</td><td class="acc">error</td><td>535 · Username and Password not accepted</td></tr>'
+      +'<tr><td>15.09 07:00</td><td>cron:thursday-report</td><td class="sft">info</td><td>sent report to 2 recipients</td></tr>'
+      +'</tbody></table><div style="padding:1rem;border-top:1px solid #eef1f3;font-size:.8rem;color:#6b7f8a">קישורים חיצוניים: Vercel Logs · Supabase Logs · Vercel Deployments</div></div></div>';
+    set("s-logs",h);
+  }
+
+  /* ---------- router ---------- */
+  var SCREENS=["dashboard","lessons","customers","customer","groups","products","debts","payments","calls","reports","broadcast","finances","settings","phone","logs"];
+  function buildNav(active){ document.getElementById("nav").innerHTML=NAV.map(function(it){ return '<li><a data-h="'+it.h+'" class="'+(it.h===active?"active":"")+'">'+icon(it.i)+it.l+'</a></li>'; }).join(""); }
+  function show(href,navKey){
+    SCREENS.forEach(function(id){ document.getElementById("s-"+id).hidden=true; });
+    document.getElementById("s-"+href).hidden=false;
+    buildNav(navKey||href);
+    try{ window.scrollTo(0,0); }catch(e){}
+  }
+
+  document.getElementById("nav").addEventListener("click",function(e){ var a=e.target.closest("a[data-h]"); if(!a)return; show(a.getAttribute("data-h")); });
+  document.getElementById("deptsw").addEventListener("click",function(e){ var b=e.target.closest("button[data-dep]"); if(!b)return; currentDep=b.getAttribute("data-dep"); [].forEach.call(this.children,function(x){x.className="";}); b.className=currentDep==="water_aerobics"?"on-wa":"on-sw"; renderDashboard(currentDep); renderLessons(currentDep); renderGroups(currentDep); });
+
+  // dashboard group card → groups
+  document.getElementById("s-dashboard").addEventListener("click",function(e){ if(e.target.closest("[data-go='groups']")) show("groups"); });
+  // customers → customer detail
+  document.getElementById("s-customers").addEventListener("click",function(e){ var c=e.target.closest("[data-cust]"); if(c){ renderCustomer(+c.getAttribute("data-cust")); show("customer","customers"); } });
+  // back buttons
+  document.body.addEventListener("click",function(e){ var b=e.target.closest("[data-back]"); if(b) show(b.getAttribute("data-back")); });
+  // customer detail tabs
+  document.getElementById("s-customer").addEventListener("click",function(e){ var t=e.target.closest("#custTabs button[data-t]"); if(!t)return; [].forEach.call(t.parentNode.children,function(x){x.className="";}); t.className="on"; var k=t.getAttribute("data-t"); document.getElementById("ct-up").hidden=k!=="up"; document.getElementById("ct-subs").hidden=k!=="subs"; document.getElementById("ct-stmt").hidden=k!=="stmt"; });
+  // debts tabs + expand
+  document.getElementById("s-debts").addEventListener("click",function(e){
+    var tb=e.target.closest("#debtTabs button[data-t]");
+    if(tb){ [].forEach.call(tb.parentNode.children,function(x){x.className="";}); tb.className="on"; document.getElementById("tab-debts").hidden=tb.getAttribute("data-t")!=="debts"; document.getElementById("tab-credits").hidden=tb.getAttribute("data-t")!=="credits"; return; }
+    if(e.target.closest(".lk")){ show("customer","customers"); renderCustomer(2); return; }
+    var db=e.target.closest("button[data-d]");
+    if(db){ var i=db.getAttribute("data-d"); var box=document.getElementById("dd-"+i); box.hidden=!box.hidden; var ch=db.querySelector(".chev"); if(ch)ch.textContent=box.hidden?"▾":"▲"; }
+  });
+  // settings → phone
+  document.getElementById("s-settings").addEventListener("click",function(e){ if(e.target.closest("[data-openphone]")) show("phone","settings"); });
+  // logs tabs
+  document.getElementById("s-logs").addEventListener("click",function(e){ var t=e.target.closest("#logTabs button[data-t]"); if(!t)return; [].forEach.call(t.parentNode.children,function(x){x.className="";}); t.className="on"; var k=t.getAttribute("data-t"); document.getElementById("lt-err").hidden=k!=="err"; document.getElementById("lt-notif").hidden=k!=="notif"; document.getElementById("lt-dev").hidden=k!=="dev"; });
+
+  // initial render
+  renderDashboard(currentDep); renderLessons(currentDep); renderCustomers(); renderGroups(currentDep); renderProducts(); renderDebts(); renderPayments(); renderCalls(); renderReports(); renderBroadcast(); renderFinances(); renderSettings(); renderPhone(); renderLogs();
+  buildNav("dashboard"); show("dashboard");
+})();
+</script>

@@ -55,9 +55,20 @@
   .item .chips{margin-top:.7rem; display:flex; flex-wrap:wrap; gap:.4rem}
   .item .chips span{font-size:.8rem; font-weight:600; color:var(--lime-deep); border:1px solid var(--line-strong); border-radius:999px; padding:.15rem .7rem; background:var(--ground)}
 
+  /* phone line — full-width feature */
+  .item.feature{grid-column:1 / -1}
+  .item.feature p{max-width:74ch}
+  .actions{list-style:none; margin:1.1rem 0 0; padding:0; display:grid; grid-template-columns:repeat(2,1fr); column-gap:clamp(28px,6vw,72px); row-gap:.55rem}
+  @media(max-width:720px){ .actions{grid-template-columns:1fr} }
+  .actions li{position:relative; padding-inline-start:1.4rem; color:var(--ink); font-size:.98rem; font-weight:500}
+  .actions li::before{content:""; position:absolute; inset-inline-start:0; top:.66em; width:.55rem; height:.55rem; border-radius:50%; background:var(--lime); box-shadow:0 0 0 3px color-mix(in srgb,var(--lime) 22%, transparent)}
+
   /* result — spans full width, emphasized */
   .item.result{grid-column:1 / -1; border-top:2px solid var(--ink)}
   .item.result p{max-width:70ch; font-size:1.12rem; font-weight:500; color:var(--ink)}
+
+  /* soft cue above the demo bar */
+  .demo-cue{margin-top:2rem; margin-bottom:-.5rem; font-size:1rem; font-weight:600; color:var(--lime-deep)}
 
   /* ---- metrics ---- */
   .metrics{border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); overflow:hidden}
@@ -85,6 +96,7 @@
     <p class="lead">מערכת אחת שמנהלת את הסטודיו במקומך: לקוחות, מנויים, כספים וקו טלפוני חכם.
       פחות רישומים ידניים, פחות טעויות ויותר זמן פנוי — בזמן שהלקוחות מסתדרות בעצמן, מתי שנוח להן.</p>
 
+    <p class="demo-cue">הכי קל להבין כשרואים. הצצה קצרה למערכת בפעולה:</p>
     <a class="demobar" href="https://claude.ai/artifact/18W19Dv89LWLWV4A2rrtuM" target="_blank" rel="noopener">
       <span class="rec" aria-hidden="true">
         <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#bcd42e"/><circle cx="13" cy="13" r="4.5" fill="#363a1f"/></svg>
@@ -109,7 +121,7 @@
 
       <div class="item">
         <div class="ihead"><h3>לפני</h3><span class="n">02</span></div>
-        <p>עד היום הכול התנהל באיירטייבל, אקסל והרבה שיחות טלפון. כל שאלה קטנה — "כמה שיעורים
+        <p>עד היום הכול התנהל במערכת קטנה, אקסל והרבה שיחות טלפון. כל שאלה קטנה — "כמה שיעורים
           נשארו לי?" — הצריכה בירור ידני, ורק בשעות שהמשרד היה פתוח.</p>
       </div>
 
@@ -121,16 +133,26 @@
       </div>
 
       <div class="item">
-        <div class="ihead"><h3>הקו הטלפוני</h3><span class="n">04</span></div>
-        <p>הקו עובד בשבילך מסביב לשעון: הלקוחה מתקשרת, בודקת כמה שיעורים נשארו לה, נרשמת
-          ומשלמת, מחליפה שיעור או מצטרפת לרשימת המתנה — הכול לבד, בעברית נעימה, בלי להמתין
-          למזכירה.</p>
-      </div>
-
-      <div class="item">
-        <div class="ihead"><h3>האוטומציה</h3><span class="n">05</span></div>
+        <div class="ihead"><h3>האוטומציה</h3><span class="n">04</span></div>
         <p>תזכורות התשלום, תזכורות חידוש המנוי והדוחות יוצאים מעצמם — במייל או בשיחה טלפונית,
           איך שנוח ללקוחה. פחות מעקב ידני, ואף לקוחה לא נשכחת.</p>
+      </div>
+
+      <div class="item feature">
+        <div class="ihead"><h3>הקו הטלפוני</h3><span class="n">05</span></div>
+        <p>זה החלק שחוסך הכי הרבה טלפונים למזכירה. במקום שכל בקשה תגיע אליה, הלקוחה מתקשרת לקו
+          ומסדרת הכול בעצמה — בעברית נעימה, מסביב לשעון, גם כשהמשרד סגור. כל הפעולות שהמזכירה
+          עשתה עד היום ידנית, עכשיו נעשות לבד:</p>
+        <ul class="actions">
+          <li>רישום למנוי ותשלום מאובטח באשראי</li>
+          <li>בדיקת יתרת השיעורים והמועדים הקרובים</li>
+          <li>החלפת שיעור חד-פעמית לפי מקום פנוי</li>
+          <li>הפשרת מנוי שהוקפא</li>
+          <li>הצטרפות לרשימת המתנה לקבוצה מלאה</li>
+          <li>רישום קבוצתי מאורגן בקוד ייחודי</li>
+          <li>שמיעת הודעת חוב ואישור קבלתה</li>
+          <li>עדכון פרטים ובחירת אופן קבלת ההודעות</li>
+        </ul>
       </div>
 
       <div class="item result">

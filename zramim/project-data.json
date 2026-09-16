@@ -1,0 +1,77 @@
+{
+  "slug": "zramim",
+  "name": "Zramim",
+  "nameHebrew": "זרמים",
+  "tagline": "Studio-management platform with a self-service Hebrew phone line",
+  "oneLiner": "A production, Hebrew-RTL management system for a swimming & water-aerobics studio: subscriptions, class scheduling, a reconciling financial ledger, and a full self-service IVR phone system (registration, card clearing, automated debt collection).",
+  "role": "Full-stack engineer & system designer (sole developer)",
+  "status": "Production / client delivery",
+  "year": 2026,
+  "durationWeeks": 3,
+  "commits": 85,
+  "language": "Hebrew (RTL)",
+  "clientType": "Small business — swimming & water-aerobics studio",
+  "confidential": true,
+  "repositoryVisibility": "private",
+  "metrics": {
+    "linesOfTsx": 26581,
+    "sourceFiles": 204,
+    "sqlMigrations": 71,
+    "sqlLines": 1858,
+    "dbTables": 24,
+    "dbFunctions": 15,
+    "dbTriggers": 2,
+    "rlsPolicies": 48,
+    "enums": 9,
+    "cronJobs": 9
+  },
+  "stack": {
+    "frontend": ["Next.js 15 (App Router)", "React 19", "Server Actions", "TypeScript", "Tailwind CSS"],
+    "backend": ["Next.js Route Handlers", "PostgreSQL (PL/pgSQL RPCs)"],
+    "database": ["Supabase (PostgreSQL)", "Supabase Auth", "Row-Level Security"],
+    "telephony": ["Yemot HaMashiach (IVR / TTS / campaigns)", "Dicta Nakdan API (Hebrew vowelization)"],
+    "payments": ["Nedarim Plus (credit clearing)"],
+    "email": ["Resend", "SMTP / Nodemailer"],
+    "hosting": ["Vercel", "Render"],
+    "scheduling": ["GitHub Actions (hourly cron dispatcher)"]
+  },
+  "highlights": [
+    "Atomic subscription registration in a single transactional Postgres function (subscription + N class bookings + ledger charge)",
+    "Customer-level financial ledger with automatic credit balances that eliminated a double-allocation bug",
+    "Two-model revenue accounting: cash ledger plus an accrual/deferred-revenue waterfall that reconciles to the bank",
+    "Full self-service IVR: caller-ID identification, status checks, phone registration + card payment, one-time class swaps (24h rule), unfreeze, waitlists, group codes, voicemail, and debt acknowledgement",
+    "Stateless IVR protocol given real back-navigation via a per-call navigation stack keyed by call-ID",
+    "Hebrew text-to-speech with nikud, including best-effort automatic vowelization validated so it can never corrupt names",
+    "Defense-in-depth authorization: identical role invariants enforced at both the app layer and via Row-Level Security",
+    "Adapter pattern for email, payments, and TTS so the app runs end-to-end before real integrations land",
+    "Hourly idempotent automation dispatcher driving debt alerts, renewal reminders, and scheduled reports",
+    "Timezone-correct scheduling pinned to Asia/Jerusalem (DST-aware) with no date library"
+  ],
+  "features": [
+    "Two-department separation (swimming / water-aerobics) with a unified customer list",
+    "Class-grid dashboard: enrolled / waiting / free seats in real time",
+    "Freeze / unfreeze subscriptions with 1-year balance expiry",
+    "Capacity control enforced by DB trigger, with manager override",
+    "Waitlists and future (pre-registration) groups with broadcast messaging",
+    "Debt tracking, collection-call logging, and automated escalation calls",
+    "Add-on product sales and expense tracking feeding an income report",
+    "Manager/secretary roles with financial data hidden from secretaries",
+    "Configurable email templates, report recipients, and automation schedules — all in-app",
+    "Hebrew calendar dates displayed alongside Gregorian",
+    "Health-declaration email flow with signed confirmation links",
+    "Manager-controllable phone menu: TTS, recordings, hours, and terms edited from settings"
+  ],
+  "engineeringDecisions": [
+    "Push atomicity into Postgres RPCs (registration, freeze/unfreeze, group change, reschedule)",
+    "Compute calendar occurrences in TypeScript, do the atomic write in SQL",
+    "Runtime-selected adapters with fail-safe defaults (noop email never falsely reports success)",
+    "Header-only shared secrets with constant-time comparison for machine endpoints",
+    "React cache() to memoize per-request auth loads; background work via Next after()",
+    "Hebrew-first error translation so raw server errors never leak to users"
+  ],
+  "links": {
+    "liveDemo": null,
+    "repository": null,
+    "caseStudy": "case-study.md"
+  }
+}

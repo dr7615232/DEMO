@@ -131,6 +131,7 @@
   /* calendar */
   .cal-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
   .cal-head h2{font-size:19px;font-weight:700;color:var(--plum-deep);min-width:130px;text-align:center}
+  .heb-my{font-size:12px;color:var(--muted);font-weight:500;text-align:center;margin-top:2px}
   .cal-nav{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);
     display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:.13s}
   .cal-nav:hover{border-color:var(--rose);color:var(--rose)}
@@ -143,6 +144,10 @@
   .cal-cell.other{background:transparent;border-color:transparent;cursor:default}
   .cal-num{font-size:12.5px;font-weight:600;color:var(--muted);align-self:flex-end}
   .cal-cell.today .cal-num{color:var(--rose);font-weight:700}
+  .c-top{display:flex;align-items:center;justify-content:space-between;width:100%;gap:4px}
+  .c-num{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .cal-cell.today .c-num{color:var(--rose);font-weight:700}
+  .c-heb{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
   .cal-ev{font-size:11.5px;font-weight:600;border-radius:6px;padding:3px 6px;line-height:1.25;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cal-ev .ev-t{opacity:.75;font-weight:700;margin-inline-end:3px}
@@ -416,6 +421,24 @@ function itemsTotal(its){return its.reduce((a,i)=>a+(Number(i.price)||0),0);}
 function evTotal(e){return itemsTotal(e.items);}
 function evPending(e){return e.items.length && e.items.every(i=>!i.sub);} /* booked, no sub yet */
 
+/* ---- Hebrew (Jewish) calendar dates — faithful to the original ---- */
+let _hebFmt=null;
+try{ _hebFmt=new Intl.DateTimeFormat("he-u-ca-hebrew-nu-latn",{day:"numeric",month:"long",year:"numeric"}); }catch(e){}
+function gematria(num){
+  if(!num||num<1) return "";
+  const ones=["","א","ב","ג","ד","ה","ו","ז","ח","ט"],tens=["","י","כ","ל","מ","נ","ס","ע","פ","צ"],huns=["","ק","ר","ש","ת","תק","תר","תש","תת","תתק"];
+  let n=num,res=huns[Math.floor(n/100)]||""; n%=100;
+  if(n===15) res+="טו"; else if(n===16) res+="טז"; else { res+=tens[Math.floor(n/10)]||""; res+=ones[n%10]||""; }
+  if(res.length===1) res+="׳"; else res=res.slice(0,-1)+"״"+res.slice(-1);
+  return res;
+}
+function hebPartsOf(d){ const o={}; if(!_hebFmt) return o;
+  try{ _hebFmt.formatToParts(d).forEach(p=>{ if(p.type==="day")o.day=+p.value; else if(p.type==="month")o.month=p.value; else if(p.type==="year")o.year=+p.value; }); }catch(e){}
+  return o; }
+function hebDay(d){ const p=hebPartsOf(d); return p.day?gematria(p.day):""; }
+function hebFull(dt){ const d=(dt instanceof Date)?dt:new Date(dt+"T12:00:00"); const p=hebPartsOf(d); if(!p.day) return ""; return gematria(p.day)+" ב"+p.month+" "+gematria(p.year%1000); }
+function hebMonthYear(d){ const p=hebPartsOf(d); if(!p.month) return ""; return p.month+" "+gematria(p.year%1000); }
+
 /* ============ RENDERERS ============ */
 function renderDashboard(){
   const todays=events.filter(e=>e.date===0).sort((a,b)=>a.time.localeCompare(b.time));
@@ -468,7 +491,7 @@ function toggleTask(id,el){const t=tasks.find(x=>x.id===id);if(!t)return;t.done=
 function renderClients(){
   const rows=clients.map(c=>`<tr>
     <td><div class="name-cell"><div class="avatar">${initials(c.name)}</div>
-      <div><div class="cell-name">${c.name}</div><div class="cell-sub">${c.bday?"יום הולדת "+fmtDate(c.bday):""}</div></div></div></td>
+      <div><div class="cell-name">${c.name}</div><div class="cell-sub">${c.bday?"יום הולדת "+fmtDate(c.bday)+" · "+hebFull(c.bday):""}</div></div></div></td>
     <td><div>${c.phone}</div></td>
     <td>${badge(clientStatuses,c.statusId)}</td>
     <td>${c.groupId?badge(groups,c.groupId):'<span class="cell-sub">—</span>'}</td>
@@ -531,17 +554,20 @@ function renderCalendar(){
     if(d===null)return `<div class="cal-cell other"></div>`;
     const isToday=d===TODAY.getDate()&&calMonth===TODAY.getMonth()&&calYear===TODAY.getFullYear();
     const evs=(evByDay[d]||[]).sort((a,b)=>a.time.localeCompare(b.time));
+    const hd=hebDay(new Date(calYear,calMonth,d,12));
     return `<div class="cal-cell ${isToday?'today':''}">
-      <span class="cal-num">${d}</span>
+      <div class="c-top"><span class="c-num">${d}</span><span class="c-heb">${hd}</span></div>
       ${evs.slice(0,3).map(e=>{const svc=e.items[0]?services.find(s=>s.id===e.items[0].svc):null;const sw=svc?SWATCHES[svc.color]:SWATCHES.taupe;
         return `<div class="cal-ev" style="background:${sw.bg};color:${sw.fg}" title="${e.title}"><span class="ev-t">${e.time}</span>${e.type==='event'?e.title:clientName(e.clientId)}</div>`;}).join("")}
       ${evs.length>3?`<div class="cell-sub" style="padding-inline-start:4px">+${evs.length-3} עוד</div>`:""}
     </div>`;
   }).join("");
+  const hebStart=hebMonthYear(new Date(calYear,calMonth,1,12)),hebEnd=hebMonthYear(new Date(calYear,calMonth,days,12));
+  const hebLabel=hebStart===hebEnd?hebStart:hebStart+" – "+hebEnd;
   document.getElementById("v-calendar").innerHTML=`
     <div class="cal-head">
       <button class="cal-nav" onclick="calStep(1)">${ico.chevR}</button>
-      <h2>${HE_MONTHS[calMonth]} ${calYear}</h2>
+      <div><h2>${HE_MONTHS[calMonth]} ${calYear}</h2>${hebLabel?`<div class="heb-my">${hebLabel}</div>`:""}</div>
       <button class="cal-nav" onclick="calStep(-1)">${ico.chevL}</button>
       <button class="btn btn-ghost btn-sm" onclick="calToday()">היום</button>
       <div class="act" style="margin-inline-start:auto"><button class="btn btn-primary btn-sm" onclick="toast('קביעת תור: יום + לקוחה + שירות')">${ico.plus} תור חדש</button></div>
@@ -573,7 +599,7 @@ function finPeriodBar(){
   return `<div style="display:flex;align-items:center;margin-bottom:16px;gap:14px;flex-wrap:wrap">
     <div class="seg-ctrl"><button class="seg-btn on">חודש</button><button class="seg-btn">רבעון</button><button class="seg-btn">שנה</button></div>
     <div class="cal-head" style="margin:0"><button class="cal-nav" onclick="toast('חודש קודם')">${ico.chevR}</button>
-      <h2 style="font-size:16px;min-width:120px">${HE_MONTHS[TODAY.getMonth()]} ${TODAY.getFullYear()}</h2>
+      <div style="min-width:120px"><h2 style="font-size:16px">${HE_MONTHS[TODAY.getMonth()]} ${TODAY.getFullYear()}</h2><div class="heb-my">${hebMonthYear(new Date(TODAY.getFullYear(),TODAY.getMonth(),15,12))}</div></div>
       <button class="cal-nav" onclick="toast('חודש הבא')">${ico.chevL}</button></div>
     <div class="act" style="margin-inline-start:auto;display:flex;gap:8px">
       <button class="btn btn-primary btn-sm" onclick="toast('רישום הכנסה')">${ico.plus} הכנסה</button>

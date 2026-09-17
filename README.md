@@ -14,10 +14,13 @@ bulk prices, and a ready-to-fill client order form — ready to send in a few cl
 **Stack:** Self-contained HTML · CSS · JavaScript (single-file demo, no build)
 
 **▶ צפייה חיה / Live:**
-- 📄 עמוד הפרויקט (Project page): [`tuki/site/index.html`](./tuki/site/index.html)
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/Q1NbhQTXLwFGPNzXxwSY2c
 - 🦜 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/N6HuWafMG1kLRiFnvZsX6p
 
 *(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+Start with **[`tuki/docs/README.md`](./tuki/docs/README.md)** for the full index, or jump to
+the **[case study](./tuki/docs/case-study.md)**.
 
 **📄 Project page (Hebrew):** [`tuki/site/index.html`](./tuki/site/index.html) — a designed,
 RTL Hebrew case-study page (cream/olive/lime style) telling the project story, with a link to the live demo. Open it in a browser (no build).

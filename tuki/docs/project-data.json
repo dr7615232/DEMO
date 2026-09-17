@@ -1,0 +1,44 @@
+{
+  "slug": "tuki",
+  "name": "תוכי פרינט — בונה הקטלוג",
+  "name_en": "Tuki Print — Catalog Builder",
+  "tagline_he": "קטלוג מוצרים אישי, שמתעדכן איתך",
+  "tagline_en": "A self-updating product catalog builder for a print shop",
+  "type": "Hebrew-RTL catalog builder / order tool (single-file interactive demo)",
+  "status": "Portfolio demo (faithful UI reconstruction)",
+  "language": "Hebrew (RTL)",
+  "audience": "Print-shop / product-business owners",
+  "year": 2026,
+  "summary_he": "מסך עבודה אחד לבחירת מוצרים לקטלוג העונתי: מחיר ליחידה ומחיר לכמות, שער חגיגי, קטלוג מסודר לפי קטגוריה וטופס הזמנה ללקוח, מוכן לשליחה בכמה נגיעות.",
+  "summary_en": "One screen to pick this season's catalog products (per-unit and bulk price), producing a festive cover, a category-sorted catalog, and a client order form ready to send.",
+  "stack": ["Self-contained HTML", "CSS", "Vanilla JavaScript", "Rubik (Google Fonts)", "Intl Hebrew calendar", "no build / no server / offline"],
+  "screens": [
+    "בונה הקטלוג (builder: products, prices, categories, search/filter, add product, contact)",
+    "שער הקטלוג (festive cover + catalog pages grouped by category)",
+    "טופס הזמנה (client order form with quantities, tier pricing, totals + VAT)"
+  ],
+  "features": [
+    "Pick catalog items with a single toggle; selection drives every screen",
+    "Inline-editable product title; per-unit and bulk (25+) price fields",
+    "Category grouping with search and a category filter",
+    "Add a product on the fly; edit business contact details",
+    "Festive cover with logo, tagline, contact, voucher/CTA badges",
+    "Order form with quantity-aware pricing and totals, VAT toggle",
+    "Dual Gregorian + Hebrew date on the cover",
+    "Continuous autosave indicator; live selection summary bar",
+    "Fully client-side, offline, single file"
+  ],
+  "highlights": [
+    "One in-memory selection is the single source of truth across builder, cover and order form.",
+    "Pure quantity-aware pricing function (bulk from 25 units) with safe fallbacks.",
+    "Whole product grid runs on one delegated event handler — no per-card listeners.",
+    "Hebrew + Gregorian dating via the browser's Intl Hebrew calendar, no date library."
+  ],
+  "links": {
+    "project_page_artifact": "https://claude.ai/artifact/Q1NbhQTXLwFGPNzXxwSY2c",
+    "demo_artifact": "https://claude.ai/artifact/N6HuWafMG1kLRiFnvZsX6p",
+    "project_page_file": "../site/index.html",
+    "demo_file": "../demo/index.html"
+  },
+  "privacy_note": "Products, prices, phone and email are example data only. The demo runs client-side and calls no external services."
+}

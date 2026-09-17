@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="120" viewBox="0 0 360 120" role="img" aria-label="שובר אוטומטי">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#128975"/>
+      <stop offset="1" stop-color="#0d6e5f"/>
+    </linearGradient>
+  </defs>
+  <!-- ticket mark -->
+  <g transform="translate(20 24)">
+    <rect x="0" y="0" width="72" height="72" rx="16" fill="url(#g)"/>
+    <circle cx="36" cy="0" r="8" fill="#f4f7f5"/>
+    <circle cx="36" cy="72" r="8" fill="#f4f7f5"/>
+    <path d="M20 36h32" stroke="#c8892b" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 6"/>
+    <text x="36" y="30" font-family="Heebo, Arial, sans-serif" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">₪</text>
+    <text x="36" y="58" font-family="Heebo, Arial, sans-serif" font-size="14" font-weight="700" fill="#f3d9a6" text-anchor="middle">100</text>
+  </g>
+  <!-- wordmark (RTL visual order handled manually) -->
+  <text x="112" y="56" font-family="Heebo, Arial, sans-serif" font-size="30" font-weight="800" fill="#12312b">שובר אוטומטי</text>
+  <text x="112" y="82" font-family="Heebo, Arial, sans-serif" font-size="14" font-weight="600" fill="#5f7a72">ניהול תרומות והפקת שוברים</text>
+</svg>

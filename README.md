@@ -107,3 +107,41 @@ and settings. Open it in a browser (no build step). Uses example data only — n
 > contains a personal name and is deliberately excluded; the pages use a neutral wordmark.
 > Before making anything public, review the anonymization checklist in
 > [`wig-crm/docs/README.md`](./wig-crm/docs/README.md).
+
+---
+
+### 🎟️ [Voucher Automation (שובר אוטומטי)](./voucher-automation/) — donations that become vouchers, automatically
+
+An automation that closes the whole loop between a received donation and a delivered
+thank-you voucher, with zero manual work. Donation details flow in on their own; the donor
+gets a short form to choose **where** to redeem; the system generates a designed voucher with
+a **unique, never-reused number** and emails it in seconds. Stock per redemption location is
+tracked continuously, and the operator is alerted **before** any location runs low. One
+dashboard shows the whole operation.
+
+**Stack:** Reference implementation — PostgreSQL (transactions, unique sequences) · Node.js ·
+server-side HTML→PDF · transactional email · a lightweight job runner for retries
+
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/MTozqShyt4TCYcDwX5fdjZ
+- 🎟️ דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/E8qpZ9VRKBggksd5sUFntd
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+Start with **[`voucher-automation/docs/README.md`](./voucher-automation/docs/README.md)** for the full index, or jump to
+the **[case study](./voucher-automation/docs/case-study.md)**.
+
+**📄 Project page (Hebrew):** [`voucher-automation/site/index.html`](./voucher-automation/site/index.html) — a designed,
+RTL Hebrew case-study page telling the project story: the manual process before, the automation,
+the feature that watches stock, and the result, with a link to the live demo. Open it in a browser (no build).
+
+**🎟️ Interactive UI demo:** [`voucher-automation/demo/index.html`](./voucher-automation/demo/index.html) — a faithful,
+self-contained reconstruction of the system's screens in Hebrew (RTL) with demo data:
+dashboard, donations, issued vouchers, voucher stock, low-stock alerts, the donor choice form,
+the delivered voucher, and settings. Open it in a browser (no build step). Uses example data only — no real donors.
+
+> ℹ️ This project was reconstructed from the operator's description of the workflow, not from a
+> shared source repository; the architecture and code are a representative reference implementation.
+> All donors, emails, partner locations, amounts, and voucher numbers are examples. Before making
+> anything public, review the anonymization checklist in
+> [`voucher-automation/docs/README.md`](./voucher-automation/docs/README.md).

@@ -1,0 +1,63 @@
+{
+  "slug": "voucher-automation",
+  "name_he": "שובר אוטומטי",
+  "name_en": "Voucher Automation",
+  "tagline_he": "תרומה שהופכת לשובר, לבד",
+  "tagline_en": "A donation that becomes a voucher, by itself",
+  "audience_he": "בעלי עסקים ועמותות",
+  "summary_he": "אוטומציה שמקבלת פרטי תרומה, נותנת לתורם לבחור היכן לממש שובר, מפיקה שובר מעוצב עם מספר ייחודי ושולחת אותו במייל, ומתריעה לבעל העסק כשמלאי מתקרב לסיום.",
+  "summary_en": "An automation that ingests donation details, lets the donor pick a redemption location, generates a designed voucher with a unique number, emails it automatically, and alerts the operator before any location runs low on stock.",
+  "sourcing_note": "Reconstructed from the operator's description of the workflow, not from a shared source repository. Architecture and code are a representative reference implementation of that workflow.",
+  "problem": "Every donation required manual work: opening the confirmation email, copying the donor's details by hand, preparing a document, typing a unique voucher number, and emailing it back — slow, error-prone, and delayed for the donor.",
+  "solution": "A system that closes the whole loop automatically: donation in, donor chooses a location, voucher generated with a unique number, emailed in seconds, stock decremented, and low-stock alerts raised ahead of time — all visible on one dashboard.",
+  "result": "What took minutes of copy-paste per donor now happens by itself in seconds: fewer errors, an instant response to the donor, and full visibility of the whole operation.",
+  "features": [
+    "Automatic intake of donation details (no manual copy-paste from email)",
+    "Donor-facing form to choose the voucher redemption location",
+    "Automatic generation of a designed voucher with a unique, never-reused number",
+    "Instant email delivery of the voucher to the donor",
+    "Automatic per-location stock decrement on issue",
+    "Early low-stock alerts to the operator, before a location runs out",
+    "Operator dashboard with the full picture: donations, vouchers, stock, alerts"
+  ],
+  "highlights": [
+    "Unique voucher numbering enforced by the database (sequence + unique constraint), not by manual care",
+    "Voucher issuance is a single atomic transaction: reserve number, decrement stock, create voucher — all or nothing",
+    "Stock guard (remaining > 0) makes overselling impossible even under concurrency",
+    "Edge-triggered, de-duplicated low-stock alerts: one alert per crossing, auto-resolved on replenishment",
+    "Email delivery happens after commit, tracked as its own state, with retries on transient failure"
+  ],
+  "reference_stack": {
+    "note": "One sound way to build the described workflow; not a claim about a specific deployment.",
+    "data": "PostgreSQL (transactions, unique constraints, sequences)",
+    "backend": "Node.js or any transactional backend",
+    "voucher_render": "Server-side HTML to PDF",
+    "email": "Transactional email provider (SMTP/API)",
+    "scheduling": "Lightweight job runner for retries and reconciliation"
+  },
+  "screens": [
+    "סקירה כללית (Dashboard overview)",
+    "תרומות שהתקבלו (Donations received)",
+    "שוברים שהופקו (Vouchers issued)",
+    "מלאי שוברים (Voucher stock)",
+    "התראות מלאי (Stock alerts)",
+    "טופס בחירת שובר (Donor choice form)",
+    "השובר שנשלח (Delivered voucher)",
+    "הגדרות ואוטומציה (Settings & automation)"
+  ],
+  "metrics_illustrative": {
+    "note": "Illustrative example figures used in the demo, not real client data.",
+    "donations_this_month": 142,
+    "vouchers_auto_issued": 138,
+    "share_hands_off": "97%",
+    "avg_issue_time": "~11 seconds from choice to email"
+  },
+  "privacy": "All names, emails, partner locations, amounts, and voucher numbers are examples. No secrets, no real client identity.",
+  "deliverables": {
+    "project_page": "../site/index.html",
+    "interactive_demo": "../demo/index.html",
+    "docs": "./"
+  },
+  "language": "he",
+  "direction": "rtl"
+}

@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>שובר אוטומטי · דמו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --brand:#0d6e5f;      /* deep teal-green */
+    --brand-2:#128975;
+    --soft:#3bb39a;        /* mint */
+    --gold:#c8892b;        /* warm gold accent (vouchers) */
+    --gold-soft:#f3d9a6;
+    --bg:#f4f7f5;
+    --line:#e2ece8;
+    --ink:#12312b;
+    --muted:#5f7a72;
+    --card-shadow:0 18px 40px -34px rgba(6,58,48,.5);
+  }
+  *{box-sizing:border-box}
+  html{direction:rtl}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Heebo",system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; font-feature-settings:"kern"}
+  a{color:inherit;text-decoration:none} button{font-family:inherit}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:2px; border-radius:6px}
+
+  .shell{display:flex; min-height:100vh; flex-direction:column}
+  @media(min-width:900px){ .shell{flex-direction:row} }
+
+  /* sidebar */
+  .side{position:relative; overflow:hidden; color:#fff; background:linear-gradient(to bottom,#128975,#0d6e5f,#08463c); box-shadow:0 10px 30px -12px rgba(0,0,0,.4)}
+  @media(min-width:900px){ .side{position:sticky; top:0; height:100vh; width:16.5rem; flex:none; display:flex; flex-direction:column} }
+  .glow{position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background:radial-gradient(circle at 80% 8%, rgba(200,137,43,.35), transparent 42%), radial-gradient(circle at 15% 92%, rgba(59,179,154,.35), transparent 45%)}
+  .side-head{position:relative; z-index:10; border-bottom:1px solid rgba(255,255,255,.12); padding:1.25rem}
+  .brandmark{display:flex; align-items:center; gap:.6rem}
+  .brandmark .logo{height:2.5rem; width:2.5rem; border-radius:.7rem; background:rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex:none; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+  .brandmark b{font-size:1.15rem; font-weight:800; letter-spacing:.01em; display:block}
+  .brandmark small{font-size:.68rem; color:rgba(255,255,255,.7); font-weight:500; letter-spacing:.02em}
+  .who{margin-top:.9rem; font-size:.74rem; color:rgba(255,255,255,.72); display:flex; align-items:center; gap:.4rem}
+  .who .av{height:1.6rem;width:1.6rem;border-radius:999px;background:var(--gold);color:#3a2707;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem}
+
+  .nav{position:relative; z-index:10; flex:1; overflow-y:auto; padding:.5rem}
+  .nav ul{list-style:none; margin:0; padding:.25rem .5rem .75rem; display:flex; gap:.25rem; overflow-x:auto}
+  @media(min-width:900px){ .nav ul{flex-direction:column; overflow:visible} }
+  .nav a{display:flex; align-items:center; gap:.7rem; white-space:nowrap; border-radius:.6rem; padding:.6rem .8rem; font-size:.9rem; color:rgba(255,255,255,.82); transition:.15s; cursor:pointer; font-weight:500}
+  .nav a:hover{background:rgba(255,255,255,.1)}
+  .nav a.active{background:#fff; color:var(--brand); font-weight:700; box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .nav a svg{width:1.2rem; height:1.2rem; flex:none}
+  .nav .navlabel{padding:.9rem .8rem .35rem; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.5); font-weight:700}
+  @media(max-width:899px){ .nav .navlabel{display:none} }
+  .side-foot{position:relative; z-index:10; border-top:1px solid rgba(255,255,255,.12); padding:.9rem 1.1rem; font-size:.72rem; color:rgba(255,255,255,.6)}
+
+  main{flex:1; background:linear-gradient(to bottom left,#f6faf8,#eef4f1); padding:1.25rem}
+  @media(min-width:900px){ main{padding:2rem 2.4rem} }
+  .screen[hidden]{display:none}
+
+  .pagehead{margin-bottom:1.6rem; display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap}
+  .pagehead h1{margin:0; font-size:1.7rem; font-weight:800; letter-spacing:-.01em; color:var(--brand)}
+  .pagehead p{margin:.3rem 0 0; font-size:.9rem; color:var(--muted); max-width:64ch}
+
+  .btn{border:0; cursor:pointer; border-radius:999px; padding:.55rem 1.2rem; font-size:.86rem; font-weight:700; color:#fff; background:linear-gradient(135deg,#128975,#0d6e5f); box-shadow:0 10px 22px -12px rgba(13,110,95,.9); transition:.15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn.gold{background:linear-gradient(135deg,#d89b3d,#c8892b); box-shadow:0 10px 22px -12px rgba(200,137,43,.9); color:#3a2707}
+  .btn.ghost{background:#fff; color:var(--brand); border:1px solid var(--line); box-shadow:none}
+  .btn.sm{padding:.35rem .8rem; font-size:.78rem}
+
+  .grid{display:grid; gap:1rem}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1100px){ .g4{grid-template-columns:repeat(2,1fr)} }
+  @media(max-width:760px){ .g2,.g3,.g4{grid-template-columns:1fr} }
+  .card{background:#fff; border:1px solid var(--line); border-radius:1rem; padding:1.25rem; box-shadow:var(--card-shadow)}
+
+  .stat{position:relative; overflow:hidden; border-radius:1rem; border:1px solid; padding:1.2rem 1.25rem; box-shadow:0 18px 40px -34px rgba(6,58,48,.6); background:#fff}
+  .stat .lab{font-size:.76rem; font-weight:600; color:var(--muted)}
+  .stat .val{margin-top:.3rem; font-weight:800; font-variant-numeric:tabular-nums; font-size:1.9rem; color:var(--ink)}
+  .stat .sub{font-size:.74rem; color:var(--muted); margin-top:.15rem}
+  .stat .ic{position:absolute; inset-inline-start:1.1rem; top:1.1rem; height:2.2rem; width:2.2rem; border-radius:.7rem; display:flex; align-items:center; justify-content:center; font-size:1.1rem}
+  .t-brand{border-color:rgba(13,110,95,.18)} .t-brand .ic{background:rgba(13,110,95,.1); color:var(--brand)}
+  .t-gold{border-color:rgba(200,137,43,.22)} .t-gold .ic{background:rgba(200,137,43,.12); color:var(--gold)}
+  .t-mint{border-color:rgba(59,179,154,.22)} .t-mint .ic{background:rgba(59,179,154,.14); color:#1f8a72}
+  .t-amber{border-color:#fde3a7} .t-amber .ic{background:#fff6e6; color:#b7791f}
+
+  h2.sec{margin:2rem 0 .75rem; font-size:1.12rem; font-weight:800; color:var(--brand)}
+  h2.sec:first-child{margin-top:0}
+  h3.sec{margin:0 0 .3rem; font-weight:700; color:var(--ink); font-size:1rem}
+  .subtle{font-size:.84rem; color:var(--muted); margin:0 0 1rem}
+
+  /* tables */
+  table{width:100%; border-collapse:collapse; font-size:.86rem}
+  thead th{text-align:right; font-weight:700; color:var(--muted); font-size:.74rem; letter-spacing:.02em; padding:.6rem .7rem; border-bottom:1px solid var(--line); white-space:nowrap}
+  tbody td{padding:.7rem .7rem; border-bottom:1px solid var(--line); vertical-align:middle}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#f8fbfa}
+  td .vno{font-variant-numeric:tabular-nums; font-weight:700; color:var(--brand); letter-spacing:.02em}
+  .amt{font-variant-numeric:tabular-nums; font-weight:700}
+
+  .pill{display:inline-flex; align-items:center; gap:.35rem; border-radius:999px; padding:.15rem .65rem; font-size:.74rem; font-weight:700; white-space:nowrap}
+  .pill .d{width:.5rem;height:.5rem;border-radius:999px;background:currentColor}
+  .p-sent{background:#e8f6f1; color:#0f7a5f}
+  .p-auto{background:#fdf2df; color:#a9741f}
+  .p-wait{background:#eef2f7; color:#5b6b7a}
+  .p-new{background:#e7f0fb; color:#2563a8}
+  .p-low{background:#fdecec; color:#c0392b}
+  .p-ok{background:#e8f6f1; color:#0f7a5f}
+
+  .flow{display:flex; flex-wrap:wrap; align-items:stretch; gap:.6rem; margin:.4rem 0 .2rem}
+  .flow .step{flex:1; min-width:150px; background:#fff; border:1px solid var(--line); border-radius:.9rem; padding:.85rem .95rem; position:relative}
+  .flow .step .n{font-size:.7rem;font-weight:800;color:var(--gold)}
+  .flow .step h4{margin:.15rem 0 .2rem; font-size:.92rem; font-weight:700}
+  .flow .step p{margin:0; font-size:.78rem; color:var(--muted); line-height:1.5}
+  .flow .arrow{align-self:center; color:var(--soft); font-weight:800; flex:none}
+  @media(max-width:760px){ .flow .arrow{transform:rotate(90deg)} }
+
+  .alert{border-radius:1rem; border:1px solid #fde3a7; background:linear-gradient(180deg,#fffdf7,#fff6e6); padding:1.1rem 1.2rem; margin-bottom:1.4rem}
+  .alert h4{margin:0 0 .2rem; font-weight:800; color:#8a5a12; display:flex; align-items:center; gap:.5rem}
+  .alert p{margin:0 0 .7rem; font-size:.84rem; color:#a9741f}
+  .alert .row{display:flex; align-items:center; justify-content:space-between; gap:.6rem; border-radius:.6rem; background:#fff; padding:.55rem .8rem; font-size:.86rem; margin-top:.45rem; border:1px solid #f6e6c4}
+  .alert .row b{color:#8a5a12}
+
+  /* progress bars */
+  .bar{height:.5rem; border-radius:999px; background:#eef4f1; overflow:hidden; margin-top:.4rem}
+  .bar i{display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#3bb39a,#0d6e5f)}
+  .bar.low i{background:linear-gradient(90deg,#e8896b,#c0392b)}
+  .invmeta{display:flex; justify-content:space-between; font-size:.78rem; color:var(--muted); margin-top:.35rem}
+  .invmeta b{color:var(--ink)}
+
+  /* donor form (public) */
+  .publicwrap{max-width:560px; margin-inline:auto}
+  .formcard{background:#fff; border:1px solid var(--line); border-radius:1.4rem; overflow:hidden; box-shadow:0 30px 70px -50px rgba(6,58,48,.6)}
+  .formtop{background:linear-gradient(135deg,#128975,#0d6e5f); color:#fff; padding:1.6rem 1.6rem 1.4rem; text-align:center}
+  .formtop .logo{height:3rem;width:3rem;border-radius:.9rem;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto .6rem}
+  .formtop h2{margin:0;font-size:1.3rem;font-weight:800}
+  .formtop p{margin:.35rem 0 0;font-size:.85rem;color:rgba(255,255,255,.85)}
+  .formbody{padding:1.5rem 1.6rem 1.7rem}
+  .donsum{background:#f6faf8; border:1px solid var(--line); border-radius:.9rem; padding:.9rem 1rem; margin-bottom:1.2rem; font-size:.86rem}
+  .donsum .r{display:flex; justify-content:space-between; padding:.2rem 0}
+  .donsum .r b{color:var(--ink)} .donsum .r span{color:var(--muted)}
+  .flabel{font-size:.85rem; font-weight:700; margin:1rem 0 .5rem; display:block}
+  .choices{display:grid; gap:.6rem}
+  .choice{display:flex; align-items:center; gap:.8rem; border:1.5px solid var(--line); border-radius:.9rem; padding:.8rem .9rem; cursor:pointer; transition:.15s; background:#fff}
+  .choice:hover{border-color:var(--soft)}
+  .choice.on{border-color:var(--brand); background:#f2faf7; box-shadow:0 0 0 3px rgba(13,110,95,.08)}
+  .choice .ph{height:2.4rem;width:2.4rem;border-radius:.7rem;background:#eef4f1;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex:none}
+  .choice .txt{flex:1}
+  .choice .txt b{display:block; font-size:.92rem}
+  .choice .txt small{color:var(--muted); font-size:.76rem}
+  .choice .rad{height:1.2rem;width:1.2rem;border-radius:999px;border:2px solid var(--line);flex:none;position:relative}
+  .choice.on .rad{border-color:var(--brand)}
+  .choice.on .rad::after{content:"";position:absolute;inset:3px;border-radius:999px;background:var(--brand)}
+  .choice.soldout{opacity:.55; cursor:not-allowed}
+  .choice.soldout:hover{border-color:var(--line)}
+
+  /* ===== gift voucher — designed like a present ===== */
+  .giftwrap{max-width:540px; margin-inline:auto; padding:.4rem}
+  .voucher{position:relative; border-radius:1.5rem; overflow:hidden;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(255,255,255,.5), transparent 40%),
+      linear-gradient(155deg,#fffdf8 0%,#fbf3e3 42%,#f7ead0 100%);
+    box-shadow:0 40px 80px -44px rgba(120,80,15,.55), 0 2px 0 rgba(255,255,255,.7) inset;
+    border:1px solid #e7d7b3}
+  /* ornamental gold frame */
+  .voucher::before{content:""; position:absolute; inset:14px; border-radius:1.05rem;
+    border:1.5px solid rgba(200,137,43,.5);
+    box-shadow:0 0 0 1px rgba(255,255,255,.6) inset; pointer-events:none; z-index:3}
+  .voucher::after{content:""; position:absolute; inset:19px; border-radius:.85rem;
+    border:1px dashed rgba(200,137,43,.35); pointer-events:none; z-index:3}
+  /* subtle sheen */
+  .sheen{position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%)}
+
+  /* ribbon crossing the corner */
+  .ribbon{position:absolute; top:0; inset-inline-start:0; width:150px; height:150px; overflow:hidden; z-index:5; pointer-events:none}
+  .ribbon span{position:absolute; display:block; width:230px; padding:.4rem 0; text-align:center;
+    background:linear-gradient(135deg,#d89b3d,#b87d1f); color:#fff; font-size:.72rem; font-weight:800; letter-spacing:.14em;
+    box-shadow:0 6px 14px -6px rgba(120,80,15,.6); text-transform:uppercase;
+    inset-inline-start:-58px; top:34px; transform:rotate(-45deg)}
+
+  .vinner{position:relative; z-index:4; padding:2.6rem 2rem 1.4rem}
+  /* header: gift bow + brand + title */
+  .vhead{text-align:center; margin-bottom:1.2rem}
+  .vbow{font-size:2.4rem; line-height:1; filter:drop-shadow(0 6px 10px rgba(120,80,15,.3))}
+  .vbrandtag{margin-top:.5rem; font-size:.72rem; font-weight:800; letter-spacing:.14em; color:#a9741f; text-transform:uppercase}
+  .vkicker{margin-top:.9rem; font-size:.78rem; font-weight:700; letter-spacing:.34em; color:#b98a3a; text-transform:uppercase}
+  .vtitle{margin:.2rem 0 .1rem; font-size:1.05rem; font-weight:600; color:#7a5a1c}
+  .vplace{margin:.15rem 0 0; font-size:2rem; font-weight:900; color:#0d6e5f; letter-spacing:-.01em; line-height:1.1}
+  .vdivider{display:flex; align-items:center; justify-content:center; gap:.7rem; margin:1.1rem 0 1.2rem; color:rgba(200,137,43,.55)}
+  .vdivider::before,.vdivider::after{content:""; height:1px; width:64px; background:linear-gradient(90deg,transparent,rgba(200,137,43,.55))}
+  .vdivider::after{background:linear-gradient(90deg,rgba(200,137,43,.55),transparent)}
+  .vdivider svg{width:16px;height:16px;flex:none}
+
+  /* value spotlight */
+  .vvalue{text-align:center; margin:.2rem 0 1.3rem}
+  .vvalue small{display:block; font-size:.72rem; font-weight:700; letter-spacing:.16em; color:#a9741f; text-transform:uppercase}
+  .vvalue b{display:block; font-size:2.9rem; font-weight:900; color:#12312b; font-variant-numeric:tabular-nums; line-height:1.1;
+    background:linear-gradient(180deg,#3a2707,#7a5a1c); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+
+  .vmeta{display:grid; grid-template-columns:1fr 1fr; gap:.5rem .9rem; margin:0 auto 1.2rem; max-width:88%}
+  .vmeta .mrow{display:flex; flex-direction:column; gap:.05rem; padding:.5rem .2rem; border-bottom:1px dashed rgba(200,137,43,.3)}
+  .vmeta .mrow small{font-size:.68rem; color:#a9741f; font-weight:700; letter-spacing:.04em}
+  .vmeta .mrow b{font-size:.95rem; color:#3a2f1a; font-weight:700}
+
+  /* unique code — the ticket stub */
+  .vcode{position:relative; text-align:center; margin:0 auto; max-width:88%;
+    background:linear-gradient(180deg,#0d6e5f,#0a5346); color:#fff; border-radius:1rem; padding:1rem 1.2rem;
+    box-shadow:0 16px 30px -18px rgba(10,70,60,.7)}
+  .vcode::before,.vcode::after{content:""; position:absolute; top:50%; width:20px; height:20px; border-radius:999px;
+    background:#f7ead0; transform:translateY(-50%)}
+  .vcode::before{inset-inline-start:-10px} .vcode::after{inset-inline-end:-10px}
+  .vcode small{display:block; font-size:.68rem; color:rgba(255,255,255,.75); letter-spacing:.2em; font-weight:700}
+  .vcode b{display:block; font-size:1.7rem; font-weight:900; color:#f3d9a6; letter-spacing:.24em; font-variant-numeric:tabular-nums; margin-top:.25rem}
+
+  .vbarcode{display:flex; gap:2px; justify-content:center; margin-top:.7rem; height:26px; opacity:.9}
+  .vbarcode i{display:block; width:2px; background:rgba(255,255,255,.85); border-radius:1px}
+
+  .vfoot{position:relative; z-index:4; text-align:center; padding:1rem 2rem 1.8rem; font-size:.74rem; color:#8a6a2c; line-height:1.6}
+  .vfoot .heart{color:#c8892b}
+  .emailhint{max-width:540px; margin:1.2rem auto 0; text-align:center; font-size:.84rem; color:var(--muted)}
+  @media(max-width:520px){ .vmeta{grid-template-columns:1fr} .vplace{font-size:1.6rem} .vvalue b{font-size:2.3rem} }
+
+  .toolbar{display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem}
+  .search{flex:1; min-width:180px; display:flex; align-items:center; gap:.5rem; background:#fff; border:1px solid var(--line); border-radius:999px; padding:.5rem .9rem; color:var(--muted); font-size:.84rem}
+  .search input{border:0; outline:0; background:transparent; flex:1; font-family:inherit; font-size:.86rem; color:var(--ink)}
+  .filt{display:flex; gap:.3rem}
+  .filt button{border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:999px; padding:.4rem .85rem; font-size:.78rem; font-weight:600; cursor:pointer}
+  .filt button.on{background:var(--brand); color:#fff; border-color:var(--brand)}
+
+  .demotag{position:fixed; z-index:50; inset-block-end:1rem; inset-inline-start:1rem; background:rgba(18,49,43,.92); color:#fff; font-size:.74rem; font-weight:600; padding:.5rem .85rem; border-radius:999px; box-shadow:0 10px 30px -12px rgba(0,0,0,.5); display:flex; align-items:center; gap:.5rem; backdrop-filter:blur(4px)}
+  .demotag .d{width:.5rem;height:.5rem;border-radius:999px;background:var(--gold)}
+
+  .mini{font-size:.78rem;color:var(--muted)}
+  .timeline{list-style:none; margin:0; padding:0}
+  .timeline li{position:relative; padding:.55rem 0 .55rem 0; padding-inline-start:1.4rem; border-inline-start:2px solid var(--line); margin-inline-start:.4rem}
+  .timeline li::before{content:""; position:absolute; inset-inline-start:-.42rem; top:.8rem; width:.7rem;height:.7rem;border-radius:999px; background:var(--soft); box-shadow:0 0 0 3px #fff}
+  .timeline li b{font-size:.86rem}
+  .timeline li small{display:block; color:var(--muted); font-size:.76rem}
+  .timeline li .tm{position:absolute; inset-inline-end:0; top:.6rem; font-size:.72rem; color:var(--num,#9aa)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="side">
+    <div class="glow"></div>
+    <div class="side-head">
+      <div class="brandmark">
+        <div class="logo">🎟️</div>
+        <div><b>שובר אוטומטי</b><small>ניהול תרומות ושוברים</small></div>
+      </div>
+      <div class="who"><span class="av">מ</span> מנהל העמותה · כניסה אחרונה היום</div>
+    </div>
+    <nav class="nav">
+      <div class="navlabel">ניהול</div>
+      <ul>
+        <li><a class="active" data-screen="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>סקירה כללית</a></li>
+        <li><a data-screen="donations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 6.6a5 5 0 0 0-8.8-1.5A5 5 0 0 0 3.2 6.6C1.9 9.4 3.7 12 6 14l6 5 6-5c2.3-2 4.1-4.6 2.8-7.4Z"/></svg>תרומות שהתקבלו</a></li>
+        <li><a data-screen="vouchers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4Z"/><path d="M15 6v12" stroke-dasharray="2 2"/></svg>שוברים שהופקו</a></li>
+        <li><a data-screen="inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>מלאי שוברים</a></li>
+        <li><a data-screen="alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>התראות מלאי</a></li>
+      </ul>
+      <div class="navlabel">חוויית התורם</div>
+      <ul>
+        <li><a data-screen="form"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>טופס בחירת שובר</a></li>
+        <li><a data-screen="voucher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 8l9 5 9-5"/></svg>השובר שנשלח</a></li>
+      </ul>
+      <div class="navlabel">מערכת</div>
+      <ul>
+        <li><a data-screen="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2 2 2 0 1 1-4 0 1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21.4 9v.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.9 1Z"/></svg>הגדרות ואוטומציה</a></li>
+      </ul>
+    </nav>
+    <div class="side-foot">גרסת דמו · הנתונים להמחשה בלבד</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="screen" id="dash">
+      <div class="pagehead">
+        <div>
+          <h1>סקירה כללית</h1>
+          <p>תמונה מלאה של הפעילות: מה נכנס, מה יצא, ומה דורש תשומת לב. הכול מתעדכן לבד, בזמן אמת.</p>
+        </div>
+        <button class="btn ghost">ייצוא דוח חודשי</button>
+      </div>
+
+      <div class="alert">
+        <h4>⚠️ מלאי שוברים מתקרב לסיום</h4>
+        <p>שני מקומות עומדים להיגמר. אפשר לחדש מלאי כדי שההפקה האוטומטית תמשיך ללא הפרעה.</p>
+        <div class="row"><b>סופר השכונה</b><span class="pill p-low"><span class="d"></span>נותרו 6 שוברים</span></div>
+        <div class="row"><b>פארם יופי ובריאות</b><span class="pill p-low"><span class="d"></span>נותרו 9 שוברים</span></div>
+      </div>
+
+      <div class="grid g4">
+        <div class="stat t-mint"><div class="ic">💚</div><div class="lab">תרומות החודש</div><div class="val">142</div><div class="sub">₪ 68,400 סך התקבל</div></div>
+        <div class="stat t-gold"><div class="ic">🎟️</div><div class="lab">שוברים שהופקו אוטומטית</div><div class="val">138</div><div class="sub">97% ללא נגיעה ידנית</div></div>
+        <div class="stat t-brand"><div class="ic">⚡</div><div class="lab">זמן ממוצע להפקת שובר</div><div class="val">11 שנ׳</div><div class="sub">מרגע הבחירה ועד המייל</div></div>
+        <div class="stat t-amber"><div class="ic">🔔</div><div class="lab">התראות מלאי פתוחות</div><div class="val">2</div><div class="sub">מקומות שדורשים חידוש</div></div>
+      </div>
+
+      <h2 class="sec">איך תרומה הופכת לשובר, לבד</h2>
+      <div class="card">
+        <div class="flow">
+          <div class="step"><div class="n">01</div><h4>תרומה נכנסת</h4><p>פרטי התרומה מגיעים ישירות למערכת, בלי העתקה ידנית.</p></div>
+          <div class="arrow">←</div>
+          <div class="step"><div class="n">02</div><h4>התורם בוחר</h4><p>טופס קצר שבו התורם מסמן לאיזה מקום הוא רוצה את השובר.</p></div>
+          <div class="arrow">←</div>
+          <div class="step"><div class="n">03</div><h4>שובר נוצר</h4><p>המערכת מפיקה שובר מעוצב עם מספר ייחודי, אוטומטית.</p></div>
+          <div class="arrow">←</div>
+          <div class="step"><div class="n">04</div><h4>נשלח במייל</h4><p>השובר יוצא לתורם תוך שניות, המלאי מתעדכן לבד.</p></div>
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-top:1.4rem">
+        <div class="card">
+          <h3 class="sec">פעילות אחרונה</h3>
+          <p class="subtle">כל שלב מתועד לבד, בלי שאף אחד צריך לרשום.</p>
+          <ul class="timeline">
+            <li><span class="tm">08:42</span><b>שובר נשלח למשפחת ברזני</b><small>סופר השכונה · שובר מס׳ 100482</small></li>
+            <li><span class="tm">08:39</span><b>התורם בחר מקום</b><small>יעל אזולאי בחרה: ביתן הספרים</small></li>
+            <li><span class="tm">08:31</span><b>תרומה חדשה התקבלה</b><small>₪ 500 · נקלטה אוטומטית</small></li>
+            <li><span class="tm">07:58</span><b>מלאי עודכן</b><small>קפה פינתי · נותרו 24 שוברים</small></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="sec">שוברים לפי מקום · החודש</h3>
+          <p class="subtle">חלוקה של השוברים שיצאו, לפי היעד שהתורמים בחרו.</p>
+          <div style="display:grid; gap:.9rem; margin-top:.4rem">
+            <div><div class="invmeta"><b>סופר השכונה</b><span>44 שוברים</span></div><div class="bar"><i style="width:78%"></i></div></div>
+            <div><div class="invmeta"><b>ביתן הספרים</b><span>31 שוברים</span></div><div class="bar"><i style="width:55%"></i></div></div>
+            <div><div class="invmeta"><b>פארם יופי ובריאות</b><span>28 שוברים</span></div><div class="bar"><i style="width:49%"></i></div></div>
+            <div><div class="invmeta"><b>קפה פינתי</b><span>21 שוברים</span></div><div class="bar"><i style="width:37%"></i></div></div>
+            <div><div class="invmeta"><b>צעצועים ומתנות</b><span>14 שוברים</span></div><div class="bar"><i style="width:25%"></i></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DONATIONS ===== -->
+    <section class="screen" id="donations" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>תרומות שהתקבלו</h1>
+          <p>כל תרומה נקלטת אוטומטית עם כל הפרטים. אין יותר העתק־הדבק ידני מהמייל.</p>
+        </div>
+        <button class="btn gold">+ תרומה ידנית</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">🔎<input placeholder="חיפוש לפי שם תורם או סכום…"></div>
+        <div class="filt">
+          <button class="on">הכול</button>
+          <button>הופק שובר</button>
+          <button>ממתין לבחירה</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:.4rem .4rem">
+        <table>
+          <thead><tr><th>תאריך</th><th>תורם</th><th>סכום</th><th>מקור</th><th>סטטוס שובר</th><th>אימייל</th></tr></thead>
+          <tbody>
+            <tr><td>17.09 · 08:31</td><td>יעל אזולאי</td><td class="amt">₪ 500</td><td>אישור תרומה</td><td><span class="pill p-wait"><span class="d"></span>ממתין לבחירה</span></td><td class="mini">yael•••@mail.com</td></tr>
+            <tr><td>17.09 · 08:12</td><td>משפחת ברזני</td><td class="amt">₪ 360</td><td>אישור תרומה</td><td><span class="pill p-sent"><span class="d"></span>שובר נשלח</span></td><td class="mini">barzani•••@mail.com</td></tr>
+            <tr><td>17.09 · 07:49</td><td>אברהם נחום</td><td class="amt">₪ 1,000</td><td>אישור תרומה</td><td><span class="pill p-sent"><span class="d"></span>שובר נשלח</span></td><td class="mini">a.nachum•••@mail.com</td></tr>
+            <tr><td>16.09 · 21:05</td><td>רבקה שטרן</td><td class="amt">₪ 250</td><td>אישור תרומה</td><td><span class="pill p-sent"><span class="d"></span>שובר נשלח</span></td><td class="mini">r.stern•••@mail.com</td></tr>
+            <tr><td>16.09 · 19:33</td><td>משפחת אוחיון</td><td class="amt">₪ 720</td><td>אישור תרומה</td><td><span class="pill p-sent"><span class="d"></span>שובר נשלח</span></td><td class="mini">ohayon•••@mail.com</td></tr>
+            <tr><td>16.09 · 18:10</td><td>דוד מזרחי</td><td class="amt">₪ 180</td><td>אישור תרומה</td><td><span class="pill p-auto"><span class="d"></span>בהפקה</span></td><td class="mini">d.mizrahi•••@mail.com</td></tr>
+            <tr><td>16.09 · 16:22</td><td>חנה פרידמן</td><td class="amt">₪ 540</td><td>אישור תרומה</td><td><span class="pill p-sent"><span class="d"></span>שובר נשלח</span></td><td class="mini">h.friedman•••@mail.com</td></tr>
+            <tr><td>16.09 · 14:47</td><td>משפחת דהן</td><td class="amt">₪ 300</td><td>אישור תרומה</td><td><span class="pill p-sent"><span class="d"></span>שובר נשלח</span></td><td class="mini">dahan•••@mail.com</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mini" style="margin-top:.8rem">מוצגות 8 מתוך 142 תרומות החודש · פרטי אימייל מוסתרים בתצוגת הדמו.</p>
+    </section>
+
+    <!-- ===== VOUCHERS ===== -->
+    <section class="screen" id="vouchers" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>שוברים שהופקו</h1>
+          <p>כל שובר עם מספר ייחודי, היעד שנבחר, והתורם שקיבל אותו. הכול נוצר ונשלח אוטומטית.</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">🔎<input placeholder="חיפוש לפי מספר שובר או מקום…"></div>
+        <div class="filt">
+          <button class="on">הכול</button>
+          <button>נשלחו</button>
+          <button>בהפקה</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:.4rem .4rem">
+        <table>
+          <thead><tr><th>מספר שובר</th><th>מקום מימוש</th><th>תורם</th><th>ערך</th><th>הופק</th><th>סטטוס</th></tr></thead>
+          <tbody>
+            <tr><td><span class="vno">100482</span></td><td>סופר השכונה</td><td>משפחת ברזני</td><td class="amt">₪ 360</td><td>17.09 · 08:42</td><td><span class="pill p-sent"><span class="d"></span>נשלח במייל</span></td></tr>
+            <tr><td><span class="vno">100481</span></td><td>ביתן הספרים</td><td>אברהם נחום</td><td class="amt">₪ 1,000</td><td>17.09 · 07:55</td><td><span class="pill p-sent"><span class="d"></span>נשלח במייל</span></td></tr>
+            <tr><td><span class="vno">100480</span></td><td>פארם יופי ובריאות</td><td>רבקה שטרן</td><td class="amt">₪ 250</td><td>16.09 · 21:11</td><td><span class="pill p-sent"><span class="d"></span>נשלח במייל</span></td></tr>
+            <tr><td><span class="vno">100479</span></td><td>קפה פינתי</td><td>משפחת אוחיון</td><td class="amt">₪ 720</td><td>16.09 · 19:40</td><td><span class="pill p-sent"><span class="d"></span>נשלח במייל</span></td></tr>
+            <tr><td><span class="vno">100478</span></td><td>סופר השכונה</td><td>דוד מזרחי</td><td class="amt">₪ 180</td><td>16.09 · 18:16</td><td><span class="pill p-auto"><span class="d"></span>בהפקה</span></td></tr>
+            <tr><td><span class="vno">100477</span></td><td>צעצועים ומתנות</td><td>חנה פרידמן</td><td class="amt">₪ 540</td><td>16.09 · 16:29</td><td><span class="pill p-sent"><span class="d"></span>נשלח במייל</span></td></tr>
+            <tr><td><span class="vno">100476</span></td><td>ביתן הספרים</td><td>משפחת דהן</td><td class="amt">₪ 300</td><td>16.09 · 14:53</td><td><span class="pill p-sent"><span class="d"></span>נשלח במייל</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mini" style="margin-top:.8rem">מספר השובר נוצר לבד ואינו חוזר על עצמו לעולם.</p>
+    </section>
+
+    <!-- ===== INVENTORY ===== -->
+    <section class="screen" id="inventory" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>מלאי שוברים</h1>
+          <p>כמה שוברים נותרו לכל מקום. כשמלאי מתקרב לסיום, מגיעה התראה מבעוד מועד.</p>
+        </div>
+        <button class="btn gold">+ הוספת מלאי</button>
+      </div>
+
+      <div class="grid g3">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec">סופר השכונה</h3><span class="pill p-low"><span class="d"></span>נמוך</span></div>
+          <div class="bar low"><i style="width:12%"></i></div>
+          <div class="invmeta"><span>נותרו <b>6</b></span><span>מתוך 50</span></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec">פארם יופי ובריאות</h3><span class="pill p-low"><span class="d"></span>נמוך</span></div>
+          <div class="bar low"><i style="width:18%"></i></div>
+          <div class="invmeta"><span>נותרו <b>9</b></span><span>מתוך 50</span></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec">ביתן הספרים</h3><span class="pill p-ok"><span class="d"></span>תקין</span></div>
+          <div class="bar"><i style="width:62%"></i></div>
+          <div class="invmeta"><span>נותרו <b>31</b></span><span>מתוך 50</span></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec">קפה פינתי</h3><span class="pill p-ok"><span class="d"></span>תקין</span></div>
+          <div class="bar"><i style="width:80%"></i></div>
+          <div class="invmeta"><span>נותרו <b>24</b></span><span>מתוך 30</span></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec">צעצועים ומתנות</h3><span class="pill p-ok"><span class="d"></span>תקין</span></div>
+          <div class="bar"><i style="width:53%"></i></div>
+          <div class="invmeta"><span>נותרו <b>16</b></span><span>מתוך 30</span></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec">מסעדת המשפחה</h3><span class="pill p-ok"><span class="d"></span>תקין</span></div>
+          <div class="bar"><i style="width:70%"></i></div>
+          <div class="invmeta"><span>נותרו <b>28</b></span><span>מתוך 40</span></div>
+        </div>
+      </div>
+
+      <h2 class="sec">איך זה עובד</h2>
+      <div class="card">
+        <p class="subtle" style="margin:0">לכל מקום מוגדר סף התראה. ברגע שהמלאי יורד מתחתיו, מנהל העמותה מקבל התראה במייל וגם כאן במסך, כדי לחדש מלאי לפני שהוא נגמר. כך ההפקה האוטומטית לא נעצרת אף פעם, והתורם תמיד מקבל שובר מיד.</p>
+      </div>
+    </section>
+
+    <!-- ===== ALERTS ===== -->
+    <section class="screen" id="alerts" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>התראות מלאי</h1>
+          <p>המערכת שומרת עליכם. במקום לגלות שנגמר, מגלים מראש ומספיקים לחדש.</p>
+        </div>
+        <button class="btn ghost">סמן הכול כטופל</button>
+      </div>
+
+      <div class="alert">
+        <h4>⚠️ סופר השכונה · מלאי נמוך</h4>
+        <p>נותרו 6 שוברים מתוך 50. בקצב הנוכחי המלאי צפוי להיגמר בעוד כיומיים.</p>
+        <div class="row"><b>המלצה</b><span>הוספת 40 שוברים תספיק לכחודש</span></div>
+      </div>
+      <div class="alert">
+        <h4>⚠️ פארם יופי ובריאות · מלאי נמוך</h4>
+        <p>נותרו 9 שוברים מתוך 50. כדאי לחדש כדי לשמור על רצף.</p>
+        <div class="row"><b>המלצה</b><span>הוספת 30 שוברים</span></div>
+      </div>
+
+      <h2 class="sec">התראות שטופלו</h2>
+      <div class="card" style="padding:.4rem .4rem">
+        <table>
+          <thead><tr><th>מקום</th><th>אירוע</th><th>תאריך</th><th>סטטוס</th></tr></thead>
+          <tbody>
+            <tr><td>קפה פינתי</td><td>מלאי חודש והושלם ל־30</td><td>14.09</td><td><span class="pill p-ok"><span class="d"></span>טופל</span></td></tr>
+            <tr><td>ביתן הספרים</td><td>מלאי חודש והושלם ל־50</td><td>11.09</td><td><span class="pill p-ok"><span class="d"></span>טופל</span></td></tr>
+            <tr><td>מסעדת המשפחה</td><td>מלאי חודש והושלם ל־40</td><td>08.09</td><td><span class="pill p-ok"><span class="d"></span>טופל</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== DONOR FORM (public) ===== -->
+    <section class="screen" id="form" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>טופס בחירת שובר</h1>
+          <p>זה מה שהתורם רואה אחרי התרומה. הוא בוחר לאן, והשאר קורה לבד.</p>
+        </div>
+      </div>
+
+      <div class="publicwrap">
+        <div class="formcard">
+          <div class="formtop">
+            <div class="logo">🎟️</div>
+            <h2>תודה על תרומתך!</h2>
+            <p>נותר רק לבחור היכן תרצה לממש את השובר</p>
+          </div>
+          <div class="formbody">
+            <div class="donsum">
+              <div class="r"><span>שם התורם</span><b>יעל אזולאי</b></div>
+              <div class="r"><span>סכום התרומה</span><b>₪ 500</b></div>
+              <div class="r"><span>תאריך</span><b>17.09.2026</b></div>
+            </div>
+
+            <label class="flabel">בחרו מקום למימוש השובר</label>
+            <div class="choices" id="choices">
+              <div class="choice on" data-place="סופר השכונה"><div class="ph">🛒</div><div class="txt"><b>סופר השכונה</b><small>מזון וצריכה יומיומית</small></div><div class="rad"></div></div>
+              <div class="choice" data-place="ביתן הספרים"><div class="ph">📚</div><div class="txt"><b>ביתן הספרים</b><small>ספרים, מתנות וכלי כתיבה</small></div><div class="rad"></div></div>
+              <div class="choice" data-place="פארם יופי ובריאות"><div class="ph">💊</div><div class="txt"><b>פארם יופי ובריאות</b><small>טיפוח, תרופות ובריאות</small></div><div class="rad"></div></div>
+              <div class="choice" data-place="קפה פינתי"><div class="ph">☕</div><div class="txt"><b>קפה פינתי</b><small>בית קפה שכונתי</small></div><div class="rad"></div></div>
+              <div class="choice soldout"><div class="ph">🎁</div><div class="txt"><b>צעצועים ומתנות</b><small>אזל זמנית · יתחדש בקרוב</small></div><div class="rad"></div></div>
+            </div>
+
+            <button class="btn" style="width:100%;margin-top:1.4rem;padding:.75rem" onclick="go('voucher')">קבלת השובר במייל ←</button>
+            <p class="mini" style="text-align:center;margin-top:.8rem">השובר יישלח למייל שלך תוך שניות, אוטומטית.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VOUCHER (sent) ===== -->
+    <section class="screen" id="voucher" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>השובר שנשלח</h1>
+          <p>זה השובר המעוצב שהמערכת מפיקה ושולחת לתורם במייל, בלי אף פעולה ידנית.</p>
+        </div>
+      </div>
+
+      <div class="giftwrap">
+        <div class="voucher">
+          <div class="sheen"></div>
+          <div class="ribbon"><span>מתנה</span></div>
+
+          <div class="vinner">
+            <div class="vhead">
+              <div class="vbow">🎁</div>
+              <div class="vbrandtag">🎟️ שובר אוטומטי</div>
+            </div>
+
+            <div style="text-align:center">
+              <div class="vkicker">שובר מתנה</div>
+              <div class="vtitle">לכבוד יעל אזולאי, בהוקרה על תרומתך</div>
+              <div class="vplace" id="v-place">סופר השכונה</div>
+            </div>
+
+            <div class="vdivider" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5.9L21 8.6l-4.8 4.2L17.6 20 12 16.5 6.4 20l1.4-7.2L3 8.6l6.6-.7z"/></svg>
+            </div>
+
+            <div class="vvalue">
+              <small>ערך השובר</small>
+              <b>₪ 500</b>
+            </div>
+
+            <div class="vmeta">
+              <div class="mrow"><small>תאריך הפקה</small><b>17.09.2026</b></div>
+              <div class="mrow"><small>בתוקף עד</small><b>17.03.2027</b></div>
+            </div>
+
+            <div class="vcode">
+              <small>מספר שובר ייחודי</small>
+              <b>100483</b>
+              <div class="vbarcode" aria-hidden="true">
+                <i style="height:70%"></i><i style="height:100%"></i><i style="height:45%"></i><i style="height:85%"></i><i style="height:60%"></i><i style="height:100%"></i><i style="height:40%"></i><i style="height:75%"></i><i style="height:95%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i><i style="height:80%"></i><i style="height:45%"></i><i style="height:90%"></i><i style="height:100%"></i><i style="height:50%"></i><i style="height:70%"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="vfoot">להצגה בקופה בעת המימוש <span class="heart">·</span> הופק אוטומטית ואינו ניתן לשכפול <span class="heart">·</span> תודה שאתם איתנו <span class="heart">♥</span></div>
+        </div>
+      </div>
+      <p class="emailhint">✉️ נשלח אל <b>yael•••@mail.com</b> · המלאי של המקום שנבחר התעדכן אוטומטית.</p>
+    </section>
+
+    <!-- ===== SETTINGS ===== -->
+    <section class="screen" id="settings" hidden>
+      <div class="pagehead">
+        <div>
+          <h1>הגדרות ואוטומציה</h1>
+          <p>כאן מגדירים פעם אחת, והמערכת עובדת לפי זה כל הזמן.</p>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <h3 class="sec">הפקה אוטומטית</h3>
+          <p class="subtle">מה קורה ברגע שתורם בוחר מקום.</p>
+          <div style="display:grid;gap:.7rem">
+            <label class="tog"><span>הפקת שובר אוטומטית לאחר בחירה</span><i class="sw on"></i></label>
+            <label class="tog"><span>שליחת השובר במייל לתורם</span><i class="sw on"></i></label>
+            <label class="tog"><span>עדכון מלאי אוטומטי לאחר הפקה</span><i class="sw on"></i></label>
+            <label class="tog"><span>מספור ייחודי אוטומטי לכל שובר</span><i class="sw on"></i></label>
+          </div>
+        </div>
+        <div class="card">
+          <h3 class="sec">התראות מלאי</h3>
+          <p class="subtle">מתי לקבל התראה, ולאן.</p>
+          <div style="display:grid;gap:.7rem">
+            <label class="tog"><span>התראה כשמלאי יורד מתחת לסף</span><i class="sw on"></i></label>
+            <label class="tog"><span>סף התראה ברירת מחדל: 10 שוברים</span><i class="sw on"></i></label>
+            <label class="tog"><span>שליחת התראה במייל למנהל</span><i class="sw on"></i></label>
+            <label class="tog"><span>סיכום שבועי של הפעילות</span><i class="sw"></i></label>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="sec">מקומות למימוש</h2>
+      <div class="card" style="padding:.4rem .4rem">
+        <table>
+          <thead><tr><th>מקום</th><th>קטגוריה</th><th>סף התראה</th><th>מלאי נוכחי</th><th>סטטוס</th></tr></thead>
+          <tbody>
+            <tr><td>סופר השכונה</td><td>מזון</td><td>10</td><td>6</td><td><span class="pill p-low"><span class="d"></span>מתחת לסף</span></td></tr>
+            <tr><td>ביתן הספרים</td><td>ספרים ומתנות</td><td>10</td><td>31</td><td><span class="pill p-ok"><span class="d"></span>תקין</span></td></tr>
+            <tr><td>פארם יופי ובריאות</td><td>טיפוח ובריאות</td><td>10</td><td>9</td><td><span class="pill p-low"><span class="d"></span>מתחת לסף</span></td></tr>
+            <tr><td>קפה פינתי</td><td>בתי קפה</td><td>8</td><td>24</td><td><span class="pill p-ok"><span class="d"></span>תקין</span></td></tr>
+            <tr><td>צעצועים ומתנות</td><td>מתנות</td><td>8</td><td>16</td><td><span class="pill p-ok"><span class="d"></span>תקין</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="demotag"><span class="d"></span>תצוגת דמו · נתונים לדוגמה</div>
+
+<style>
+  .tog{display:flex; align-items:center; justify-content:space-between; gap:1rem; background:#f8fbfa; border:1px solid var(--line); border-radius:.7rem; padding:.65rem .9rem; font-size:.86rem; font-weight:500}
+  .sw{width:2.4rem; height:1.35rem; border-radius:999px; background:#d5e2dd; position:relative; flex:none; transition:.15s}
+  .sw::after{content:""; position:absolute; top:.15rem; inset-inline-end:.15rem; width:1.05rem; height:1.05rem; border-radius:999px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.2); transition:.15s}
+  .sw.on{background:var(--brand)}
+  .sw.on::after{inset-inline-end:calc(100% - 1.2rem)}
+</style>
+
+<script>
+  const links = document.querySelectorAll('.nav a');
+  function go(id){
+    document.querySelectorAll('.screen').forEach(s => s.hidden = (s.id !== id));
+    links.forEach(a => a.classList.toggle('active', a.dataset.screen === id));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  links.forEach(a => a.addEventListener('click', () => go(a.dataset.screen)));
+
+  // donor form: choose place -> reflects into the voucher
+  const placeNames = document.getElementById('choices');
+  if(placeNames){
+    placeNames.addEventListener('click', e => {
+      const c = e.target.closest('.choice');
+      if(!c || c.classList.contains('soldout')) return;
+      placeNames.querySelectorAll('.choice').forEach(x => x.classList.remove('on'));
+      c.classList.add('on');
+      const vp = document.getElementById('v-place');
+      if(vp && c.dataset.place) vp.textContent = c.dataset.place;
+    });
+  }
+
+  // settings toggles are interactive (demo)
+  document.querySelectorAll('.sw').forEach(sw => {
+    sw.parentElement.addEventListener('click', () => sw.classList.toggle('on'));
+  });
+</script>
+</body>
+</html>

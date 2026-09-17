@@ -4,6 +4,45 @@ A portfolio repository of project case studies.
 
 ## Projects
 
+### 🎯 [AdLeader (אדלידר)](./adleader/) — multi-channel lead attribution & advertising P&L for small businesses
+
+A production, Hebrew-RTL, multi-tenant SaaS that answers the question every advertiser keeps asking
+and can rarely prove: *which ad actually brought this customer?* It captures every inquiry from every
+channel (form, WhatsApp, email, tracking link, phone), attributes each one automatically to the
+source and campaign that produced it, and turns raw ad spend into a **per-source profit-and-loss** so
+the owner can see the real return on each shekel. Around that core: a leads inbox, a drag-and-drop
+follow-up pipeline, WhatsApp + email threads on each lead card, automations, and reports that compare
+channels by real return, not clicks.
+
+**Stack:** Next.js 14 (App Router, React 18) · TypeScript · Firebase (Firestore + Admin SDK) ·
+Tailwind v3 (RTL) · next-intl · Zod · TanStack Query/Table · Recharts · AES-256-GCM credential
+encryption · Vitest · Firebase emulator · Playwright
+
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/5N3aefwnPYKhAHpGjB3FuZ
+- 🎯 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/PHTUdUubAyg8sJgdJpPFsg
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+Start with **[`adleader/docs/README.md`](./adleader/docs/README.md)** for the full index, or jump to
+the **[case study](./adleader/docs/case-study.md)**.
+
+**📄 Project page (Hebrew):** [`adleader/site/index.html`](./adleader/site/index.html) — a designed,
+RTL Hebrew case-study page (cream/olive/lime style) telling the project story to a business owner,
+benefit-first, with a single call-to-action to the live demo. Open it in a browser (no build).
+
+**🎯 Interactive UI demo:** [`adleader/demo/index.html`](./adleader/demo/index.html) — a faithful,
+self-contained reconstruction of the real system's screens in Hebrew (RTL) with demo data: dashboard,
+leads inbox, the follow-up pipeline, campaigns, per-source ROI reports, WhatsApp/email communications,
+tracking links, and integrations. Open it in a browser (no build step). Uses example data only — no
+real people or businesses.
+
+> ℹ️ These are portfolio materials describing a working application. All names, phone numbers, emails,
+> and businesses are examples, and the demo shows illustrative data only. Before making anything
+> public, review the de-identification checklist in [`adleader/docs/README.md`](./adleader/docs/README.md).
+
+---
+
 ### 🦜 [תוכי פרינט — בונה הקטלוג](./tuki/) — a self-updating product catalog builder for a print shop
 
 A Hebrew-RTL catalog builder for a print business with hundreds of products. Instead of

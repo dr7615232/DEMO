@@ -1,0 +1,79 @@
+{
+  "slug": "adleader",
+  "name": "AdLeader",
+  "codename": "CampaignIQ",
+  "nameHebrew": "אדלידר",
+  "tagline": "Every inquiry, tied to the ad that brought it",
+  "taglineHebrew": "מפרסום לליד, בלי לאבד אף פנייה",
+  "oneLiner": "A production, Hebrew-RTL, multi-tenant SaaS that captures every inquiry from every channel (form, WhatsApp, email, tracking link, phone), attributes it automatically to the source and campaign that produced it, and turns advertising spend into a per-source profit-and-loss so a business owner can see the real return on each shekel.",
+  "role": "Sole full-stack engineer & system designer",
+  "status": "Production / client delivery",
+  "year": 2026,
+  "language": "Hebrew (RTL)",
+  "clientType": "Small business (advertiser running multi-channel campaigns)",
+  "audience": "Business owner (non-technical)",
+  "confidential": true,
+  "repositoryVisibility": "private",
+  "stack": {
+    "framework": ["Next.js 14 (App Router)", "React 18", "TypeScript"],
+    "backend": ["Firebase Firestore", "firebase-admin (Admin SDK)", "server-only domain layer", "Vercel serverless functions"],
+    "styling": ["Tailwind CSS v3", "tailwindcss-rtl", "Assistant / Rubik / Heebo (Google Fonts)"],
+    "i18n": ["next-intl (Hebrew RTL)"],
+    "state_data": ["Zustand", "TanStack Query", "TanStack Table", "Recharts"],
+    "validation": ["Zod", "react-hook-form"],
+    "integrations": ["Green API (WhatsApp)", "Gmail OAuth (inbound/outbound)", "Resend", "pluggable email-marketing provider registry", "Google Drive (attachments)", "Sumit (billing)"],
+    "security": ["AES-256-GCM credential encryption", "Firestore security rules (tenant isolation)", "hashed webhook-token lookups + timingSafeEqual", "Firestore-backed rate limiting", "webhook idempotency", "IP hashing"],
+    "testing": ["Vitest (unit)", "Firebase emulator (rules + route-level tenant isolation)", "Playwright (e2e public flows)"],
+    "reporting_export": ["jsPDF", "xlsx", "html2canvas"],
+    "monitoring": ["structured JSON error logs", "Sentry (optional, lazy)"]
+  },
+  "architecture": {
+    "tenancy": "Business-scoped multi-tenant: every entity under businesses/{businessId}; authorization derived from session, never client input",
+    "routeGroups": ["(auth)", "(dashboard)", "admin", "api/business", "api/admin", "api/webhooks", "public capture (r, f, embed, g)"],
+    "coreEntities": ["businesses", "users/members", "campaigns", "sources", "trackingLinks", "clicks", "leads", "leads/touchpoints", "leadKeys (identity index)", "deals", "expenses", "integrations", "automations", "forms", "communications"],
+    "compositeIndexes": 13,
+    "businessApiRoutes": "~60"
+  },
+  "highlights": [
+    "Automatic attribution: every inquiry from every channel is bound to the source and campaign that produced it, at capture time, with no manual work",
+    "Race-safe lead identity resolution: a single Firestore transaction dedupes returning inquiries across normalized phone/email via a leadKeys index, preserving first-touch while advancing last-touch",
+    "Per-source and per-campaign profit-and-loss (leads, deals, expenses) so the owner sees real return on ad spend, not vanity clicks",
+    "Robust public lead webhook: parses JSON / urlencoded / multipart from arbitrary form builders, matches Hebrew and English field aliases, extracts the MAKOR tracking code, and never leaks lead existence",
+    "AES-256-GCM at rest for every third-party credential and webhook token; plaintext tokens never persisted in the clear",
+    "Defense-in-depth billing webhook: timing-safe signature verification, negative-status-first parsing, idempotency claim, and coupon-aware amount reconciliation so an underpaid/failed charge cannot activate a plan",
+    "Stateless-serverless-aware primitives: Firestore-backed rate limiter (fail-open) and idempotency store, plus a jobs collection drained by a cron with exponential backoff",
+    "Tenant isolation proven at two layers: Firestore security rules AND real App Router handlers run against the emulator",
+    "Full Hebrew RTL UI for non-technical owners: leads inbox, drag-and-drop follow-up pipeline, WhatsApp + email threads on each lead card, automations, and honest per-source reports"
+  ],
+  "features": [
+    "Dashboard: pipeline overview, where leads come from, money summary, attribution breakdown, recent inquiries",
+    "Leads inbox: every inquiry with its source, campaign, attribution method and status, estimated value",
+    "Follow-up pipeline (CRM): drag-and-drop kanban across stages, auto-saved and reflected in reports and automations",
+    "Campaigns: budget, spend, sources, leads and real return per shekel",
+    "Reports: per-source and per-campaign comparison by real return, with Hebrew insight text and green/yellow/red markers",
+    "Communications: WhatsApp and email conversations attached to each lead's card",
+    "Tracking links & forms: a smart link per advertising place that measures clicks and attributes every inquiry automatically",
+    "Integrations: WhatsApp (Green API), email (Gmail/SMTP), email-marketing providers, payments",
+    "Automations: notifications and follow-up tasks so no inquiry falls through the cracks",
+    "Admin console: users, invitations, coupons, costs, logs, support (platform operator)"
+  ],
+  "engineeringDecisions": [
+    "Model a tenant as a business and scope every entity under businesses/{businessId}; derive businessId from the verified session and build all paths from businessRef(), so no route trusts a client-supplied tenant id",
+    "Resolve lead identity inside a single Firestore transaction with a claimable leadKeys index, preserving first-touch and advancing last-touch, so dedup and attribution are race-safe under provider retries",
+    "Attribute at capture time from whatever the outside world sends, marking confirmed vs manual_required, so the source is never guessed after the fact",
+    "Encrypt all stored credentials with authenticated AES-256-GCM and store webhook tokens only as SHA-256 hash + encrypted copy",
+    "Build rate limiting, idempotency and deferred side effects on Firestore (no Redis), so the system is correct on stateless serverless with instant webhook responses",
+    "Prove tenant isolation with both rules-level and route-level emulator tests rather than asserting it"
+  ],
+  "designSystem": {
+    "colors": { "primaryNavy": "#07306b", "secondary": "#15508f", "accentCyan": "#00b7c7", "success": "#10b981", "warning": "#f59e0b", "danger": "#ef4444", "purple": "#7c3aed" },
+    "fonts": { "body": "Assistant", "headings": "Rubik", "numbers": "Heebo" },
+    "direction": "rtl"
+  },
+  "links": {
+    "liveDemo": "https://claude.ai/artifact/PHTUdUubAyg8sJgdJpPFsg",
+    "projectPage": "https://claude.ai/artifact/5N3aefwnPYKhAHpGjB3FuZ",
+    "repository": null,
+    "caseStudy": "case-study.md"
+  }
+}

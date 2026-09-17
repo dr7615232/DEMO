@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דמו · AdLeader — מדידת פרסום ופניות</title>
+<meta name="description" content="תצוגת דמו אינטראקטיבית של AdLeader — מערכת שמחברת כל פנייה למקור הפרסום שהביא אותה. נתונים לדוגמה בלבד.">
+<link rel="icon" href="adleader-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Heebo:wght@400;500;600;700;800&family=Rubik:wght@500;600;700;800&display=swap">
+<style>
+  :root{
+    --primary:#07306b; --primary-dark:#0a2f6f; --secondary:#15508f;
+    --accent:#00b7c7; --accent-dark:#00afc0; --accent-soft:#e6fbfd;
+    --success:#10b981; --warning:#f59e0b; --danger:#ef4444; --purple:#7c3aed;
+    --bg:#ffffff; --card:#ffffff; --card-tint:#fbfdff; --card-muted:#f5f9fc;
+    --sidebar:rgba(255,255,255,.96); --sidebar-hover:#eef8fb; --sidebar-active:#e6fbfd; --sidebar-border:#bfdce5;
+    --border:#d5e8ee; --border-strong:#a8d4df;
+    --text:#071827; --text-muted:#52687a; --text-soft:#718698;
+    --table-head:#eef8fb; --table-row:rgba(245,249,252,.72); --table-hover:#e6fbfd;
+    --r-card:12px; --r-btn:8px;
+    --shadow-card:0 12px 28px rgba(7,48,107,.08),0 2px 8px rgba(7,48,107,.06);
+    --shadow-soft:0 6px 18px rgba(7,48,107,.06);
+    --font-body:"Assistant"; --font-head:"Rubik"; --font-num:"Heebo";
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  svg{width:18px;height:18px;flex-shrink:0}
+  html,body{height:100%}
+  body{font-family:var(--font-body),"Heebo","Segoe UI",Arial,sans-serif;color:var(--text);font-size:15px;line-height:1.55;
+    background:linear-gradient(180deg,#eef8fb 0,#ffffff 280px,var(--bg) 100%);-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.sec-title{font-family:var(--font-head),var(--font-body),Arial,sans-serif}
+  .num,.app-table th,.app-table td,button,.btn{font-family:var(--font-num),var(--font-body),Arial,sans-serif}
+  button{cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:14px}
+  ::selection{background:var(--accent-soft)}
+  a{color:inherit;text-decoration:none}
+
+  .app{display:grid;grid-template-columns:1fr 288px;grid-template-rows:auto;min-height:100vh}
+  /* ---------- sidebar (right in RTL) ---------- */
+  .sidebar{grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--sidebar);
+    border-inline-start:1px solid var(--sidebar-border);box-shadow:0 0 30px rgba(36,59,74,.08);backdrop-filter:blur(8px);
+    padding:20px;display:flex;flex-direction:column;gap:6px}
+  .logo-card{background:#fff;border-radius:10px;padding:12px;box-shadow:var(--shadow-soft);border:1px solid var(--sidebar-border);margin-bottom:6px}
+  .logo-card img{width:100%;height:auto;display:block;object-fit:contain}
+  .biz{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card-tint);margin-bottom:8px}
+  .biz .ava{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--accent-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+  .biz b{display:block;font-size:13.5px;font-weight:700;color:var(--primary)}
+  .biz span{font-size:11.5px;color:var(--text-soft)}
+  .biz .chev{margin-inline-start:auto;color:var(--text-soft)}
+  .nav-group{margin-top:4px}
+  .nav-group .gt{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--text-soft);text-transform:uppercase;padding:8px 12px 4px}
+  .nav-item{display:flex;align-items:center;gap:11px;width:100%;text-align:right;padding:9px 12px;border-radius:var(--r-btn);
+    color:var(--text-muted);font-size:14.5px;font-weight:600;transition:.14s;position:relative}
+  .nav-item svg{width:18px;height:18px;opacity:.8;color:var(--secondary)}
+  .nav-item:hover{background:var(--sidebar-hover);color:var(--primary)}
+  .nav-item.active{background:var(--sidebar-active);color:var(--primary)}
+  .nav-item.active::before{content:"";position:absolute;inset-inline-end:0;top:20%;bottom:20%;width:3px;border-radius:3px;background:var(--accent)}
+  .nav-item.active svg{opacity:1;color:var(--accent-dark)}
+  .nav-item .cnt{margin-inline-start:auto;font-size:11px;font-weight:800;background:var(--accent-soft);color:var(--accent-dark);border-radius:999px;padding:1px 8px}
+  .side-foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--sidebar-border);display:flex;flex-direction:column;gap:7px}
+  .theme-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-soft);padding:6px 4px}
+
+  /* ---------- main ---------- */
+  .main{grid-column:1;grid-row:1;min-width:0;padding:26px clamp(18px,3vw,40px) 70px}
+  .topbar{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .topbar .tt h1{font-size:clamp(21px,3vw,27px);font-weight:800;letter-spacing:-.5px;color:var(--primary)}
+  .topbar .tt p{font-size:13.5px;color:var(--text-muted);margin-top:3px;max-width:60ch}
+  .topbar .act{margin-inline-start:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .search{position:relative;display:flex;align-items:center}
+  .search svg{position:absolute;inset-inline-start:11px;width:16px;height:16px;color:var(--text-soft)}
+  .search input{width:190px;padding:9px 12px 9px 34px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--text)}
+  .search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .bell{width:40px;height:40px;border-radius:999px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--text-muted);position:relative}
+  .bell:hover{border-color:var(--accent);color:var(--accent-dark)}
+  .bell b{position:absolute;top:-3px;inset-inline-start:-3px;min-width:17px;height:17px;background:var(--danger);color:#fff;border-radius:999px;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+  .btn{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 16px;border-radius:var(--r-btn);font-size:14px;font-weight:700;transition:.15s;white-space:nowrap}
+  .btn svg{width:16px;height:16px}
+  .btn-primary{color:#fff;background:linear-gradient(135deg,var(--primary) 0%,var(--accent-dark) 100%);box-shadow:0 8px 18px rgba(0,183,199,.2)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--primary-dark) 0%,var(--secondary) 100%);transform:translateY(-1px)}
+  .btn-ghost{background:var(--card);color:var(--primary);border:1px solid var(--border)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent-dark)}
+  .btn-sm{height:34px;padding:0 12px;font-size:13px}
+
+  .screen{display:none;animation:fade .3s ease}
+  .screen.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* cards / grid */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+  @media(max-width:1150px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);padding:16px 18px;box-shadow:var(--shadow-soft);transition:.15s;position:relative;overflow:hidden}
+  .kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-card);border-color:var(--border-strong)}
+  .kpi .ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:11px}
+  .kpi .k{font-size:12.5px;color:var(--text-muted);font-weight:600}
+  .kpi .v{font-size:27px;font-weight:800;color:var(--primary);letter-spacing:-.6px;margin-top:5px;line-height:1.1}
+  .kpi .v small{font-size:14px;font-weight:700;color:var(--text-soft)}
+  .kpi .d{font-size:12px;font-weight:700;margin-top:6px;display:inline-flex;align-items:center;gap:3px}
+  .kpi .d.up{color:var(--success)}.kpi .d.down{color:var(--danger)}
+
+  .cols{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;align-items:start}
+  @media(max-width:1000px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--shadow-soft);overflow:hidden;margin-bottom:18px}
+  .panel-head{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border)}
+  .panel-head h2{font-size:15.5px;font-weight:700;color:var(--primary)}
+  .panel-head .sub{font-size:12px;color:var(--text-soft);font-weight:500;margin-top:1px}
+  .panel-head .r{margin-inline-start:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .panel-body{padding:16px 18px}
+
+  /* table */
+  .app-table{width:100%;border-collapse:collapse}
+  .app-table th{text-align:right;font-size:11.5px;font-weight:700;color:var(--text-soft);padding:11px 16px;background:var(--table-head);border-bottom:1px solid var(--border);white-space:nowrap}
+  .app-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13.5px;vertical-align:middle}
+  .app-table tbody tr{transition:.12s}
+  .app-table tbody tr:hover{background:var(--table-hover)}
+  .app-table tbody tr:last-child td{border-bottom:none}
+  .lead-cell{display:flex;align-items:center;gap:10px}
+  .ava-sm{width:32px;height:32px;border-radius:999px;background:var(--accent-soft);color:var(--primary);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;flex-shrink:0}
+  .lead-cell b{font-weight:700;color:var(--primary);display:block}
+  .lead-cell span{font-size:12px;color:var(--text-soft)}
+  .mono{font-variant-numeric:tabular-nums;direction:ltr;text-align:right;unicode-bidi:plaintext}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .badge .dot{width:6px;height:6px;border-radius:999px;background:currentColor}
+  .b-green{background:rgba(16,185,129,.12);color:#0b8a63}
+  .b-yellow{background:rgba(245,158,11,.14);color:#b26a03}
+  .b-red{background:rgba(239,68,68,.12);color:#c0392b}
+  .b-blue{background:rgba(21,80,143,.12);color:#15508f}
+  .b-cyan{background:var(--accent-soft);color:var(--accent-dark)}
+  .b-purple{background:rgba(124,58,237,.12);color:#6b21d6}
+  .b-gray{background:#eef2f5;color:#64748b}
+
+  .src-pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--text)}
+  .src-pill i{width:9px;height:9px;border-radius:3px;display:inline-block;flex-shrink:0}
+  .attr{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700}
+  .attr svg{width:14px;height:14px}
+  .attr.ok{color:#0b8a63}.attr.man{color:#b26a03}.attr.self{color:#15508f}
+
+  /* source bars */
+  .srcbar{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .srcbar:last-child{border-bottom:none}
+  .srcbar .nm{width:150px;flex-shrink:0;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .srcbar .nm i{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  .srcbar .track{flex:1;height:9px;background:var(--card-muted);border-radius:999px;overflow:hidden}
+  .srcbar .fill{height:100%;border-radius:999px}
+  .srcbar .val{width:44px;text-align:left;font-size:13px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums}
+
+  /* kanban */
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:1050px){.kanban{grid-template-columns:repeat(2,1fr)}}
+  .kcol{background:var(--card-muted);border:1px solid var(--border);border-radius:var(--r-card);padding:12px;min-height:120px}
+  .kcol-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;font-weight:700}
+  .kcol-head .c{margin-inline-start:auto;font-size:11px;font-weight:800;color:var(--text-soft);background:#fff;border:1px solid var(--border);border-radius:999px;padding:0 7px}
+  .kcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 12px;margin-bottom:9px;box-shadow:var(--shadow-soft);cursor:grab;transition:.13s}
+  .kcard:hover{transform:translateY(-2px);border-color:var(--border-strong);box-shadow:var(--shadow-card)}
+  .kcard b{font-size:13.5px;font-weight:700;color:var(--primary)}
+  .kcard .meta{display:flex;align-items:center;gap:7px;margin-top:7px;flex-wrap:wrap}
+  .kcard .val{font-size:12.5px;font-weight:800;color:var(--success)}
+
+  /* campaign cards */
+  .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .ccard{background:var(--card);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--shadow-soft);padding:18px;transition:.15s}
+  .ccard:hover{transform:translateY(-2px);box-shadow:var(--shadow-card);border-color:var(--border-strong)}
+  .ccard .ch{display:flex;align-items:flex-start;gap:10px}
+  .ccard .ch b{font-size:15.5px;font-weight:800;color:var(--primary);line-height:1.3}
+  .ccard .ch .st{margin-inline-start:auto}
+  .ccard .desc{font-size:12.5px;color:var(--text-muted);margin:8px 0 14px}
+  .prog{height:8px;background:var(--card-muted);border-radius:999px;overflow:hidden;margin:6px 0 4px}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--secondary));border-radius:999px}
+  .cmetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+  .cmetrics .m{text-align:center}
+  .cmetrics .m b{display:block;font-size:17px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums}
+  .cmetrics .m span{font-size:11px;color:var(--text-soft)}
+  .csrc{display:flex;gap:5px;margin-top:12px;flex-wrap:wrap}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:0;padding:0 6px}
+  .tab{padding:11px 16px;font-size:13.5px;font-weight:700;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.13s}
+  .tab.on{color:var(--primary);border-bottom-color:var(--accent)}
+  .insight{display:flex;gap:9px;align-items:flex-start;background:var(--accent-soft);border:1px solid #bfeef2;border-radius:10px;padding:11px 14px;margin:0 0 16px;font-size:13px;color:#0a5a62;font-weight:600}
+  .insight svg{color:var(--accent-dark);margin-top:1px}
+
+  /* communications */
+  .chat{display:grid;grid-template-columns:280px 1fr;min-height:440px}
+  @media(max-width:900px){.chat{grid-template-columns:1fr}.chat .thread{display:none}}
+  .convs{border-inline-end:1px solid var(--border);overflow-y:auto}
+  .conv{display:flex;align-items:center;gap:11px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:.12s}
+  .conv:hover,.conv.on{background:var(--sidebar-hover)}
+  .conv.on{box-shadow:inset 3px 0 0 var(--accent)}
+  .conv .tx{min-width:0;flex:1}
+  .conv b{font-size:13.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .conv p{font-size:12px;color:var(--text-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .conv .un{width:9px;height:9px;border-radius:999px;background:var(--accent);flex-shrink:0}
+  .thread{display:flex;flex-direction:column}
+  .thread .th-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px}
+  .th-body{flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--card-muted)}
+  .msg{max-width:74%;padding:10px 13px;border-radius:13px;font-size:13.5px;line-height:1.5;box-shadow:var(--shadow-soft)}
+  .msg .t{font-size:10.5px;color:var(--text-soft);margin-top:5px;font-weight:600}
+  .msg.in{align-self:flex-start;background:#fff;border:1px solid var(--border);border-bottom-right-radius:4px}
+  .msg.out{align-self:flex-end;background:linear-gradient(135deg,#e8fbfd,#d6f3f6);border:1px solid #bfeef2;border-bottom-left-radius:4px}
+  .th-input{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:9px;align-items:center}
+  .th-input input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:999px;background:var(--card)}
+  .ch-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+
+  /* links list */
+  .link-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border)}
+  .link-row:last-child{border-bottom:none}
+  .link-row .u{flex:1;min-width:0}
+  .link-row .u b{font-size:13.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:7px}
+  .link-row .u code{font-size:12px;color:var(--accent-dark);background:var(--accent-soft);border-radius:6px;padding:2px 8px;direction:ltr;display:inline-block;margin-top:5px}
+  .link-row .st{display:flex;gap:22px;text-align:center}
+  .link-row .st div b{display:block;font-size:16px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums}
+  .link-row .st div span{font-size:11px;color:var(--text-soft)}
+
+  .demo-badge{position:fixed;inset-block-end:16px;inset-inline-start:16px;z-index:100;display:inline-flex;align-items:center;gap:8px;
+    background:rgba(7,24,39,.92);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.24);backdrop-filter:blur(4px)}
+  .demo-badge i{width:8px;height:8px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 3px rgba(0,183,199,.3)}
+
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch;margin-top:2px}
+  @media(max-width:820px){.flow{grid-template-columns:1fr 1fr}}
+  .fstep{background:var(--card-tint);border:1px solid var(--border);border-radius:11px;padding:13px;text-align:center;position:relative}
+  .fstep .fi{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent-dark);display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+  .fstep b{font-size:12.5px;font-weight:700;color:var(--primary);display:block}
+  .fstep span{font-size:11px;color:var(--text-soft)}
+  .flow .fstep:not(:last-child)::after{content:"‹";position:absolute;inset-inline-start:-13px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:22px;font-weight:800;z-index:2}
+  @media(max-width:820px){.flow .fstep::after{display:none}}
+  .hint{font-size:12px;color:var(--text-soft);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="logo-card"><img src="adleader-logo.png" alt="AdLeader"></div>
+    <div class="biz">
+      <div class="ava">א</div>
+      <div><b>סטודיו אור</b><span>קורסים ושירותים דיגיטליים</span></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+
+    <div class="nav-group">
+      <div class="gt">ראשי</div>
+      <button class="nav-item active" data-screen="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        מסך ראשי
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="gt">פניות</div>
+      <button class="nav-item" data-screen="leads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        הפניות שלי<span class="cnt">10</span>
+      </button>
+      <button class="nav-item" data-screen="comms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        הודעות (וואטסאפ ומייל)<span class="cnt">2</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="gt">ניהול פניות</div>
+      <button class="nav-item" data-screen="crm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="18" rx="1"/><rect x="10" y="3" width="6" height="12" rx="1"/><rect x="17" y="3" width="4" height="8" rx="1"/></svg>
+        מסלול הפנייה
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="gt">פרסום וביצועים</div>
+      <button class="nav-item" data-screen="campaigns">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        פרסומים
+      </button>
+      <button class="nav-item" data-screen="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        דוחות
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="gt">קישורים וטפסים</div>
+      <button class="nav-item" data-screen="links">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+        קישורים לשיתוף
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="gt">מערכת</div>
+      <button class="nav-item" data-screen="integrations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7h5a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5"/><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/></svg>
+        חיבורים
+      </button>
+    </div>
+
+    <div class="side-foot">
+      <div class="theme-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>
+        מצב תצוגה: בהיר
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="topbar">
+      <div class="tt">
+        <h1 id="scr-title">מסך ראשי</h1>
+        <p id="scr-sub">תמונת מצב חודשית: כמה פניות נכנסו, כמה נסגרו, וכמה כל שקל פרסום החזיר.</p>
+      </div>
+      <div class="act">
+        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="חיפוש פנייה, קמפיין או מקור" aria-label="חיפוש"></div>
+        <button class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><b>3</b></button>
+        <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg>פנייה חדשה</button>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="screen on" id="dashboard">
+      <div class="kpis">
+        <div class="kpi">
+          <div class="ic" style="background:linear-gradient(135deg,#07306b,#15508f)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="k">פניות החודש</div><div class="v">83</div><div class="d up">▲ 18% מהחודש שעבר</div>
+        </div>
+        <div class="kpi">
+          <div class="ic" style="background:linear-gradient(135deg,#10b981,#0b8a63)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div class="k">עסקאות שנסגרו</div><div class="v">16</div><div class="d up">▲ 12% מהחודש שעבר</div>
+        </div>
+        <div class="kpi">
+          <div class="ic" style="background:linear-gradient(135deg,#00b7c7,#00afc0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="k">הכנסות מפרסום</div><div class="v"><small>₪</small> 62,800</div><div class="d up">▲ 26% מהחודש שעבר</div>
+        </div>
+        <div class="kpi">
+          <div class="ic" style="background:linear-gradient(135deg,#7c3aed,#6b21d6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg></div>
+          <div class="k">החזר לכל ₪ פרסום</div><div class="v">₪ 5.0</div><div class="d up">מצוין · יעד ₪3</div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <div class="panel">
+            <div class="panel-head"><div><h2>מאיפה מגיעות הפניות</h2><div class="sub">כל פנייה משויכת אוטומטית למקור שהביא אותה</div></div><div class="r"><button class="btn btn-ghost btn-sm">30 ימים אחרונים</button></div></div>
+            <div class="panel-body" id="dash-sources"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><h2>הפניות האחרונות</h2></div><div class="r"><button class="btn btn-ghost btn-sm" data-screen="leads">לכל הפניות</button></div></div>
+            <div style="overflow-x:auto"><table class="app-table" id="dash-leads"></table></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="panel-head"><div><h2>סיכום הכסף</h2><div class="sub">אחרי שיוך כל ההוצאות למקור</div></div></div>
+            <div class="panel-body" id="dash-money"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><h2>שיוך הפניות</h2></div></div>
+            <div class="panel-body" id="dash-attr"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LEADS ===== -->
+    <section class="screen" id="leads">
+      <div class="panel">
+        <div class="panel-head">
+          <div><h2>כל הפניות</h2><div class="sub">10 פניות · כל אחת עם המקור והקמפיין שהביאו אותה</div></div>
+          <div class="r">
+            <button class="btn btn-ghost btn-sm">כל המקורות</button>
+            <button class="btn btn-ghost btn-sm">כל הסטטוסים</button>
+            <button class="btn btn-primary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>פנייה</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto"><table class="app-table" id="leads-table"></table></div>
+      </div>
+    </section>
+
+    <!-- ===== CRM ===== -->
+    <section class="screen" id="crm">
+      <div class="insight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>גררו כרטיס פנייה בין השלבים כדי לעדכן את הסטטוס. כל שינוי נשמר אוטומטית ומתעדכן בדוחות ובאוטומציות.</div>
+      <div class="kanban" id="crm-board"></div>
+    </section>
+
+    <!-- ===== CAMPAIGNS ===== -->
+    <section class="screen" id="campaigns">
+      <div class="cgrid" id="camp-grid"></div>
+    </section>
+
+    <!-- ===== REPORTS ===== -->
+    <section class="screen" id="reports">
+      <div class="panel" style="padding-bottom:0">
+        <div class="tabs">
+          <button class="tab on" data-rep="sources">לפי מקור פרסום</button>
+          <button class="tab" data-rep="campaigns">לפי קמפיין</button>
+        </div>
+        <div class="panel-body">
+          <div class="insight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span id="rep-insight"></span></div>
+          <div style="overflow-x:auto"><table class="app-table" id="reports-table"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COMMUNICATIONS ===== -->
+    <section class="screen" id="comms">
+      <div class="panel" style="padding:0">
+        <div class="chat">
+          <div class="convs" id="conv-list"></div>
+          <div class="thread">
+            <div class="th-head" id="th-head"></div>
+            <div class="th-body" id="th-body"></div>
+            <div class="th-input"><input placeholder="כתוב הודעה..."><button class="btn btn-primary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4z"/></svg>שליחה</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TRACKING LINKS ===== -->
+    <section class="screen" id="links">
+      <div class="insight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>כל קישור מדיד יודע מאיזה קמפיין ומקור הוא, כך שכל קליק וכל פנייה שמגיעים דרכו משויכים אוטומטית. זה מה שסוגר את הפער בין הפרסום לפנייה.</div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>קישורים לשיתוף</h2><div class="sub">קישור אחד לכל מקום שבו מפרסמים</div></div><div class="r"><button class="btn btn-primary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>קישור חדש</button></div></div>
+        <div id="links-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== INTEGRATIONS ===== -->
+    <section class="screen" id="integrations">
+      <div class="insight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>מחברים את הערוצים שדרכם מגיעות הפניות, וכל הודעה נכנסת ויוצאת נשמרת אוטומטית על כרטיס הפנייה הנכון.</div>
+      <div class="cgrid" id="integ-grid"></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="demo-badge"><i></i>תצוגת דמו · נתונים לדוגמה</div>
+
+<script>
+/* ============ authentic demo data (from AdLeader demo dataset) ============ */
+const SOURCES = [
+  {id:"google",   name:"Google Search · חיפוש קורסים", color:"#2563eb", paid:true,  leads:22, deals:6, spend:4100, revenue:27600},
+  {id:"haredi",   name:"מודעה באתר חדשות חרדי",         color:"#db2777", paid:true,  leads:19, deals:4, spend:5300, revenue:18400},
+  {id:"whatsapp", name:"WhatsApp קהילות",               color:"#16a34a", paid:false, leads:15, deals:3, spend:900,   revenue:9800},
+  {id:"email",    name:"רשימת תפוצה · מייל",            color:"#7c3aed", paid:false, leads:12, deals:2, spend:800,   revenue:5200},
+  {id:"gift",     name:"חסומות · מתנה במייל",           color:"#5EA8B0", paid:false, leads:9,  deals:1, spend:0,     revenue:1800},
+  {id:"print",    name:"טלפון ממודעה מודפסת",           color:"#f59e0b", paid:true,  leads:6,  deals:0, spend:1400,  revenue:0}
+];
+const CAMPAIGNS = [
+  {id:"course", name:"השקת קורס אוטומציה יוני", desc:"קמפיין הרשמה לקורס עם דף נחיתה, טופס מובנה ופרסום במספר מקורות.", status:"active", budget:12000, spent:7800, leads:44, deals:11, revenue:41800, srcs:["google","haredi","whatsapp"]},
+  {id:"webinar",name:"וובינר חינמי · מדידת פרסום", desc:"קמפיין ליצירת פניות חמות לפני השקת שירות.", status:"active", budget:5500, spent:3200, leads:27, deals:5, revenue:19200, srcs:["email","haredi"]},
+  {id:"retarget",name:"רימרקטינג למתעניינים", desc:"קמפיין חזרה למי שכבר ביקר בדף ולא השאיר פרטים.", status:"paused", budget:4000, spent:2600, leads:12, deals:0, revenue:1800, srcs:["google","email"]}
+];
+/* attribution: ok = auto-linked, self = manual-confirmed, man = needs manual link */
+const A = {
+  ok:{cls:"ok", label:"שיוך ודאי", ic:'<path d="M20 6 9 17l-5-5"/>'},
+  self:{cls:"self", label:"שויך ידנית", ic:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'},
+  man:{cls:"man", label:"דורש שיוך ידני", ic:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>'}
+};
+const METHOD = {tracking_link:"קישור לפרסום", whatsapp:"הודעת וואטסאפ", form:"טופס AdLeader", phone:"מספר טלפון ייעודי", gift:"קישור חסומות", none:"ללא שיוך"};
+const ST = {
+  new:{t:"חדש",b:"b-yellow"}, contacted:{t:"נוצר קשר",b:"b-blue"}, in_progress:{t:"בטיפול",b:"b-purple"},
+  quoted:{t:"נשלחה הצעה",b:"b-yellow"}, closed:{t:"נסגר בהצלחה",b:"b-green"}, lost:{t:"לא רלוונטי",b:"b-red"}
+};
+const LEADS = [
+  {n:"דנה לוי",   ph:"052-111-2233", src:"google",   camp:"course",  st:"new",         attr:"ok",  m:"tracking_link", val:1800},
+  {n:"אבי כהן",   ph:"054-987-6543", src:"haredi",   camp:"course",  st:"closed",      attr:"ok",  m:"tracking_link", val:4200},
+  {n:"מיכאל רוזן",ph:"050-333-7788", src:"whatsapp", camp:"course",  st:"in_progress", attr:"ok",  m:"whatsapp",      val:2200},
+  {n:"רותם בר",   ph:"053-887-7665", src:"email",    camp:"webinar", st:"quoted",      attr:"ok",  m:"form",          val:3000},
+  {n:"אלון שחר",  ph:"052-229-9001", src:"google",   camp:"course",  st:"closed",      attr:"ok",  m:"tracking_link", val:3600},
+  {n:"נועה גל",   ph:"058-444-9900", src:"",         camp:"",        st:"contacted",   attr:"man", m:"none",          val:1200},
+  {n:"שי מור",    ph:"052-778-8991", src:"haredi",   camp:"course",  st:"closed",      attr:"ok",  m:"tracking_link", val:2800},
+  {n:"טל אברהם",  ph:"053-222-1199", src:"email",    camp:"webinar", st:"new",         attr:"ok",  m:"tracking_link", val:900},
+  {n:"יעל פרץ",   ph:"052-555-1212", src:"print",    camp:"retarget",st:"lost",        attr:"self",m:"phone",         val:0},
+  {n:"חני גולד",  ph:"058-321-4455", src:"gift",     camp:"",        st:"new",         attr:"ok",  m:"gift",          val:0}
+];
+const srcById = id => SOURCES.find(s=>s.id===id);
+const campById = id => CAMPAIGNS.find(c=>c.id===id);
+const nis = n => "₪" + n.toLocaleString("he-IL");
+const initials = n => n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join("");
+
+/* ---------- dashboard ---------- */
+function renderDashboard(){
+  const maxLeads = Math.max(...SOURCES.map(s=>s.leads));
+  document.getElementById("dash-sources").innerHTML = SOURCES.map(s=>`
+    <div class="srcbar">
+      <div class="nm"><i style="background:${s.color}"></i>${s.name}</div>
+      <div class="track"><div class="fill" style="width:${Math.round(s.leads/maxLeads*100)}%;background:${s.color}"></div></div>
+      <div class="val">${s.leads}</div>
+    </div>`).join("");
+
+  document.getElementById("dash-leads").innerHTML = `
+    <thead><tr><th>שם</th><th>מקור</th><th>סטטוס</th><th>שיוך</th></tr></thead>
+    <tbody>${LEADS.slice(0,5).map(l=>{const s=srcById(l.src);return `
+      <tr><td><div class="lead-cell"><span class="ava-sm">${initials(l.n)}</span><div><b>${l.n}</b><span class="mono">${l.ph}</span></div></div></td>
+      <td>${s?`<span class="src-pill"><i style="background:${s.color}"></i>${s.name.split(" · ")[0]}</span>`:'<span class="src-pill"><i style="background:#cbd5e1"></i>ישיר</span>'}</td>
+      <td><span class="badge ${ST[l.st].b}"><span class="dot"></span>${ST[l.st].t}</span></td>
+      <td><span class="attr ${A[l.attr].cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${A[l.attr].ic}</svg>${A[l.attr].label}</span></td></tr>`}).join("")}
+    </tbody>`;
+
+  const revenue=62800, spend=12500, profit=revenue-spend;
+  document.getElementById("dash-money").innerHTML = `
+    ${moneyRow("הכנסות שנסגרו", nis(revenue), "#0b8a63")}
+    ${moneyRow("עלות פרסום (משויכת)", nis(spend), "#c0392b")}
+    <div style="height:1px;background:var(--border);margin:6px 0"></div>
+    ${moneyRow("רווח", nis(profit), "#07306b", true)}
+    ${moneyRow("עלות ממוצעת לפנייה", nis(Math.round(spend/83)), "#52687a")}
+    ${moneyRow("החזר לכל ₪ פרסום", "₪"+(revenue/spend).toFixed(1), "#00afc0", true)}`;
+
+  const counts={ok:0,self:0,man:0}; LEADS.forEach(l=>counts[l.attr]++);
+  const total=LEADS.length;
+  document.getElementById("dash-attr").innerHTML = `
+    <div style="display:flex;height:12px;border-radius:999px;overflow:hidden;margin-bottom:14px">
+      <div style="width:${counts.ok/total*100}%;background:#10b981"></div>
+      <div style="width:${counts.self/total*100}%;background:#15508f"></div>
+      <div style="width:${counts.man/total*100}%;background:#f59e0b"></div>
+    </div>
+    ${attrRow("#10b981","שיוך ודאי",counts.ok)}
+    ${attrRow("#15508f","שויך ידנית",counts.self)}
+    ${attrRow("#f59e0b","דורש שיוך ידני",counts.man)}
+    <div class="hint">${Math.round((counts.ok)/total*100)}% מהפניות שויכו למקור לבד, בלי עבודה ידנית.</div>`;
+}
+const moneyRow=(k,v,c,strong)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0"><span style="font-size:13px;color:var(--text-muted);font-weight:${strong?700:500}">${k}</span><b class="mono" style="font-size:${strong?18:15}px;font-weight:800;color:${c}">${v}</b></div>`;
+const attrRow=(c,k,v)=>`<div style="display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13px"><i style="width:10px;height:10px;border-radius:3px;background:${c}"></i><span style="color:var(--text-muted);font-weight:600">${k}</span><b style="margin-inline-start:auto;font-weight:800;color:var(--primary)">${v}</b></div>`;
+
+/* ---------- leads ---------- */
+function renderLeads(){
+  document.getElementById("leads-table").innerHTML = `
+    <thead><tr><th>שם ומספר</th><th>מקור</th><th>קמפיין</th><th>אופן השיוך</th><th>סטטוס</th><th>שווי צפוי</th><th>שיוך</th></tr></thead>
+    <tbody>${LEADS.map(l=>{const s=srcById(l.src);const c=campById(l.camp);return `
+      <tr>
+        <td><div class="lead-cell"><span class="ava-sm">${initials(l.n)}</span><div><b>${l.n}</b><span class="mono">${l.ph}</span></div></div></td>
+        <td>${s?`<span class="src-pill"><i style="background:${s.color}"></i>${s.name.split(" · ")[0]}</span>`:'<span class="src-pill"><i style="background:#cbd5e1"></i>הגיע ישירות</span>'}</td>
+        <td style="font-size:12.5px;color:var(--text-muted)">${c?c.name:'—'}</td>
+        <td><span class="badge b-gray">${METHOD[l.m]}</span></td>
+        <td><span class="badge ${ST[l.st].b}"><span class="dot"></span>${ST[l.st].t}</span></td>
+        <td class="mono" style="font-weight:700">${l.val?nis(l.val):'—'}</td>
+        <td><span class="attr ${A[l.attr].cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${A[l.attr].ic}</svg>${A[l.attr].label}</span></td>
+      </tr>`}).join("")}
+    </tbody>`;
+}
+
+/* ---------- crm kanban ---------- */
+const STAGES=[{id:"new",t:"פנייה חדשה",c:"#00b7c7"},{id:"contacted",t:"נוצר קשר",c:"#15508f"},{id:"quoted",t:"נשלחה הצעה",c:"#7c3aed"},{id:"closed",t:"נסגר בהצלחה",c:"#10b981"}];
+const stageOf = st => st==="in_progress"?"contacted":st==="lost"?"quoted":st;
+function renderCrm(){
+  document.getElementById("crm-board").innerHTML = STAGES.map(stg=>{
+    const cards=LEADS.filter(l=>stageOf(l.st)===stg.id);
+    return `<div class="kcol">
+      <div class="kcol-head"><i style="width:9px;height:9px;border-radius:3px;background:${stg.c}"></i>${stg.t}<span class="c">${cards.length}</span></div>
+      ${cards.map(l=>{const s=srcById(l.src);return `<div class="kcard">
+        <b>${l.n}</b>
+        <div class="meta">${s?`<span class="src-pill" style="font-size:11px"><i style="background:${s.color}"></i>${s.name.split(" · ")[0]}</span>`:'<span class="badge b-gray">ישיר</span>'}</div>
+        <div class="meta"><span class="mono" style="font-size:11.5px;color:var(--text-soft)">${l.ph}</span>${l.val?`<span class="val" style="margin-inline-start:auto">${nis(l.val)}</span>`:''}</div>
+      </div>`}).join("")||'<div class="hint" style="text-align:center;padding:12px 0">אין פניות בשלב זה</div>'}
+    </div>`;
+  }).join("");
+}
+
+/* ---------- campaigns ---------- */
+function renderCampaigns(){
+  document.getElementById("camp-grid").innerHTML = CAMPAIGNS.map(c=>{
+    const roi=(c.revenue/c.spent);
+    const stBadge=c.status==="active"?'<span class="badge b-green"><span class="dot"></span>פעיל</span>':'<span class="badge b-yellow"><span class="dot"></span>מושהה</span>';
+    return `<div class="ccard">
+      <div class="ch"><b>${c.name}</b><span class="st">${stBadge}</span></div>
+      <div class="desc">${c.desc}</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-soft);font-weight:600"><span>נוצל ${nis(c.spent)}</span><span>תקציב ${nis(c.budget)}</span></div>
+      <div class="prog"><i style="width:${Math.round(c.spent/c.budget*100)}%"></i></div>
+      <div class="csrc">${c.srcs.map(id=>{const s=srcById(id);return `<span class="src-pill" style="font-size:11px;background:var(--card-muted);border:1px solid var(--border);border-radius:999px;padding:2px 9px"><i style="background:${s.color}"></i>${s.name.split(" · ")[0]}</span>`}).join("")}</div>
+      <div class="cmetrics">
+        <div class="m"><b>${c.leads}</b><span>פניות</span></div>
+        <div class="m"><b>${c.deals}</b><span>נסגרו</span></div>
+        <div class="m"><b style="color:${roi>=2?'#0b8a63':roi>=1?'#b26a03':'#c0392b'}">₪${roi.toFixed(1)}</b><span>לכל ₪</span></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- reports ---------- */
+function renderReports(mode){
+  const rows = mode==="sources" ? SOURCES.map(s=>({name:s.name, leads:s.leads, deals:s.deals, spend:s.spend, revenue:s.revenue}))
+                                : CAMPAIGNS.map(c=>({name:c.name, leads:c.leads, deals:c.deals, spend:c.spent, revenue:c.revenue}));
+  document.getElementById("rep-insight").textContent = mode==="sources"
+    ? "רואים מיד איזה מקור מחזיר את ההשקעה ואיזה שורף תקציב. הטלפון מהמודעה המודפסת עדיין לא סגר עסקה, בעוד וואטסאפ ורשימת התפוצה מחזירים פי כמה."
+    : "השוואת קמפיינים לפי החזר אמיתי לשקל, לא לפי קליקים. קמפיין הקורס הוא המנוע, הרימרקטינג עדיין לא הבשיל.";
+  document.getElementById("reports-table").innerHTML = `
+    <thead><tr><th>${mode==="sources"?"מקור פרסום":"קמפיין"}</th><th>פניות</th><th>נסגרו</th><th>עלות</th><th>הכנסות</th><th>רווח</th><th>החזר לשקל</th><th>מדד</th></tr></thead>
+    <tbody>${rows.map(r=>{
+      const profit=r.revenue-r.spend; const roi=r.spend?r.revenue/r.spend:(r.revenue?99:0);
+      const mk = roi>=2.5?["b-green","מצוין"]:roi>=1?["b-yellow","חלקי"]:["b-red","חלש"];
+      return `<tr>
+        <td style="font-weight:700;color:var(--primary)">${r.name}</td>
+        <td class="mono">${r.leads}</td><td class="mono">${r.deals}</td>
+        <td class="mono">${nis(r.spend)}</td><td class="mono" style="font-weight:700">${nis(r.revenue)}</td>
+        <td class="mono" style="font-weight:800;color:${profit>=0?'#0b8a63':'#c0392b'}">${profit>=0?'':'-'}₪${Math.abs(profit).toLocaleString("he-IL")}</td>
+        <td class="mono" style="font-weight:700">${r.spend?'₪'+roi.toFixed(1):'—'}</td>
+        <td><span class="badge ${mk[0]}"><span class="dot"></span>${mk[1]}</span></td>
+      </tr>`}).join("")}
+    </tbody>`;
+}
+
+/* ---------- communications ---------- */
+const THREADS=[
+  {id:"t1", lead:"מיכאל רוזן", ch:"whatsapp", unread:true, msgs:[
+    {d:"in", b:"הגעתי מהפרסום WhatsApp קהילות ואשמח לפרטים", t:"16.6 · 15:40"},
+    {d:"out", b:"בשמחה, שולח לך עכשיו פרטים וקישור לשיחת התאמה.", t:"16.6 · 15:43"}
+  ]},
+  {id:"t2", lead:"רותם בר", ch:"email", unread:true, msgs:[
+    {d:"out", b:"מצורפת הצעה מותאמת לפי מה שדיברנו בוובינר.", t:"15.6 · 13:10"},
+    {d:"in", b:"תודה, אשמח לשיחת המשך מחר.", t:"15.6 · 15:20"}
+  ]}
+];
+const CH={whatsapp:{c:"#16a34a",ic:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',n:"וואטסאפ"},email:{c:"#15508f",ic:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',n:"מייל"}};
+let activeThread="t1";
+function renderComms(){
+  document.getElementById("conv-list").innerHTML = THREADS.map(t=>{
+    const ch=CH[t.ch]; const last=t.msgs[t.msgs.length-1];
+    return `<div class="conv ${t.id===activeThread?'on':''}" data-thread="${t.id}">
+      <span class="ch-ic" style="background:${ch.c}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">${ch.ic}</svg></span>
+      <div class="tx"><b>${t.lead}${t.unread?'<span class="un"></span>':''}</b><p>${last.b}</p></div>
+    </div>`;
+  }).join("");
+  const t=THREADS.find(x=>x.id===activeThread); const ch=CH[t.ch];
+  document.getElementById("th-head").innerHTML = `<span class="ch-ic" style="background:${ch.c}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">${ch.ic}</svg></span><div><b style="font-weight:700;color:var(--primary)">${t.lead}</b><div style="font-size:12px;color:var(--text-soft)">שיחת ${ch.n}</div></div><span class="badge b-cyan" style="margin-inline-start:auto">משויך לקמפיין</span>`;
+  document.getElementById("th-body").innerHTML = t.msgs.map(m=>`<div class="msg ${m.d}">${m.b}<div class="t">${m.t}</div></div>`).join("");
+  document.querySelectorAll("[data-thread]").forEach(el=>el.onclick=()=>{activeThread=el.dataset.thread;renderComms();});
+}
+
+/* ---------- tracking links ---------- */
+const LINKS=[
+  {name:"קורס · Google Search", code:"google-course-demo", src:"google", clicks:640, leads:22},
+  {name:"קורס · אתר חדשות חרדי", code:"insta-course-demo", src:"haredi", clicks:512, leads:19},
+  {name:"קורס · WhatsApp קהילות", code:"whatsapp-course-demo", src:"whatsapp", clicks:288, leads:15},
+  {name:"וובינר · רשימת תפוצה", code:"email-webinar-demo", src:"email", clicks:312, leads:16}
+];
+function renderLinks(){
+  document.getElementById("links-list").innerHTML = LINKS.map(l=>{const s=srcById(l.src);return `
+    <div class="link-row">
+      <span class="ch-ic" style="background:${s.color}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
+      <div class="u"><b>${l.name}</b><code>adleader.co.il/r/${l.code}</code></div>
+      <div class="st">
+        <div><b>${l.clicks}</b><span>קליקים</span></div>
+        <div><b>${l.leads}</b><span>פניות</span></div>
+        <div><b>${Math.round(l.leads/l.clicks*100)}%</b><span>המרה</span></div>
+      </div>
+      <button class="btn btn-ghost btn-sm">העתקה</button>
+    </div>`}).join("");
+}
+
+/* ---------- integrations ---------- */
+const INTEG=[
+  {name:"Green API · וואטסאפ", color:"#16a34a", status:"מחובר", ok:true, desc:"קליטת פניות והודעות מוואטסאפ, ושליחת תשובות מתוך המערכת.", ic:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+  {name:"מייל · Google", color:"#15508f", status:"מחובר", ok:true, desc:"קליטת פניות ממייל וזיהוי תשובות, ושליחת מיילים בשם העסק.", ic:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>'},
+  {name:"מערכת דיוור", color:"#7c3aed", status:"מחובר", ok:true, desc:"כל פנייה נכנסת אוטומטית לרשימת הדיוור המתאימה, עם תיוג לפי מקור.", ic:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>'},
+  {name:"סליקה ותשלומים", color:"#00afc0", status:"מחובר", ok:true, desc:"תשלום שנסגר מתעדכן כעסקה ומשויך לקמפיין ולמקור שהביאו את הלקוח.", ic:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>'},
+  {name:"קישורים מדידים", color:"#2563eb", status:"פעיל", ok:true, desc:"קישור לכל מקום פרסום, שמודד קליקים ומשייך כל פנייה אוטומטית.", ic:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'},
+  {name:"מספר טלפון ייעודי", color:"#f59e0b", status:"לא פעיל", ok:false, desc:"מספר נפרד לכל מודעה מודפסת, כדי לדעת איזו מודעה הרימה טלפון.", ic:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2z"/>'}
+];
+function renderInteg(){
+  document.getElementById("integ-grid").innerHTML = INTEG.map(i=>`
+    <div class="ccard">
+      <div class="ch">
+        <span class="ch-ic" style="background:${i.color}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">${i.ic}</svg></span>
+        <b style="align-self:center">${i.name}</b>
+        <span class="st">${i.ok?'<span class="badge b-green"><span class="dot"></span>'+i.status+'</span>':'<span class="badge b-gray"><span class="dot"></span>'+i.status+'</span>'}</span>
+      </div>
+      <div class="desc" style="margin:12px 0 4px">${i.desc}</div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px">${i.ok?'הגדרות':'חיבור'}</button>
+    </div>`).join("");
+}
+
+/* ============ navigation ============ */
+const TITLES={
+  dashboard:["מסך ראשי","תמונת מצב חודשית: כמה פניות נכנסו, כמה נסגרו, וכמה כל שקל פרסום החזיר."],
+  leads:["הפניות שלי","כל פנייה שנכנסה, עם המקור, הקמפיין ואופן השיוך שמאחוריה."],
+  crm:["מסלול הפנייה","לוח שמראה איפה כל פנייה עומדת בדרך לסגירה."],
+  campaigns:["פרסומים","כל קמפיין עם התקציב, הפניות וההחזר האמיתי לשקל."],
+  reports:["דוחות","השוואת מקורות וקמפיינים לפי החזר אמיתי, לא לפי קליקים."],
+  comms:["הודעות","וואטסאפ ומייל של כל פנייה במקום אחד, מחוברים לכרטיס שלה."],
+  links:["קישורים לשיתוף","קישור מדיד לכל מקום פרסום, שמשייך כל קליק ופנייה לבד."],
+  integrations:["חיבורים","וואטסאפ, מייל, דיוור ותשלומים, מחוברים למערכת."]
+};
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.screen===id));
+  const t=TITLES[id]||TITLES.dashboard;
+  document.getElementById("scr-title").textContent=t[0];
+  document.getElementById("scr-sub").textContent=t[1];
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-screen]").forEach(el=>el.addEventListener("click",()=>show(el.dataset.screen)));
+document.querySelectorAll(".tab[data-rep]").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab[data-rep]").forEach(x=>x.classList.toggle("on",x===t));
+  renderReports(t.dataset.rep);
+}));
+
+renderDashboard();renderLeads();renderCrm();renderCampaigns();renderReports("sources");renderComms();renderLinks();renderInteg();
+</script>
+</body>
+</html>

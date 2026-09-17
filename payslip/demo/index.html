@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בדיקת תלוש שכר · דמו</title>
+<meta name="description" content="דמו אינטראקטיבי של מערכת לבדיקת תלושי שכר בישראל — נתונים לדוגמה בלבד.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+    --brand-50:#eef6ff; --brand-100:#d9eaff; --brand-200:#bcd9ff; --brand-300:#8ec1ff;
+    --brand-500:#317bff; --brand-600:#1a5cf5; --brand-700:#1548e1; --brand-800:#183cb6;
+    --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-300:#d1d5db;
+    --gray-400:#9ca3af; --gray-500:#6b7280; --gray-600:#4b5563; --gray-700:#374151;
+    --red-50:#fef2f2; --red-100:#fee2e2; --red-200:#fecaca; --red-500:#ef4444; --red-700:#b91c1c; --red-800:#991b1b;
+    --amber-50:#fffbeb; --amber-100:#fef3c7; --amber-200:#fde68a; --amber-500:#f59e0b; --amber-700:#b45309; --amber-800:#92400e;
+    --sky-100:#e0f2fe; --sky-500:#0ea5e9; --sky-800:#075985; --sky-200:#bae6fd;
+    --em-50:#ecfdf5; --em-100:#d1fae5; --em-200:#a7f3d0; --em-500:#10b981; --em-700:#047857; --em-800:#065f46;
+  }
+  *{box-sizing:border-box}
+  html{direction:rtl}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Rubik",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit}
+  .min-h{min-height:100vh;display:flex;flex-direction:column}
+  .wrap{max-width:1024px;margin-inline:auto;padding-inline:16px;width:100%}
+
+  /* header */
+  header.top{background:#fff;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:20}
+  .headrow{height:64px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.125rem;color:var(--brand-700)}
+  .brand .mark{width:36px;height:36px;border-radius:12px;background:var(--brand-600);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  nav.mainnav{display:flex;align-items:center;gap:4px;font-size:.875rem;flex-wrap:wrap;justify-content:flex-end}
+  .name-chip{max-width:9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:10px 16px;font-weight:500;transition:background-color .15s ease,border-color .15s ease,opacity .15s;border:none;cursor:pointer;font-size:.9rem}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-primary{background:var(--brand-600);color:#fff}
+  .btn-primary:hover:not(:disabled){background:var(--brand-700)}
+  .btn-ghost{background:var(--gray-100);color:var(--gray-700)}
+  .btn-ghost:hover{background:var(--gray-200)}
+  .btn-danger{background:var(--red-50);color:var(--red-700)}
+  .btn-danger:hover{background:var(--red-100)}
+  .btn-sm{padding:7px 12px;font-size:.82rem}
+  .btn-lg{padding:12px 24px;font-size:1rem}
+
+  /* cards / inputs */
+  .card{background:#fff;border-radius:16px;border:1px solid var(--gray-200);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .p6{padding:24px}.p5{padding:20px}.p4{padding:16px}.p3{padding:12px}
+  .input{width:100%;border-radius:12px;border:1px solid var(--gray-300);padding:10px 12px;outline:none;font-size:.9rem;font-family:inherit;background:#fff}
+  .input:focus{border-color:var(--brand-500);box-shadow:0 0 0 3px var(--brand-100)}
+  .label{display:block;font-size:.8rem;font-weight:500;color:var(--gray-700);margin-bottom:4px}
+  .chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 10px;font-size:.72rem;font-weight:500}
+  .muted{color:var(--gray-500)}
+  h1{font-size:1.5rem;font-weight:700;margin:0}
+  h2{font-size:1.15rem;font-weight:600;margin:0}
+  h3{font-size:1.05rem;font-weight:600;margin:0}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:720px){.g2,.g3,.g4{grid-template-columns:1fr}.headrow{height:auto;padding:10px 0;flex-direction:column;align-items:stretch}nav.mainnav{justify-content:center}}
+  .flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+  .gap2{gap:8px}.gap3{gap:12px}.wrapf{flex-wrap:wrap}
+  .space>*+*{margin-top:20px}
+  .space-sm>*+*{margin-top:8px}
+  .txt-sm{font-size:.875rem}.txt-xs{font-size:.75rem}
+  .bold{font-weight:600}.b700{font-weight:700}
+  .center{text-align:center}
+  .hidden{display:none!important}
+  main{flex:1;padding-block:32px}
+
+  /* footer */
+  footer.foot{border-top:1px solid var(--gray-200);background:#fff}
+  footer.foot .wrap{padding-block:24px}
+  footer .fnote{font-size:.8rem;color:var(--gray-500)}
+  footer .fnote+.fnote{margin-top:4px}
+
+  /* stepper */
+  .stepper{display:flex;align-items:center;gap:4px;overflow-x:auto;padding-bottom:4px}
+  .step{display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px;font-size:.85rem;border:none;cursor:pointer;white-space:nowrap;background:var(--gray-100);color:var(--gray-500)}
+  .step.active{background:var(--brand-600);color:#fff}
+  .step.done{background:var(--brand-50);color:var(--brand-700)}
+  .step .dot{height:20px;width:20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;background:var(--gray-300);color:#fff}
+  .step.active .dot{background:#fff;color:var(--brand-700)}
+  .step.done .dot{background:var(--brand-600);color:#fff}
+  .step-sep{color:var(--gray-300);margin-inline:4px}
+
+  /* upload cards */
+  .upcard{border:1px solid var(--gray-200);border-radius:16px;padding:16px;background:#fff}
+  .doc-line{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.78rem;color:var(--gray-600)}
+  .req{color:var(--red-500)}
+
+  /* verify rows */
+  .rowline{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;border-radius:12px;background:var(--gray-50);padding:8px}
+  .rowline .grow{flex:1;min-width:140px}
+  table{width:100%;border-collapse:collapse;font-size:.875rem}
+  th{text-align:right;font-weight:500;padding:8px 12px;white-space:nowrap;background:var(--gray-50);color:var(--gray-600)}
+  td{padding:8px 12px;white-space:nowrap;border-top:1px solid var(--gray-100)}
+
+  /* finding cards */
+  .finding{border-radius:16px;border:1px solid var(--gray-200);border-right:4px solid var(--gray-300);background:#fff;overflow:hidden}
+  .finding.error{border-right-color:var(--red-200)}
+  .finding.warning{border-right-color:var(--amber-200)}
+  .finding.info{border-right-color:var(--sky-200)}
+  .finding.ok{border-right-color:var(--em-200)}
+  .finding>button{width:100%;text-align:right;padding:12px 16px;display:flex;align-items:flex-start;gap:12px;background:none;border:none;cursor:pointer;font-family:inherit}
+  .finding>button:hover{background:var(--gray-50)}
+  .sevdot{margin-top:6px;height:10px;width:10px;border-radius:999px;flex:none}
+  .dot-error{background:var(--red-500)}.dot-warning{background:var(--amber-500)}.dot-info{background:var(--sky-500)}.dot-ok{background:var(--em-500)}
+  .badge-error{background:var(--red-100);color:var(--red-800)}
+  .badge-warning{background:var(--amber-100);color:var(--amber-800)}
+  .badge-info{background:var(--sky-100);color:var(--sky-800)}
+  .badge-ok{background:var(--em-100);color:var(--em-800)}
+  .chip-gray{background:var(--gray-100);color:var(--gray-600)}
+  .finding .body{padding:4px 16px 16px;border-top:1px solid var(--gray-100)}
+  .detail-lbl{font-size:.72rem;color:var(--gray-500);margin-bottom:2px}
+  .money{border-radius:12px;background:var(--gray-50);border:1px solid var(--gray-200);padding:12px;font-size:.85rem}
+
+  .summary{border-radius:16px;padding:24px;border:1px solid}
+  .summary.ok{background:var(--em-50);border-color:var(--em-200)}
+  .summary.warn{background:var(--amber-50);border-color:var(--amber-200)}
+  .summary .icon{height:56px;width:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;color:#fff;flex:none}
+  .summary.ok .icon{background:var(--em-500)}
+  .summary.warn .icon{background:var(--amber-500)}
+
+  .mode-btn{text-align:right;border-radius:12px;border:1px solid var(--gray-300);padding:16px;background:#fff;cursor:pointer;width:100%;transition:border-color .15s,background-color .15s}
+  .mode-btn.active{border-color:var(--brand-500);background:var(--brand-50);box-shadow:0 0 0 2px var(--brand-100)}
+
+  .list-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px}
+  .list-item:hover{border-color:var(--brand-300)}
+  .trend-up{color:var(--em-700)}.trend-down{color:var(--red-700)}
+
+  .demo-tag{position:fixed;inset-block-end:14px;inset-inline-start:14px;z-index:50;background:rgba(17,24,39,.9);color:#fff;font-size:.72rem;font-weight:500;padding:7px 12px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;align-items:center;gap:7px}
+  .demo-tag .rec{height:8px;width:8px;border-radius:999px;background:var(--brand-300)}
+  .banner{background:var(--brand-50);border:1px solid var(--brand-200);border-radius:12px;padding:14px;font-size:.85rem;color:var(--brand-800)}
+  .step-num{height:32px;width:32px;border-radius:10px;background:var(--brand-600);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;margin-bottom:8px}
+  @media print{header.top,footer.foot,.demo-tag,[data-nav]{}}
+</style>
+</head>
+<body>
+<div class="min-h">
+
+  <!-- ===== header ===== -->
+  <header class="top">
+    <div class="wrap headrow">
+      <a class="brand" href="#" data-nav="home">
+        <span class="mark">₪</span>
+        <span>בדיקת תלוש שכר</span>
+      </a>
+      <nav class="mainnav">
+        <button class="btn btn-ghost btn-sm" data-nav="home">דף הבית</button>
+        <button class="btn btn-ghost btn-sm" data-nav="history">היסטוריה</button>
+        <button class="btn btn-ghost btn-sm" data-nav="clients">לקוחות</button>
+        <button class="btn btn-ghost btn-sm" data-nav="compare">השוואה</button>
+        <button class="btn btn-ghost btn-sm" data-nav="usage" style="color:var(--brand-700)">ניהול</button>
+        <button class="btn btn-primary btn-sm" data-nav="new">בדיקה חדשה</button>
+        <button class="btn btn-ghost btn-sm name-chip" data-nav="settings" title="האזור האישי">מיכל לוי</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+
+    <!-- ========== HOME ========== -->
+    <section id="s-home" class="screen space">
+      <div class="center" style="padding-block:16px">
+        <h1 style="font-size:1.9rem">בדיקת תלוש שכר בישראל, בכמה דקות</h1>
+        <p class="muted" style="max-width:640px;margin:12px auto 0">
+          העלו תלוש שכר (PDF או תמונה), ובמידת הצורך גם דוח נוכחות. המערכת תחלץ את הנתונים,
+          תבדוק אותם מול חוקי העבודה וצווי ההרחבה בישראל, ותציג תוצאה ברורה: תקין או דורש בדיקה.
+        </p>
+        <div class="flex gap3" style="justify-content:center;margin-top:20px">
+          <button class="btn btn-primary btn-lg" data-nav="new">התחלת בדיקה</button>
+          <button class="btn btn-ghost btn-lg" data-nav="history">הבדיקות שלי</button>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card p6">
+          <h3>עובד/ת פרטי/ת</h3>
+          <p class="muted txt-sm" style="margin:8px 0">רוצים לוודא שהתלוש תקין? קבלו בדיקה פשוטה וברורה של השכר, השעות, הזכויות והניכויים.</p>
+          <ul class="space-sm txt-sm" style="list-style:none;padding:0;margin:12px 0 0">
+            <li>✓ בדיקת שכר מינימום</li><li>✓ הפרשות פנסיה</li><li>✓ דמי הבראה, נסיעות ועוד</li>
+          </ul>
+        </div>
+        <div class="card p6">
+          <h3>בעל/ת מקצוע</h3>
+          <p class="muted txt-sm" style="margin:8px 0">מבצעים בדיקות עבור לקוחות? נהלו כרטיס לקוח עם הגדרות קבועות שימולאו אוטומטית בכל בדיקה.</p>
+          <ul class="space-sm txt-sm" style="list-style:none;padding:0;margin:12px 0 0">
+            <li>✓ כרטיס הגדרות לכל לקוח/ה</li><li>✓ מילוי אוטומטי בבדיקה חדשה</li><li>✓ היסטוריה וחיפוש</li>
+          </ul>
+          <button class="btn btn-ghost btn-sm" style="color:var(--brand-700);margin-top:16px" data-nav="clients">ניהול לקוחות ←</button>
+        </div>
+      </div>
+
+      <div class="card p6">
+        <h2 style="margin-bottom:16px">איך זה עובד?</h2>
+        <div class="grid g4">
+          <div class="p4" style="border-radius:12px;background:var(--gray-50);border:1px solid var(--gray-200)">
+            <div class="step-num">1</div><div class="bold">העלאה</div><div class="muted txt-sm">תלוש שכר, ואופציונלית דוח נוכחות והסכם עבודה.</div></div>
+          <div class="p4" style="border-radius:12px;background:var(--gray-50);border:1px solid var(--gray-200)">
+            <div class="step-num">2</div><div class="bold">אימות נתונים</div><div class="muted txt-sm">בדקו ותקנו את הנתונים שחולצו מהמסמך.</div></div>
+          <div class="p4" style="border-radius:12px;background:var(--gray-50);border:1px solid var(--gray-200)">
+            <div class="step-num">3</div><div class="bold">בדיקה</div><div class="muted txt-sm">המנוע בודק חישובים, זכויות ואי־התאמות.</div></div>
+          <div class="p4" style="border-radius:12px;background:var(--gray-50);border:1px solid var(--gray-200)">
+            <div class="step-num">4</div><div class="bold">תוצאות</div><div class="muted txt-sm">תוצאה ברורה, ממצאים והסבר לכל אחד.</div></div>
+        </div>
+      </div>
+
+      <div class="card p4 txt-sm muted">
+        <strong style="color:var(--ink)">פרטיות ואבטחה:</strong> המסמכים נשמרים מוצפנים, משויכים אליכם בלבד, וניתן למחוק אותם בכל עת. איננו מוסרים את הנתונים לצד שלישי.
+      </div>
+    </section>
+
+    <!-- ========== NEW CHECK ========== -->
+    <section id="s-new" class="screen space hidden">
+      <div style="max-width:576px;margin-inline:auto;width:100%">
+        <h1 style="margin-bottom:24px">בדיקה חדשה</h1>
+        <div class="card p6 space">
+          <div>
+            <span class="label">מי מבצע את הבדיקה?</span>
+            <div class="grid g2">
+              <button class="mode-btn active" id="mode-employee" onclick="setMode('employee')">
+                <div class="bold">עובד/ת פרטי/ת</div><div class="muted txt-sm">בדיקת התלוש שלי</div></button>
+              <button class="mode-btn" id="mode-pro" onclick="setMode('professional')">
+                <div class="bold">בעל/ת מקצוע</div><div class="muted txt-sm">בדיקה עבור לקוח</div></button>
+            </div>
+          </div>
+          <div id="client-block" class="hidden">
+            <label class="label">לקוח/ה</label>
+            <select class="input">
+              <option>ללא לקוח מנוהל (התחלה נקייה)</option>
+              <option>רות א. — מרכז ורדים בע"מ</option>
+              <option>דנה כ. — סטודיו גל</option>
+            </select>
+            <p class="txt-xs muted" style="margin-top:4px">בבחירת לקוח/ה, ההגדרות הקבועות (תנאי העסקה, זכאויות) ימולאו אוטומטית בבדיקה.</p>
+          </div>
+          <div>
+            <label class="label">תיאור לבדיקה (אופציונלי)</label>
+            <input class="input" value="תלוש מאי 2024" placeholder="לדוגמה: תלוש מאי 2024">
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:12px" data-nav="wizard">המשך להעלאת מסמכים</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== WIZARD ========== -->
+    <section id="s-wizard" class="screen space hidden">
+      <div class="flex items-center justify-between wrapf gap3">
+        <div>
+          <h1>בדיקה: תלוש מאי 2024</h1>
+          <p class="muted txt-sm" style="margin-top:2px">מיכל לוי · מרכז ורדים בע"מ</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" data-nav="history">← להיסטוריה</button>
+      </div>
+
+      <div class="stepper" id="stepper"></div>
+
+      <!-- step: upload -->
+      <div id="w-upload" class="wstep space">
+        <p class="muted txt-sm">העלו את תלוש השכר. ניתן להוסיף גם דוח נוכחות והסכם עבודה לבדיקה מדויקת יותר. אין צורך למלא שאלון — נשאל רק שאלות ממוקדות אם יחסר מידע לאחר הבדיקה.</p>
+        <div class="grid g2">
+          <div class="upcard">
+            <div class="flex items-center justify-between"><div class="bold">תלוש שכר <span class="req">*</span></div><span class="chip badge-ok">1 קבצים</span></div>
+            <p class="muted txt-xs" style="margin:4px 0 0">חובה — PDF או תמונה של התלוש</p>
+            <div class="doc-line" style="margin-top:8px"><span>📄 תלוש_מאי_2024.pdf</span><span style="color:var(--red-600,#dc2626);cursor:pointer">הסר ✕</span></div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px">הוספת קובץ</button>
+          </div>
+          <div class="upcard">
+            <div class="flex items-center justify-between"><div class="bold">דוח נוכחות</div><span class="chip badge-ok">1 קבצים</span></div>
+            <p class="muted txt-xs" style="margin:4px 0 0">אופציונלי — לצורך הצלבת שעות וימים</p>
+            <div class="doc-line" style="margin-top:8px"><span>📄 נוכחות_מאי_2024.pdf</span><span style="color:#dc2626;cursor:pointer">הסר ✕</span></div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px">הוספת קובץ</button>
+          </div>
+          <div class="upcard">
+            <div class="bold">הסכם עבודה</div>
+            <p class="muted txt-xs" style="margin:4px 0 0">אופציונלי — לבדיקה מול תנאים אישיים</p>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px">בחירת קובץ</button>
+          </div>
+          <div class="upcard">
+            <div class="bold">מסמך נוסף</div>
+            <p class="muted txt-xs" style="margin:4px 0 0">אופציונלי</p>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:12px">בחירת קובץ</button>
+          </div>
+        </div>
+        <div class="banner" style="background:var(--em-50);border-color:var(--em-200);color:var(--em-800)">✓ הקבצים הועלו ונקראו אוטומטית. הנתונים חולצו ומוכנים לאימות.</div>
+        <div class="flex items-center justify-between" style="padding-top:8px">
+          <span class="muted txt-sm">תלוש הועלה — ניתן להמשיך</span>
+          <button class="btn btn-primary" onclick="goStep('verify')">המשך לאימות נתונים</button>
+        </div>
+      </div>
+
+      <!-- step: verify -->
+      <div id="w-verify" class="wstep space hidden">
+        <p class="muted txt-sm">אלה הנתונים שחולצו מהמסמך. בדקו ותקנו במידת הצורך — דיוק הנתונים משפיע ישירות על אמינות הבדיקה. שדות שלא זוהו מסומנים כריקים.</p>
+
+        <div class="card p5">
+          <h3 style="margin-bottom:12px">פרטים כלליים</h3>
+          <div class="grid g3">
+            <div><label class="label">חודש (YYYY-MM)</label><input class="input" value="2024-05"></div>
+            <div><label class="label">שם העובד/ת</label><input class="input" value="מיכל לוי"></div>
+            <div><label class="label">שם המעסיק</label><input class="input" value='מרכז ורדים בע"מ'></div>
+            <div><label class="label">תאריך תחילת עבודה</label><input class="input" value="2021-03-01"></div>
+            <div><label class="label">ותק (חודשים)</label><input class="input" type="number" value="38"></div>
+            <div><label class="label">היקף משרה (%)</label><input class="input" type="number" value="100"></div>
+          </div>
+        </div>
+
+        <div class="card p5">
+          <h3 style="margin-bottom:12px">שכר ושעות</h3>
+          <div class="grid g3">
+            <div><label class="label">ברוטו (₪)</label><input class="input" type="number" value="9240"></div>
+            <div><label class="label">נטו (₪)</label><input class="input" type="number" value="7612"></div>
+            <div><label class="label">שכר יסוד (₪)</label><input class="input" type="number" value="6232"></div>
+            <div><label class="label">תעריף שעתי (₪)</label><input class="input" type="number" value="34.2"></div>
+            <div><label class="label">שעות עבודה</label><input class="input" type="number" value="182"></div>
+            <div><label class="label">ימי עבודה</label><input class="input" type="number" value="21"></div>
+            <div><label class="label">יתרת חופשה (ימים)</label><input class="input" type="number" value="9.5"></div>
+            <div><label class="label">יתרת מחלה (ימים)</label><input class="input" type="number" value="24"></div>
+          </div>
+        </div>
+
+        <div class="card p5">
+          <h3 style="margin-bottom:12px">רכיבי תשלום</h3>
+          <div class="space-sm">
+            <div class="rowline"><div class="grow"><input class="input" value="שכר יסוד"></div><select class="input" style="width:140px"><option>שכר יסוד</option></select><input class="input" style="width:80px" value="182"><input class="input" style="width:96px" value="34.2"><input class="input" style="width:112px" value="6232"><button class="btn btn-danger btn-sm">✕</button></div>
+            <div class="rowline"><div class="grow"><input class="input" value="שעות נוספות 125%"></div><select class="input" style="width:140px"><option>ש"נ 125%</option></select><input class="input" style="width:80px" value="12"><input class="input" style="width:96px" value="39.00"><input class="input" style="width:112px" value="468"><button class="btn btn-danger btn-sm">✕</button></div>
+            <div class="rowline"><div class="grow"><input class="input" value="נסיעות"></div><select class="input" style="width:140px"><option>נסיעות</option></select><input class="input" style="width:80px" value="21"><input class="input" style="width:96px" value="12.5"><input class="input" style="width:112px" value="263"><button class="btn btn-danger btn-sm">✕</button></div>
+            <div class="rowline"><div class="grow"><input class="input" value="דמי הבראה"></div><select class="input" style="width:140px"><option>הבראה</option></select><input class="input" style="width:80px" placeholder="כמות"><input class="input" style="width:96px" placeholder="תעריף"><input class="input" style="width:112px" value="0"><button class="btn btn-danger btn-sm">✕</button></div>
+            <button class="btn btn-ghost btn-sm">+ הוספת שורה</button>
+          </div>
+        </div>
+
+        <div class="card p5">
+          <h3 style="margin-bottom:12px">ניכויים</h3>
+          <div class="space-sm">
+            <div class="rowline"><div class="grow"><input class="input" value="מס הכנסה"></div><select class="input" style="width:140px"><option>מס הכנסה</option></select><input class="input" style="width:112px" value="612"><button class="btn btn-danger btn-sm">✕</button></div>
+            <div class="rowline"><div class="grow"><input class="input" value="ביטוח לאומי"></div><select class="input" style="width:140px"><option>ביטוח לאומי</option></select><input class="input" style="width:112px" value="392"><button class="btn btn-danger btn-sm">✕</button></div>
+            <div class="rowline"><div class="grow"><input class="input" value="פנסיה (עובד)"></div><select class="input" style="width:140px"><option>פנסיה (עובד)</option></select><input class="input" style="width:112px" value="374"><button class="btn btn-danger btn-sm">✕</button></div>
+            <button class="btn btn-ghost btn-sm">+ הוספת שורה</button>
+          </div>
+        </div>
+
+        <div class="card p5">
+          <h3 style="margin-bottom:12px">הפרשות מעסיק</h3>
+          <div class="space-sm">
+            <div class="rowline"><div class="grow"><input class="input" value="פנסיה מעסיק (תגמולים)"></div><select class="input" style="width:180px"><option>פנסיה מעסיק (תגמולים)</option></select><input class="input" style="width:112px" value="374"><button class="btn btn-danger btn-sm">✕</button></div>
+            <div class="rowline"><div class="grow"><input class="input" value="פיצויים"></div><select class="input" style="width:180px"><option>פיצויים</option></select><input class="input" style="width:112px" value="374"><button class="btn btn-danger btn-sm">✕</button></div>
+            <button class="btn btn-ghost btn-sm">+ הוספת שורה</button>
+          </div>
+        </div>
+
+        <div class="card p5">
+          <h3 style="margin-bottom:12px">נתוני נוכחות</h3>
+          <div class="grid g3">
+            <div><label class="label">חודש נוכחות</label><input class="input" value="2024-05"></div>
+            <div><label class="label">סה"כ שעות</label><input class="input" type="number" value="194"></div>
+            <div><label class="label">סה"כ ימים</label><input class="input" type="number" value="21"></div>
+          </div>
+          <p class="txt-xs muted" style="margin-top:8px">זוהו 21 ימי נוכחות מפורטים.</p>
+        </div>
+
+        <div class="flex" style="justify-content:flex-end;position:sticky;bottom:16px">
+          <button class="btn btn-primary btn-lg" style="box-shadow:0 8px 20px rgba(26,92,245,.25)" onclick="runCheck()">שמירה והרצת בדיקה</button>
+        </div>
+      </div>
+
+      <!-- step: questions -->
+      <div id="w-questions" class="wstep space hidden">
+        <div class="banner">כדי לדייק את הבדיקה, חסרים כמה פרטים. המענה עליהם אינו חובה — ניתן לדלג ולראות את התוצאות הראשוניות.</div>
+        <div class="card p4">
+          <label class="bold" style="display:block;margin-bottom:4px">האם קיים הסכם עבודה אישי הקובע שיעור הפרשה לפנסיה גבוה מצו ההרחבה?</label>
+          <p class="txt-xs muted" style="margin-bottom:8px">רלוונטי לבדיקת תקינות תגמולי המעסיק.</p>
+          <div class="flex gap2"><button class="btn btn-ghost btn-sm">כן</button><button class="btn btn-primary btn-sm">לא</button></div>
+        </div>
+        <div class="card p4">
+          <label class="bold" style="display:block;margin-bottom:4px">האם שולמו דמי הבראה בחודש אחר במהלך השנה?</label>
+          <p class="txt-xs muted" style="margin-bottom:8px">דמי הבראה משולמים לרוב פעם בשנה (בקיץ). המענה מונע ממצא שגוי.</p>
+          <div class="flex gap2"><button class="btn btn-ghost btn-sm">כן</button><button class="btn btn-ghost btn-sm">לא</button><button class="btn btn-ghost btn-sm">לא ידוע</button></div>
+        </div>
+        <div class="flex justify-between">
+          <button class="btn btn-ghost" onclick="goStep('results')">דילוג לתוצאות</button>
+          <button class="btn btn-primary" onclick="goStep('results')">עדכון הבדיקה</button>
+        </div>
+      </div>
+
+      <!-- step: results -->
+      <div id="w-results" class="wstep space hidden">
+        <div id="result-summary-slot"></div>
+        <div class="flex gap3 wrapf">
+          <button class="btn btn-primary" data-nav="report">לדוח המפורט ←</button>
+          <button class="btn btn-ghost" onclick="goStep('questions')">שאלות השלמה</button>
+          <button class="btn btn-ghost" data-nav="compare">השוואה לתלושים קודמים</button>
+        </div>
+        <h2 style="margin-top:8px">ממצאים מרכזיים</h2>
+        <div id="findings-slot" class="space-sm"></div>
+      </div>
+    </section>
+
+    <!-- ========== REPORT ========== -->
+    <section id="s-report" class="screen space hidden">
+      <div class="flex items-center justify-between">
+        <button class="btn btn-ghost btn-sm" data-nav="wizard">← חזרה לבדיקה</button>
+        <button class="btn btn-primary btn-sm" onclick="window.print()">הורדה / הדפסה כ-PDF</button>
+      </div>
+      <div style="border-bottom:1px solid var(--gray-200);padding-bottom:16px">
+        <div class="flex items-center justify-between wrapf gap3">
+          <div><h1>דוח בדיקת תלוש שכר</h1><p class="muted txt-sm" style="margin-top:4px">תלוש מאי 2024 · מאי 2024 · מרכז ורדים בע"מ</p></div>
+          <div class="txt-xs muted" style="text-align:left"><div>הופק בתאריך 17 בספטמבר 2026</div><div>בדיקת תלוש שכר</div></div>
+        </div>
+      </div>
+
+      <div class="card p5">
+        <div class="flex items-center gap3"><span class="sevdot dot-warning" style="margin-top:0;height:12px;width:12px"></span><span class="bold" style="font-size:1.05rem">נמצאו 3 נקודות לבדיקה</span></div>
+        <div class="grid g4" style="margin-top:16px">
+          <div class="p3" style="border-radius:12px;border:1px solid var(--gray-200)"><div class="txt-xs muted">ליקויים</div><div class="b700" style="font-size:1.15rem;color:var(--red-700)">1</div></div>
+          <div class="p3" style="border-radius:12px;border:1px solid var(--gray-200)"><div class="txt-xs muted">לבדיקה</div><div class="b700" style="font-size:1.15rem;color:var(--amber-700)">2</div></div>
+          <div class="p3" style="border-radius:12px;border:1px solid var(--gray-200)"><div class="txt-xs muted">פער כספי משוער</div><div class="b700" style="font-size:1.15rem;color:var(--amber-700)">‏₪‎294.00</div></div>
+          <div class="p3" style="border-radius:12px;border:1px solid var(--gray-200)"><div class="txt-xs muted">פער בוודאות גבוהה</div><div class="b700" style="font-size:1.15rem;color:var(--red-700)">‏₪‎45.00</div></div>
+        </div>
+        <p class="txt-xs muted" style="margin-top:12px">הפער הכספי הוא אומדן המבוסס על הנתונים שהוזנו. סכומים בוודאות גבוהה מבוססים על נתונים מלאים; היתר אומדנים.</p>
+      </div>
+
+      <div class="card p5">
+        <h2 style="margin-bottom:12px">נתוני התלוש שנבדקו</h2>
+        <div class="grid g3 txt-sm" id="report-info"></div>
+      </div>
+
+      <div id="report-findings" class="space"></div>
+
+      <div class="card p4 txt-xs muted">
+        דוח זה מבוסס על הנתונים שהוזנו ועל פרמטרים משפטיים כלליים. חלק מהערכים (שכר מינימום, ערך יום הבראה, מדרגות מס, תקרות) מתעדכנים מעת לעת. הממצאים הם כלי עזר לבדיקה ראשונית ואינם מהווים ייעוץ משפטי מחייב; לפני נקיטת פעולה יש לאמת מול המקורות הרשמיים ואיש מקצוע.
+      </div>
+    </section>
+
+    <!-- ========== HISTORY ========== -->
+    <section id="s-history" class="screen space hidden">
+      <div class="flex items-center justify-between wrapf gap3">
+        <h1>היסטוריית בדיקות</h1>
+        <button class="btn btn-primary" data-nav="new">בדיקה חדשה</button>
+      </div>
+      <input class="input" placeholder="חיפוש לפי שם, מעסיק, חודש או תיאור…">
+      <div class="space-sm" id="history-list"></div>
+    </section>
+
+    <!-- ========== CLIENTS ========== -->
+    <section id="s-clients" class="screen space hidden">
+      <div class="flex items-center justify-between wrapf gap3">
+        <h1>לקוחות</h1>
+        <button class="btn btn-primary btn-sm">+ לקוח/ה חדש/ה</button>
+      </div>
+      <p class="muted txt-sm">כרטיס לכל לקוח/ה עם הגדרות קבועות (תנאי העסקה, זכאויות, הסכם אישי) שממולאות אוטומטית בכל בדיקה חדשה.</p>
+      <div class="space-sm" id="clients-list"></div>
+    </section>
+
+    <!-- ========== COMPARE ========== -->
+    <section id="s-compare" class="screen space hidden">
+      <div class="flex items-center justify-between wrapf gap3">
+        <h1>השוואת תלושים לאורך זמן</h1>
+        <button class="btn btn-ghost btn-sm" data-nav="history">להיסטוריה</button>
+      </div>
+      <p class="muted txt-sm">בחרו שתי בדיקות או יותר כדי להשוות שכר, שעות וממצאים לאורך החודשים ולזהות מגמות.</p>
+      <div class="card p4" id="compare-picker"></div>
+      <button class="btn btn-primary" onclick="document.getElementById('compare-results').classList.remove('hidden')">השוואה (3)</button>
+      <div id="compare-results" class="space">
+        <div class="grid g3">
+          <div class="card p4"><div class="txt-xs muted">מגמת ברוטו</div><div class="b700 trend-up" style="font-size:1.15rem">▲ ‏₪‎610.00</div></div>
+          <div class="card p4"><div class="txt-xs muted">מגמת נטו</div><div class="b700 trend-up" style="font-size:1.15rem">▲ ‏₪‎488.00</div></div>
+          <div class="card p4"><div class="txt-xs muted">סך פער כספי משוער (כל התלושים)</div><div class="b700" style="font-size:1.15rem;color:var(--amber-700)">‏₪‎742.00</div></div>
+        </div>
+        <div class="card" style="overflow:auto">
+          <table>
+            <thead><tr><th>חודש</th><th>מעסיק</th><th>ברוטו</th><th>נטו</th><th>תעריף שעתי</th><th>שעות</th><th>ממצאים</th><th>פער משוער</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--brand-700)">מרץ 2024</td><td>מרכז ורדים בע"מ</td><td>‏₪‎8,630.00</td><td>‏₪‎7,124.00</td><td>‏₪‎34.20</td><td>178</td><td>2</td><td>‏₪‎210.00</td></tr>
+              <tr><td style="color:var(--brand-700)">אפריל 2024</td><td>מרכז ורדים בע"מ</td><td>‏₪‎8,910.00</td><td>‏₪‎7,340.00</td><td>‏₪‎34.20</td><td>176</td><td>2</td><td>‏₪‎238.00</td></tr>
+              <tr><td style="color:var(--brand-700)">מאי 2024</td><td>מרכז ורדים בע"מ</td><td>‏₪‎9,240.00</td><td>‏₪‎7,612.00</td><td>‏₪‎34.20</td><td>182</td><td>3</td><td>‏₪‎294.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SETTINGS ========== -->
+    <section id="s-settings" class="screen space hidden">
+      <h1>האזור האישי</h1>
+      <p class="muted txt-sm">שם להצגה והגדרות קבועות (תנאי העסקה, זכאויות, הסכם אישי) שממולאות אוטומטית בכל בדיקה חדשה, כדי לא להזין אותן בכל פעם.</p>
+      <div class="card p5 space">
+        <div><label class="label">שם להצגה</label><input class="input" value="מיכל לוי"></div>
+        <div class="grid g2">
+          <div><label class="label">היקף משרה קבוע (%)</label><input class="input" type="number" value="100"></div>
+          <div><label class="label">תאריך תחילת עבודה</label><input class="input" value="2021-03-01"></div>
+        </div>
+        <div class="grid g2">
+          <label class="flex items-center gap2 txt-sm"><input type="checkbox" checked> זכאות לקרן השתלמות</label>
+          <label class="flex items-center gap2 txt-sm"><input type="checkbox" checked> זכאות לדמי הבראה</label>
+        </div>
+        <button class="btn btn-primary" style="align-self:flex-start">שמירת הגדרות</button>
+      </div>
+    </section>
+
+    <!-- ========== ADMIN USAGE ========== -->
+    <section id="s-usage" class="screen space hidden">
+      <div class="flex items-center gap2 wrapf" style="font-size:.85rem">
+        <button class="btn btn-primary btn-sm">שימוש ועלויות</button>
+        <button class="btn btn-ghost btn-sm">ניהול משתמשים</button>
+        <button class="btn btn-ghost btn-sm">הגדרות AI / OCR</button>
+        <button class="btn btn-ghost btn-sm">פרמטרים משפטיים</button>
+        <button class="btn btn-ghost btn-sm">יומן פעולות</button>
+      </div>
+      <h1>שימוש ועלויות</h1>
+      <p class="muted txt-sm">פעילות לכל משתמש: מספר בדיקות, מסמכים, אחסון ואומדן עלות לפי תעריפים הניתנים להגדרה. חילוץ מבוסס AI רושם איזה מודל ניתח כל מסמך וכמה עלה.</p>
+      <div class="grid g4">
+        <div class="card p4"><div class="txt-xs muted">בדיקות החודש</div><div class="b700" style="font-size:1.4rem">142</div></div>
+        <div class="card p4"><div class="txt-xs muted">מסמכים שנותחו</div><div class="b700" style="font-size:1.4rem">318</div></div>
+        <div class="card p4"><div class="txt-xs muted">אחסון מוצפן</div><div class="b700" style="font-size:1.4rem">0.6GB</div></div>
+        <div class="card p4"><div class="txt-xs muted">אומדן עלות</div><div class="b700" style="font-size:1.4rem">‏₪‎205.60</div></div>
+      </div>
+      <div class="card" style="overflow:auto">
+        <table>
+          <thead><tr><th>משתמש/ת</th><th>תפקיד</th><th>בדיקות</th><th>מסמכים</th><th>מודל אחרון</th><th>עלות משוערת</th><th>פעילות אחרונה</th></tr></thead>
+          <tbody>
+            <tr><td>מיכל לוי</td><td><span class="chip chip-gray">עובד</span></td><td>6</td><td>11</td><td>gemini-2.0-flash</td><td>‏₪‎7.20</td><td>היום</td></tr>
+            <tr><td>רו"ח דנה כ.</td><td><span class="chip badge-info">איש מקצוע</span></td><td>88</td><td>203</td><td>claude-opus-5</td><td>‏₪‎132.60</td><td>אתמול</td></tr>
+            <tr><td>אבי מ.</td><td><span class="chip chip-gray">עובד</span></td><td>3</td><td>5</td><td>gemini-2.0-flash</td><td>‏₪‎3.40</td><td>לפני 3 ימים</td></tr>
+            <tr><td>יועצת שכר — ליאת</td><td><span class="chip badge-info">איש מקצוע</span></td><td>45</td><td>99</td><td>gpt-4o-mini</td><td>‏₪‎62.40</td><td>לפני שבוע</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p class="fnote">המערכת מספקת בדיקה ראשונית ואינה מהווה ייעוץ משפטי. הממצאים הם כלי עזר; יש לאמת מול המקורות הרשמיים ואיש מקצוע לפני נקיטת פעולה.</p>
+      <p class="fnote">המסמכים נשמרים מוצפנים וניתן למחוק אותם בכל עת ממסך הבדיקה.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="demo-tag"><span class="rec"></span>תצוגת דמו · נתונים לדוגמה</div>
+
+<script>
+/* ============ demo data (example only) ============ */
+var ILS = function(n){ return new Intl.NumberFormat("he-IL",{style:"currency",currency:"ILS",maximumFractionDigits:2}).format(n); };
+
+var FINDINGS = [
+  { sev:"error", conf:"ודאות גבוהה", title:"תעריף שעה נוספת (125%) נמוך מהנדרש",
+    msg:'תעריף השעה הנוספת (‏₪‎39.00) נמוך מ־125% מהתעריף הרגיל.',
+    actual:"‏₪‎39.00", expected:"‏₪‎42.75 (125% מ־‏₪‎34.20)", gap:"‏₪‎3.75",
+    money:{actual:468, computed:513, gap:45, certainty:"ודאות גבוהה"},
+    expl:"שעתיים נוספות ראשונות מזכות ב־125% לפחות מהתעריף הרגיל.",
+    src:"חוק שעות עבודה ומנוחה, התשי״א-1951" },
+  { sev:"warning", conf:"ודאות בינונית", title:"פער בהפרשות פנסיה (תגמולי מעסיק)",
+    msg:"שיעור תגמולי המעסיק שזוהה נמוך מהמתחייב בצו ההרחבה לפנסיה חובה.",
+    actual:"6.0% (‏₪‎374)", expected:"6.5% (‏₪‎405)", gap:"‏₪‎31 לחודש",
+    money:{actual:374, computed:405, gap:31, certainty:"אומדן"},
+    expl:"צו ההרחבה לפנסיה חובה קובע תגמולי מעסיק של 6.5% לפחות מהשכר המבוטח. הפער תלוי בהגדרת השכר המבוטח ולכן זהו אומדן.",
+    src:"צו הרחבה [נוסח משולב] לפנסיה חובה — 2017 ואילך" },
+  { sev:"warning", conf:"ודאות בינונית", title:"לא זוהה תשלום דמי הבראה",
+    msg:"לא זוהה רכיב דמי הבראה בתלוש. ייתכן שישולם בחודש אחר במהלך השנה.",
+    actual:"לא זוהה רכיב הבראה", expected:"6 ימים × ‏₪‎418 = ‏₪‎2,508 לשנה", gap:"≈ ‏₪‎209 לחודש",
+    money:{actual:0, computed:2508, gap:209, certainty:"אומדן"},
+    expl:"לפי הוותק (3 שנים) מגיעים 6 ימי הבראה בשנה במגזר הפרטי. דמי הבראה משולמים לרוב פעם בשנה, ולכן נדרש אימות מול יתר חודשי השנה.",
+    src:"צו הרחבה בדבר תשלום דמי הבראה — מגזר פרטי" },
+  { sev:"ok", conf:"ודאות גבוהה", title:"עמידה בשכר מינימום",
+    msg:"התעריף השעתי (‏₪‎34.20) עומד בשכר המינימום (‏₪‎32.31).",
+    actual:"‏₪‎34.20 לשעה", expected:"לפחות ‏₪‎32.31 לשעה", gap:"",
+    money:null, expl:"התעריף השעתי בפועל שווה או גבוה משכר המינימום התקף לחודש התלוש.",
+    src:"חוק שכר מינימום — עדכון אפריל 2024" },
+  { sev:"ok", conf:"ודאות בינונית", title:"החזר נסיעות בגבולות הסביר",
+    msg:"רכיב הנסיעות שזוהה תואם החזר יומי סביר לפי ימי העבודה.",
+    actual:"‏₪‎263 (21 ימים)", expected:"עד תקרת ההחזר היומית", gap:"",
+    money:null, expl:"סכום ההחזר לחודש מתחלק לימי עבודה בגבול התקרה שבצו ההרחבה. יש לאמת מול עלות הנסיעה בפועל.",
+    src:"צו הרחבה בדבר השתתפות המעסיק בהוצאות נסיעה" }
+];
+
+var SEV_LABEL = { error:"ליקוי", warning:"לבדיקה", info:"מידע", ok:"תקין" };
+
+function findingCard(f, open){
+  var money = "";
+  if(f.money){
+    money = '<div class="money" style="margin-top:12px"><div class="bold" style="margin-bottom:4px">משמעות כספית</div>'
+      + '<div class="flex wrapf" style="gap:4px 24px">'
+      + '<span>בפועל: '+ILS(f.money.actual)+'</span>'
+      + '<span>מחושב: '+ILS(f.money.computed)+'</span>'
+      + '<span class="bold" style="color:var(--brand-700)">פער משוער: '+ILS(f.money.gap)+'</span>'
+      + '<span class="chip" style="background:var(--gray-200);color:var(--gray-700)">'+f.money.certainty+'</span>'
+      + '</div></div>';
+  }
+  var details = (f.actual||f.expected||f.gap) ?
+      '<div class="grid g3 txt-sm" style="margin-top:4px">'
+      + '<div><div class="detail-lbl">בפועל</div><div>'+(f.actual||"—")+'</div></div>'
+      + '<div><div class="detail-lbl">צפוי</div><div>'+(f.expected||"—")+'</div></div>'
+      + '<div><div class="detail-lbl">פער</div><div class="'+(f.sev!=="ok"?"bold":"")+'">'+(f.gap||"—")+'</div></div>'
+      + '</div>' : "";
+  return '<div class="finding '+f.sev+'">'
+    + '<button onclick="this.parentNode.querySelector(\'.body\').classList.toggle(\'hidden\');var a=this.querySelector(\'.arw\');a.textContent=a.textContent===\'▲\'?\'▼\':\'▲\'">'
+    +   '<span class="sevdot dot-'+f.sev+'"></span>'
+    +   '<div style="flex:1;min-width:0">'
+    +     '<div class="flex items-center wrapf gap2"><span class="bold">'+f.title+'</span>'
+    +       '<span class="chip badge-'+f.sev+'">'+SEV_LABEL[f.sev]+'</span>'
+    +       '<span class="chip chip-gray">'+f.conf+'</span></div>'
+    +     '<p class="muted txt-sm" style="margin:4px 0 0">'+f.msg+'</p>'
+    +   '</div>'
+    +   '<span class="arw muted txt-sm">'+(open?"▲":"▼")+'</span>'
+    + '</button>'
+    + '<div class="body '+(open?"":"hidden")+'">'
+    +   details + money
+    +   '<div class="txt-sm" style="margin-top:12px"><span class="bold">הסבר: </span>'+f.expl+'</div>'
+    +   '<div class="txt-xs muted" style="margin-top:6px">מקור: '+f.src+'</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function summaryCard(){
+  return '<div class="summary warn">'
+    + '<div class="flex items-center gap3"><div class="icon">!</div>'
+    + '<div><div class="b700" style="font-size:1.4rem">התלוש דורש בדיקה</div>'
+    + '<div class="muted">נמצאו 3 ממצאים מרכזיים (1 ליקויים).</div></div></div>'
+    + '<div class="grid g2" style="margin-top:16px">'
+    + '<div class="p3" style="border-radius:12px;background:rgba(255,255,255,.7);border:1px solid var(--amber-200)"><div class="txt-xs muted">סך פער כספי משוער (כולל אומדנים)</div><div class="b700" style="font-size:1.25rem;color:var(--amber-700)">‏₪‎294.00</div></div>'
+    + '<div class="p3" style="border-radius:12px;background:rgba(255,255,255,.7);border:1px solid var(--em-200)"><div class="txt-xs muted">מתוכו בוודאות גבוהה</div><div class="b700" style="font-size:1.25rem;color:var(--em-700)">‏₪‎45.00</div></div>'
+    + '</div></div>';
+}
+
+/* history + clients + compare data */
+var HISTORY = [
+  { label:"תלוש מאי 2024", sub:'מאי 2024 · מרכז ורדים בע"מ · ת"ז ••••4821', tag:"3 ממצאים", tone:"warn" },
+  { label:"תלוש אפריל 2024", sub:'אפריל 2024 · מרכז ורדים בע"מ · ת"ז ••••4821', tag:"2 ממצאים", tone:"warn" },
+  { label:"תלוש מרץ 2024", sub:'מרץ 2024 · מרכז ורדים בע"מ · ת"ז ••••4821', tag:"2 ממצאים", tone:"warn" },
+  { label:"בדיקה עבור רות א.", sub:'פברואר 2024 · סטודיו גל', tag:"תקין", tone:"ok" },
+  { label:"תלוש ינואר 2024", sub:'ינואר 2024 · מרכז ורדים בע"מ', tag:"חולצו נתונים", tone:"gray" }
+];
+var CLIENTS = [
+  { name:"רות א.", emp:"מרכז ורדים בע\"מ", note:"משרה מלאה · זכאית לקרן השתלמות" },
+  { name:"דנה כ.", emp:"סטודיו גל", note:"80% משרה · הסכם אישי" },
+  { name:"אבי מ.", emp:"טכנולוגיות שדה בע\"מ", note:"שכר שעתי · ללא הבראה בתלוש" }
+];
+
+function toneChip(t){ return t==="ok"?"badge-ok":t==="warn"?"badge-warning":"chip-gray"; }
+
+function renderAll(){
+  /* wizard results */
+  document.getElementById("result-summary-slot").innerHTML = summaryCard();
+  document.getElementById("findings-slot").innerHTML = FINDINGS.map(function(f,i){return findingCard(f, f.sev==="error");}).join("");
+
+  /* report */
+  document.getElementById("report-findings").innerHTML =
+    '<div class="space-sm"><h2 class="flex items-center gap2">שעות נוספות <span class="chip chip-gray">1</span></h2>'
+    + findingCard(FINDINGS[0], true) + '</div>'
+    + '<div class="space-sm"><h2 class="flex items-center gap2">פנסיה <span class="chip chip-gray">1</span></h2>'
+    + findingCard(FINDINGS[1], true) + '</div>'
+    + '<div class="space-sm"><h2 class="flex items-center gap2">זכויות ותשלומים <span class="chip chip-gray">1</span></h2>'
+    + findingCard(FINDINGS[2], true) + '</div>'
+    + '<div class="space-sm"><h2 class="flex items-center gap2">שכר מינימום ונסיעות <span class="chip chip-gray">2</span></h2>'
+    + findingCard(FINDINGS[3], true) + findingCard(FINDINGS[4], true) + '</div>';
+
+  var info = [["עובד/ת","מיכל לוי"],["מעסיק",'מרכז ורדים בע"מ'],["חודש","מאי 2024"],
+    ["ברוטו","‏₪‎9,240.00"],["נטו","‏₪‎7,612.00"],["תעריף שעתי","‏₪‎34.20"],
+    ["שעות","182"],["ימים","21"],["יתרת חופשה","9.5"]];
+  document.getElementById("report-info").innerHTML = info.map(function(p){
+    return '<div class="flex justify-between" style="border-bottom:1px solid var(--gray-100);padding:4px 0"><span class="muted">'+p[0]+'</span><span class="bold">'+p[1]+'</span></div>';
+  }).join("");
+
+  /* history */
+  document.getElementById("history-list").innerHTML = HISTORY.map(function(h){
+    return '<div class="card list-item" style="cursor:pointer" data-nav="report">'
+      + '<div style="min-width:0"><div class="bold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+h.label+'</div>'
+      + '<div class="muted txt-sm" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+h.sub+'</div></div>'
+      + '<span class="chip '+toneChip(h.tone)+'" style="flex:none">'+h.tag+'</span></div>';
+  }).join("");
+
+  /* clients */
+  document.getElementById("clients-list").innerHTML = CLIENTS.map(function(c){
+    return '<div class="card list-item"><div><div class="bold">'+c.name+' <span class="muted" style="font-weight:400">— '+c.emp+'</span></div>'
+      + '<div class="muted txt-sm">'+c.note+'</div></div>'
+      + '<div class="flex gap2"><button class="btn btn-ghost btn-sm" data-nav="new">בדיקה חדשה</button><button class="btn btn-ghost btn-sm">עריכה</button></div></div>';
+  }).join("");
+
+  /* compare picker */
+  document.getElementById("compare-picker").innerHTML = HISTORY.slice(0,4).map(function(h,i){
+    return '<label class="flex items-center gap3" style="padding:4px 0;cursor:pointer"><input type="checkbox" '+(i<3?"checked":"")+' style="height:16px;width:16px"><span style="flex:1">'+h.label+' <span class="muted txt-sm">· '+h.sub.split(" · ")[0]+'</span></span></label>';
+  }).join("");
+}
+
+/* ============ navigation ============ */
+var SCREENS = ["home","new","wizard","report","history","clients","compare","settings","usage"];
+function show(name){
+  SCREENS.forEach(function(s){ document.getElementById("s-"+s).classList.toggle("hidden", s!==name); });
+  if(name==="wizard"){ goStep(currentStep||"upload"); }
+  window.scrollTo(0,0);
+}
+document.addEventListener("click", function(e){
+  var t = e.target.closest("[data-nav]");
+  if(t){ e.preventDefault(); show(t.getAttribute("data-nav")); }
+});
+
+function setMode(m){
+  document.getElementById("mode-employee").classList.toggle("active", m==="employee");
+  document.getElementById("mode-pro").classList.toggle("active", m==="professional");
+  document.getElementById("client-block").classList.toggle("hidden", m!=="professional");
+}
+
+/* ============ wizard stepper ============ */
+var STEPS = [["upload","העלאת מסמכים"],["verify","אימות נתונים"],["questions","שאלות השלמה"],["results","תוצאות"]];
+var currentStep = "upload";
+var maxReached = 0;
+function goStep(key){
+  currentStep = key;
+  var idx = STEPS.findIndex(function(s){return s[0]===key;});
+  if(idx>maxReached) maxReached = idx;
+  STEPS.forEach(function(s){ document.getElementById("w-"+s[0]).classList.toggle("hidden", s[0]!==key); });
+  renderStepper();
+  window.scrollTo(0,0);
+}
+function renderStepper(){
+  var idx = STEPS.findIndex(function(s){return s[0]===currentStep;});
+  document.getElementById("stepper").innerHTML = STEPS.map(function(s,i){
+    var cls = i===idx ? "active" : (i<idx ? "done" : "");
+    var reachable = i<=maxReached;
+    var inner = '<span class="dot">'+(i<idx?"✓":(i+1))+'</span><span>'+s[1]+'</span>';
+    var btn = '<button class="step '+cls+'" '+(reachable?'onclick="goStep(\''+s[0]+'\')"':'disabled style="cursor:default"')+'>'+inner+'</button>';
+    return btn + (i<STEPS.length-1 ? '<span class="step-sep">—</span>' : '');
+  }).join("");
+}
+function runCheck(){
+  var btn = event.target; btn.textContent = "מריץ בדיקה…"; btn.disabled = true;
+  setTimeout(function(){ btn.textContent = "שמירה והרצת בדיקה"; btn.disabled=false; goStep("questions"); }, 700);
+}
+
+renderAll();
+renderStepper();
+show("home");
+</script>
+</body>
+</html>

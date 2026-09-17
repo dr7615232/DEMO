@@ -172,3 +172,43 @@ the delivered voucher, and settings. Open it in a browser (no build step). Uses 
 > All donors, emails, partner locations, amounts, and voucher numbers are examples. Before making
 > anything public, review the anonymization checklist in
 > [`voucher-automation/docs/README.md`](./voucher-automation/docs/README.md).
+
+---
+
+### 🧾 [Payslip Check (בדיקת תלוש שכר)](./payslip/) — automated Israeli payslip auditing in plain Hebrew
+
+A Hebrew-RTL web application that tells a person whether their Israeli payslip is correct. The user
+uploads a payslip (PDF or image), optionally an attendance report and a contract; the system extracts
+the data, shows it for verification, and runs a **rules engine grounded in Israeli labour law and
+extension orders**. It returns a clear verdict, valid or needs review, with per-finding legal source,
+confidence level, plain-language explanation, and an estimated monetary gap (split into high-certainty
+vs. estimate). One codebase serves two audiences: a private employee, and a payroll professional with
+per-client setting cards.
+
+**Stack:** Next.js 14 (App Router, React 18) · TypeScript · Tailwind · PostgreSQL (with a file-based
+fallback) · Supabase Auth · pdf-parse / tesseract.js / multi-provider AI extraction (Gemini · OpenAI ·
+Anthropic) · Zod · Vitest · GitHub Actions
+
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/EhcaNPusrQKdZjJ5EkGEjD
+- 🧾 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/JiYZ78FcF8Kb3GWsyr6YN1
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+Start with **[`payslip/docs/README.md`](./payslip/docs/README.md)** for the full index, or jump to
+the **[case study](./payslip/docs/case-study.md)**.
+
+**📄 Project page (Hebrew):** [`payslip/site/index.html`](./payslip/site/index.html) — a designed,
+RTL Hebrew case-study page (cream/olive/lime style) telling the project story: the problem, the
+automatic check, and the result, with a link to the live demo. Open it in a browser (no build).
+
+**🧾 Interactive UI demo:** [`payslip/demo/index.html`](./payslip/demo/index.html) — a faithful,
+self-contained reconstruction of the real system's screens in Hebrew (RTL) with demo data: home,
+new check, the four-step wizard (upload, verify, follow-up questions, results), the detailed report,
+history, comparison, client cards, settings, and the admin usage & cost screen. Open it in a browser
+(no build step). Uses example data only — no real payslips or people.
+
+> ℹ️ These are portfolio materials describing a working application. All names, employers, amounts,
+> and legal parameter values are examples (several legal values are marked "to verify" in the code),
+> and the tool provides a preliminary check, not legal advice. Before making anything public, review
+> the anonymization checklist in [`payslip/docs/README.md`](./payslip/docs/README.md).

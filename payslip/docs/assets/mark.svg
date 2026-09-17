@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="בדיקת תלוש שכר">
+  <rect width="120" height="120" rx="28" fill="#1a5cf5"/>
+  <text x="60" y="60" text-anchor="middle" dominant-baseline="central"
+        font-family="Rubik, system-ui, Arial, sans-serif" font-size="62" font-weight="700" fill="#ffffff">₪</text>
+</svg>

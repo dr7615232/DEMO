@@ -1,0 +1,73 @@
+{
+  "slug": "payslip",
+  "name": "Payslip Check",
+  "nameHebrew": "בדיקת תלוש שכר",
+  "tagline": "Automated Israeli payslip auditing in plain Hebrew",
+  "oneLiner": "A Hebrew, RTL web system that reads a payslip, extracts its data, runs it through a rules engine based on Israeli labour law and extension orders, and returns a clear verdict — valid or needs review — with per-finding explanations and estimated monetary gaps.",
+  "role": "Full-stack engineer & system designer (sole developer)",
+  "status": "Working application / portfolio reconstruction",
+  "year": 2026,
+  "language": "Hebrew (RTL)",
+  "audience": "Private employees checking their own payslip, and payroll professionals checking clients' payslips",
+  "clientType": "Consumer / professional tool (dual-mode)",
+  "confidential": false,
+  "repositoryVisibility": "private",
+  "metrics": {
+    "linesOfTsx": 12958,
+    "sourceFiles": 144,
+    "engineRules": 17,
+    "appPages": 18,
+    "apiRouteHandlers": 21,
+    "uiComponents": 9,
+    "testFiles": 16,
+    "storeBackends": 2
+  },
+  "stack": {
+    "frontend": ["Next.js 14 (App Router)", "React 18", "TypeScript", "Tailwind CSS"],
+    "backend": ["Next.js Route Handlers", "PostgreSQL (pg)"],
+    "storage": ["File-based repository (dev / persistent-disk)", "PostgreSQL repository (JSONB + encrypted BYTEA)"],
+    "auth": ["Supabase Auth (Google / email-password)", "role model: admin / professional / employee"],
+    "extraction": ["pdf-parse (text-layer PDF)", "tesseract.js (local OCR)", "AI OCR + structured extraction (Gemini / OpenAI / Anthropic)"],
+    "validation": ["Zod"],
+    "security": ["AES-256-GCM document encryption at rest", "owner isolation", "ID masking"],
+    "testing": ["Vitest"],
+    "ci": ["GitHub Actions (typecheck, test, build)"]
+  },
+  "highlights": [
+    "Extensible rules engine: 17 independent rule modules, each returning findings and follow-up questions; adding a check is one file plus one registry line",
+    "Every finding carries actual vs. expected vs. gap, a legal source, a confidence level, an explanation, and an estimated monetary impact split into high-certainty vs. estimate",
+    "Honest by design: when data is insufficient the engine returns 'cannot determine' and asks one targeted follow-up question instead of asserting an error",
+    "Date-versioned legal parameters (minimum wage, convalescence day value, pension rates, travel caps) resolved by the payslip month, each tagged with an effectiveFrom and a confidence",
+    "Managed legal parameters editable in-app override the code constants, so yearly updates need no redeploy",
+    "Structured AI extraction returns the payslip as typed JSON directly, far more accurate than parsing raw text, with per-use model and cost logging",
+    "Runtime-selected storage: file repository or PostgreSQL chosen automatically by the presence of DATABASE_URL, behind one repository interface",
+    "Sensitive documents encrypted at rest with AES-256-GCM; owner isolation on every check; national-ID masking in list views",
+    "Four-step wizard (upload, verify, follow-up questions, results) with a manual verification screen so heuristic extraction errors never silently corrupt a check"
+  ],
+  "features": [
+    "Dual mode: private employee, or professional managing per-client setting cards auto-filled into new checks",
+    "Upload payslip (required) plus optional attendance report and employment contract",
+    "Automatic extraction with a manual verification/correction screen for every field and line",
+    "Rules covered: minimum wage, overtime (125%/150%/global), pension, convalescence, annual vacation, sick pay, severance accrual, holiday pay, contract bonus, study fund, income-tax sanity, split-rate, travel, teaching-sector degree & seniority, attendance cross-check, gross/net/deduction consistency",
+    "Detailed printable report grouped by category, saveable as PDF",
+    "Check history with search",
+    "Multi-payslip comparison across months with gross/net trends and total estimated gap",
+    "Personal settings and per-client setting cards for auto-fill",
+    "Admin: user management, view-as (read-only), audit log, AI/OCR settings, managed legal parameters, and a usage & cost screen per user and model",
+    "Optional AI anomaly scan layer on top of the deterministic rules"
+  ],
+  "engineeringDecisions": [
+    "Model each labour-law check as an independent Rule object behind a single RuleContext, so the domain grows by addition, not modification",
+    "Separate deterministic law parameters (date-versioned, confidence-tagged) from the rules that consume them",
+    "Prefer 'cannot determine' + a follow-up question over a false positive when inputs are incomplete",
+    "Abstract storage behind a repository interface with file and PostgreSQL implementations selected at runtime",
+    "Inject the OCR/extraction provider so the app degrades gracefully to manual entry when no provider is configured",
+    "Encrypt documents at rest and mask identifiers in the UI, treating payslips as sensitive personal data"
+  ],
+  "links": {
+    "projectPage": "https://claude.ai/artifact/EhcaNPusrQKdZjJ5EkGEjD",
+    "liveDemo": "https://claude.ai/artifact/JiYZ78FcF8Kb3GWsyr6YN1",
+    "repository": null,
+    "caseStudy": "case-study.md"
+  }
+}

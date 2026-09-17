@@ -154,21 +154,72 @@
   .choice.soldout{opacity:.55; cursor:not-allowed}
   .choice.soldout:hover{border-color:var(--line)}
 
-  /* voucher preview */
-  .voucher{max-width:520px; margin-inline:auto; background:#fff; border-radius:1.2rem; overflow:hidden; box-shadow:0 30px 70px -46px rgba(6,58,48,.7); border:1px solid var(--line)}
-  .voucher .vtop{background:linear-gradient(135deg,#c8892b,#a9741f); color:#fff; padding:1.5rem 1.6rem; position:relative}
-  .voucher .vtop small{font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; opacity:.85; font-weight:700}
-  .voucher .vtop h2{margin:.2rem 0 0; font-size:1.7rem; font-weight:900}
-  .voucher .vtop .brandtag{position:absolute; top:1.5rem; inset-inline-start:1.6rem; font-size:.8rem; font-weight:700; opacity:.9}
-  .voucher .vbody{padding:1.5rem 1.6rem}
-  .voucher .vrow{display:flex; justify-content:space-between; padding:.55rem 0; border-bottom:1px dashed var(--line); font-size:.9rem}
-  .voucher .vrow:last-of-type{border-bottom:0}
-  .voucher .vrow span{color:var(--muted)} .voucher .vrow b{color:var(--ink); font-weight:700}
-  .voucher .vcode{margin-top:1rem; text-align:center; background:#faf6ee; border:1px dashed var(--gold); border-radius:.8rem; padding:1rem}
-  .voucher .vcode small{display:block; font-size:.72rem; color:var(--muted); letter-spacing:.1em}
-  .voucher .vcode b{display:block; font-size:1.5rem; font-weight:900; color:var(--gold); letter-spacing:.14em; font-variant-numeric:tabular-nums; margin-top:.2rem}
-  .voucher .vfoot{padding:1rem 1.6rem 1.4rem; font-size:.76rem; color:var(--muted); text-align:center; border-top:1px solid var(--line)}
-  .emailhint{max-width:520px; margin:1rem auto 0; text-align:center; font-size:.82rem; color:var(--muted)}
+  /* ===== gift voucher — designed like a present ===== */
+  .giftwrap{max-width:540px; margin-inline:auto; padding:.4rem}
+  .voucher{position:relative; border-radius:1.5rem; overflow:hidden;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(255,255,255,.5), transparent 40%),
+      linear-gradient(155deg,#fffdf8 0%,#fbf3e3 42%,#f7ead0 100%);
+    box-shadow:0 40px 80px -44px rgba(120,80,15,.55), 0 2px 0 rgba(255,255,255,.7) inset;
+    border:1px solid #e7d7b3}
+  /* ornamental gold frame */
+  .voucher::before{content:""; position:absolute; inset:14px; border-radius:1.05rem;
+    border:1.5px solid rgba(200,137,43,.5);
+    box-shadow:0 0 0 1px rgba(255,255,255,.6) inset; pointer-events:none; z-index:3}
+  .voucher::after{content:""; position:absolute; inset:19px; border-radius:.85rem;
+    border:1px dashed rgba(200,137,43,.35); pointer-events:none; z-index:3}
+  /* subtle sheen */
+  .sheen{position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%)}
+
+  /* ribbon crossing the corner */
+  .ribbon{position:absolute; top:0; inset-inline-start:0; width:150px; height:150px; overflow:hidden; z-index:5; pointer-events:none}
+  .ribbon span{position:absolute; display:block; width:230px; padding:.4rem 0; text-align:center;
+    background:linear-gradient(135deg,#d89b3d,#b87d1f); color:#fff; font-size:.72rem; font-weight:800; letter-spacing:.14em;
+    box-shadow:0 6px 14px -6px rgba(120,80,15,.6); text-transform:uppercase;
+    inset-inline-start:-58px; top:34px; transform:rotate(-45deg)}
+
+  .vinner{position:relative; z-index:4; padding:2.6rem 2rem 1.4rem}
+  /* header: gift bow + brand + title */
+  .vhead{text-align:center; margin-bottom:1.2rem}
+  .vbow{font-size:2.4rem; line-height:1; filter:drop-shadow(0 6px 10px rgba(120,80,15,.3))}
+  .vbrandtag{margin-top:.5rem; font-size:.72rem; font-weight:800; letter-spacing:.14em; color:#a9741f; text-transform:uppercase}
+  .vkicker{margin-top:.9rem; font-size:.78rem; font-weight:700; letter-spacing:.34em; color:#b98a3a; text-transform:uppercase}
+  .vtitle{margin:.2rem 0 .1rem; font-size:1.05rem; font-weight:600; color:#7a5a1c}
+  .vplace{margin:.15rem 0 0; font-size:2rem; font-weight:900; color:#0d6e5f; letter-spacing:-.01em; line-height:1.1}
+  .vdivider{display:flex; align-items:center; justify-content:center; gap:.7rem; margin:1.1rem 0 1.2rem; color:rgba(200,137,43,.55)}
+  .vdivider::before,.vdivider::after{content:""; height:1px; width:64px; background:linear-gradient(90deg,transparent,rgba(200,137,43,.55))}
+  .vdivider::after{background:linear-gradient(90deg,rgba(200,137,43,.55),transparent)}
+  .vdivider svg{width:16px;height:16px;flex:none}
+
+  /* value spotlight */
+  .vvalue{text-align:center; margin:.2rem 0 1.3rem}
+  .vvalue small{display:block; font-size:.72rem; font-weight:700; letter-spacing:.16em; color:#a9741f; text-transform:uppercase}
+  .vvalue b{display:block; font-size:2.9rem; font-weight:900; color:#12312b; font-variant-numeric:tabular-nums; line-height:1.1;
+    background:linear-gradient(180deg,#3a2707,#7a5a1c); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+
+  .vmeta{display:grid; grid-template-columns:1fr 1fr; gap:.5rem .9rem; margin:0 auto 1.2rem; max-width:88%}
+  .vmeta .mrow{display:flex; flex-direction:column; gap:.05rem; padding:.5rem .2rem; border-bottom:1px dashed rgba(200,137,43,.3)}
+  .vmeta .mrow small{font-size:.68rem; color:#a9741f; font-weight:700; letter-spacing:.04em}
+  .vmeta .mrow b{font-size:.95rem; color:#3a2f1a; font-weight:700}
+
+  /* unique code — the ticket stub */
+  .vcode{position:relative; text-align:center; margin:0 auto; max-width:88%;
+    background:linear-gradient(180deg,#0d6e5f,#0a5346); color:#fff; border-radius:1rem; padding:1rem 1.2rem;
+    box-shadow:0 16px 30px -18px rgba(10,70,60,.7)}
+  .vcode::before,.vcode::after{content:""; position:absolute; top:50%; width:20px; height:20px; border-radius:999px;
+    background:#f7ead0; transform:translateY(-50%)}
+  .vcode::before{inset-inline-start:-10px} .vcode::after{inset-inline-end:-10px}
+  .vcode small{display:block; font-size:.68rem; color:rgba(255,255,255,.75); letter-spacing:.2em; font-weight:700}
+  .vcode b{display:block; font-size:1.7rem; font-weight:900; color:#f3d9a6; letter-spacing:.24em; font-variant-numeric:tabular-nums; margin-top:.25rem}
+
+  .vbarcode{display:flex; gap:2px; justify-content:center; margin-top:.7rem; height:26px; opacity:.9}
+  .vbarcode i{display:block; width:2px; background:rgba(255,255,255,.85); border-radius:1px}
+
+  .vfoot{position:relative; z-index:4; text-align:center; padding:1rem 2rem 1.8rem; font-size:.74rem; color:#8a6a2c; line-height:1.6}
+  .vfoot .heart{color:#c8892b}
+  .emailhint{max-width:540px; margin:1.2rem auto 0; text-align:center; font-size:.84rem; color:var(--muted)}
+  @media(max-width:520px){ .vmeta{grid-template-columns:1fr} .vplace{font-size:1.6rem} .vvalue b{font-size:2.3rem} }
 
   .toolbar{display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem}
   .search{flex:1; min-width:180px; display:flex; align-items:center; gap:.5rem; background:#fff; border:1px solid var(--line); border-radius:999px; padding:.5rem .9rem; color:var(--muted); font-size:.84rem}
@@ -492,23 +543,48 @@
         </div>
       </div>
 
-      <div class="voucher">
-        <div class="vtop">
-          <span class="brandtag">🎟️ שובר אוטומטי</span>
-          <small>שובר מתנה</small>
-          <h2 id="v-place">סופר השכונה</h2>
-        </div>
-        <div class="vbody">
-          <div class="vrow"><span>לכבוד</span><b>יעל אזולאי</b></div>
-          <div class="vrow"><span>ערך השובר</span><b>₪ 500</b></div>
-          <div class="vrow"><span>תאריך הפקה</span><b>17.09.2026</b></div>
-          <div class="vrow"><span>בתוקף עד</span><b>17.03.2027</b></div>
-          <div class="vcode">
-            <small>מספר שובר ייחודי</small>
-            <b>100483</b>
+      <div class="giftwrap">
+        <div class="voucher">
+          <div class="sheen"></div>
+          <div class="ribbon"><span>מתנה</span></div>
+
+          <div class="vinner">
+            <div class="vhead">
+              <div class="vbow">🎁</div>
+              <div class="vbrandtag">🎟️ שובר אוטומטי</div>
+            </div>
+
+            <div style="text-align:center">
+              <div class="vkicker">שובר מתנה</div>
+              <div class="vtitle">לכבוד יעל אזולאי, בהוקרה על תרומתך</div>
+              <div class="vplace" id="v-place">סופר השכונה</div>
+            </div>
+
+            <div class="vdivider" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5.9L21 8.6l-4.8 4.2L17.6 20 12 16.5 6.4 20l1.4-7.2L3 8.6l6.6-.7z"/></svg>
+            </div>
+
+            <div class="vvalue">
+              <small>ערך השובר</small>
+              <b>₪ 500</b>
+            </div>
+
+            <div class="vmeta">
+              <div class="mrow"><small>תאריך הפקה</small><b>17.09.2026</b></div>
+              <div class="mrow"><small>בתוקף עד</small><b>17.03.2027</b></div>
+            </div>
+
+            <div class="vcode">
+              <small>מספר שובר ייחודי</small>
+              <b>100483</b>
+              <div class="vbarcode" aria-hidden="true">
+                <i style="height:70%"></i><i style="height:100%"></i><i style="height:45%"></i><i style="height:85%"></i><i style="height:60%"></i><i style="height:100%"></i><i style="height:40%"></i><i style="height:75%"></i><i style="height:95%"></i><i style="height:55%"></i><i style="height:100%"></i><i style="height:65%"></i><i style="height:80%"></i><i style="height:45%"></i><i style="height:90%"></i><i style="height:100%"></i><i style="height:50%"></i><i style="height:70%"></i>
+              </div>
+            </div>
           </div>
+
+          <div class="vfoot">להצגה בקופה בעת המימוש <span class="heart">·</span> הופק אוטומטית ואינו ניתן לשכפול <span class="heart">·</span> תודה שאתם איתנו <span class="heart">♥</span></div>
         </div>
-        <div class="vfoot">להצגה בקופה בעת המימוש · שובר זה הופק אוטומטית ואינו ניתן לשכפול</div>
       </div>
       <p class="emailhint">✉️ נשלח אל <b>yael•••@mail.com</b> · המלאי של המקום שנבחר התעדכן אוטומטית.</p>
     </section>

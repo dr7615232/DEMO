@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בונה הקטלוג · תוכי פרינט</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#f3f4e7; --surface:#fbfbf3; --ink:#363a1f; --ink-soft:#5f6440;
+  --num:#a2a877; --line:#d8dbbe; --line-strong:#c3c79f; --lime:#bcd42e; --lime-deep:#8f9f22;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:'Assistant','Segoe UI',Arial,sans-serif;font-weight:400;
+  line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:940px;margin:0 auto;padding:0 26px}
+
+/* ---------- header ---------- */
+header{padding:52px 0 20px}
+.wordmark{display:flex;align-items:center;gap:14px;margin-bottom:46px}
+.wordmark img{height:44px;width:auto;border-radius:9px}
+.wordmark .wm-tt{display:flex;flex-direction:column;line-height:1.25}
+.wordmark .wm-tt b{font-size:16px;font-weight:700;letter-spacing:.2px}
+.wordmark .wm-tt span{font-size:13px;color:var(--ink-soft);font-weight:400}
+h1{font-size:46px;line-height:1.12;font-weight:800;margin:0 0 22px;max-width:16ch;letter-spacing:-.4px}
+.lead{font-size:19px;color:var(--ink-soft);font-weight:400;max-width:60ch;margin:0}
+
+/* ---------- demo bar ---------- */
+.softcall{font-size:17px;color:var(--lime-deep);font-weight:600;margin:40px 0 14px}
+.demobar{display:flex;align-items:center;gap:16px;background:var(--surface);
+  border:1px solid var(--line-strong);border-radius:18px;padding:16px 20px;
+  text-decoration:none;color:inherit;transition:.18s;max-width:560px}
+.demobar:hover{border-color:var(--lime-deep);transform:translateY(-1px)}
+.demobar .play{flex:none;width:52px;height:52px;border-radius:50%;background:var(--lime);
+  display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:20px;
+  box-shadow:0 4px 14px rgba(143,159,34,.28)}
+.demobar .db-tt{display:flex;flex-direction:column;line-height:1.3}
+.demobar .db-tt b{font-size:17px;font-weight:700}
+.demobar .db-tt span{font-size:14px;color:var(--ink-soft)}
+.demobar .db-go{margin-right:auto;color:var(--lime-deep);font-size:22px;font-weight:700}
+
+/* ---------- numbered sections ---------- */
+.sections{margin:64px 0 0;border-top:1px solid var(--line)}
+.sec{display:grid;grid-template-columns:1fr 1fr;gap:34px;
+  padding:40px 0;border-bottom:1px solid var(--line)}
+.sec .snum{font-size:15px;font-weight:700;color:var(--num);letter-spacing:1px}
+.sec .stitle{font-size:26px;font-weight:700;margin:8px 0 0;line-height:1.2}
+.sec .sbody{font-size:17px;color:var(--ink-soft);font-weight:400}
+.sec .sbody p{margin:0 0 14px}
+.sec .sbody p:last-child{margin-bottom:0}
+
+/* full-width feature + result */
+.sec.full{grid-template-columns:1fr;gap:18px}
+.sec.full .stitle{font-size:30px;max-width:20ch}
+.featlist{list-style:none;margin:14px 0 0;padding:0;
+  display:grid;grid-template-columns:1fr 1fr;gap:14px 30px}
+.featlist li{position:relative;padding-right:30px;font-size:17px;color:var(--ink);font-weight:500}
+.featlist li::before{content:"";position:absolute;right:0;top:9px;width:14px;height:14px;
+  border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(188,212,46,.22)}
+
+.sec.result{border-bottom:none}
+.result .topline{height:4px;width:64px;background:var(--lime);border-radius:3px;margin-bottom:20px}
+.result .stitle{font-size:34px;max-width:22ch;font-weight:800;color:var(--ink)}
+.result .rlede{font-size:18px;color:var(--ink-soft);margin-top:16px;max-width:62ch}
+
+/* ---------- footer ---------- */
+footer{background:var(--surface);border-top:1px solid var(--line-strong);margin-top:0}
+.foot{padding:56px 0 60px;text-align:center}
+.foot .fcall{font-size:24px;font-weight:700;max-width:24ch;margin:0 auto 26px;line-height:1.3}
+.btn-demo{display:inline-flex;align-items:center;gap:11px;background:var(--lime);color:var(--ink);
+  text-decoration:none;font-size:18px;font-weight:700;padding:15px 36px;border-radius:40px;
+  box-shadow:0 6px 20px rgba(143,159,34,.3);transition:.18s}
+.btn-demo:hover{background:var(--lime-deep);color:var(--surface);transform:translateY(-2px)}
+.btn-demo .c{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.55);
+  display:flex;align-items:center;justify-content:center;font-size:13px}
+.btn-demo:hover .c{background:rgba(255,255,255,.22)}
+.demonote{font-size:13px;color:var(--num);margin-top:22px}
+
+@media(max-width:720px){
+  header{padding:38px 0 8px}
+  .wordmark{margin-bottom:34px}
+  h1{font-size:33px}
+  .lead{font-size:17px}
+  .sec{grid-template-columns:1fr;gap:12px;padding:32px 0}
+  .featlist{grid-template-columns:1fr}
+  .result .stitle{font-size:27px}
+  .foot .fcall{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="wordmark">
+      <img src="data:image/webp;base64,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" alt="תוכי פרינט">
+      <div class="wm-tt">
+        <b>בונה הקטלוג</b>
+        <span>קטלוג מוצרים אישי, שמתעדכן איתך</span>
+      </div>
+    </div>
+    <h1>הקטלוג של תוכי פרינט, מוכן לשליחה בכמה נגיעות</h1>
+    <p class="lead">מאות מוצרים מודפסים, מחירים שמתעדכנים לבד ושער חגיגי שנפתח בכל עונה מחדש. במקום להרכיב קטלוג מההתחלה כל פעם, בוחרים מה נכנס החודש והלקוחות מקבלים משהו יפה ומדויק.</p>
+
+    <p class="softcall">הכי קל להבין כשרואים. הצצה קצרה למערכת בפעולה:</p>
+    <a class="demobar" href="https://claude.ai/artifact/N6HuWafMG1kLRiFnvZsX6p" target="_blank" rel="noopener">
+      <span class="play">▶</span>
+      <span class="db-tt">
+        <b>לצפייה בדמו החי</b>
+        <span>בונה הקטלוג, שער הלקוח וטופס ההזמנה</span>
+      </span>
+      <span class="db-go">‹</span>
+    </a>
+  </header>
+
+  <div class="sections">
+
+    <section class="sec">
+      <div>
+        <div class="snum">01</div>
+        <h2 class="stitle">הבעיה</h2>
+      </div>
+      <div class="sbody">
+        <p>לתוכי פרינט יש מאות מוצרים, ובכל עונה צריך להוציא ללקוחות קטלוג מעודכן. להרכיב אותו ידנית זו עבודה שחוזרת שוב ושוב, ואף פעם אין ביטחון שהמחיר הנכון הגיע לעמוד הנכון.</p>
+        <p>וכשלקוחה סוף סוף בוחרת מה היא רוצה, ההזמנה חוזרת בהודעות מפוזרות שצריך לאסוף ולסכם ביד.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div>
+        <div class="snum">02</div>
+        <h2 class="stitle">לפני</h2>
+      </div>
+      <div class="sbody">
+        <p>קודם הכול חי במסמכים ובקבצים נפרדים. תמונות בתיקייה אחת, מחירים ברשימה אחרת, ומערכת קטנה שכל שינוי בה דורש לפתוח מחדש, להעתיק ולהדביק.</p>
+        <p>כל קטלוג חדש התחיל כמעט מאפס, וכל טעות קטנה נגררה עד ההזמנה של הלקוחה.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div>
+        <div class="snum">03</div>
+        <h2 class="stitle">הפתרון</h2>
+      </div>
+      <div class="sbody">
+        <p>מסך עבודה אחד שמחזיק את כל המוצרים עם התמונות, ומאפשר לבחור בסימון פשוט מה נכנס לקטלוג החודש.</p>
+        <p>מזינים מחיר ליחידה ומחיר לכמות, מסמנים את המוצרים הרצויים, וזהו. הכול נשמר תוך כדי, בלי לחשוש שמשהו ילך לאיבוד.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div>
+        <div class="snum">04</div>
+        <h2 class="stitle">האוטומציה</h2>
+      </div>
+      <div class="sbody">
+        <p>ברגע שמסמנים מוצר, הוא כבר יושב בשער הקטלוג ובטופס ההזמנה, מסודר לפי קטגוריה ועם המחיר הנכון לצידו.</p>
+        <p>השער החגיגי, פרטי הקשר וההנחה לבעלי שובר מתעדכנים לבד, כך שהקטלוג תמיד נראה שלם ומוכן לשליחה.</p>
+      </div>
+    </section>
+
+    <section class="sec full">
+      <div>
+        <div class="snum">05</div>
+        <h2 class="stitle">מה שהמערכת עושה לבד</h2>
+      </div>
+      <ul class="featlist">
+        <li>אוספת את כל המוצרים שנבחרו לתוך קטלוג מעוצב, מסודר לפי קטגוריה</li>
+        <li>מרכיבה שער חגיגי עם הלוגו, הסלוגן ופרטי הקשר של העסק</li>
+        <li>בוחרת לבד את המחיר הנכון, ליחידה או לכמות גדולה</li>
+        <li>פותחת ללקוחה טופס הזמנה נוח, שבו רק בוחרים כמויות</li>
+        <li>מסכמת את ההזמנה עם מספרים ברורים, כולל מע״מ אם צריך</li>
+        <li>שומרת הכול תוך כדי עבודה, בלי לחיצה על שמירה</li>
+      </ul>
+    </section>
+
+    <section class="sec full result">
+      <div class="topline"></div>
+      <h2 class="stitle">קטלוג יפה ומדויק, מוכן לשליחה בכמה נגיעות</h2>
+      <p class="rlede">מה שהיה עבודה חוזרת של עונה שלמה הופך לכמה דקות. בוחרים מה נכנס החודש, והלקוחות מקבלים קטלוג שלם עם שער חגיגי, מחירים נכונים וטופס הזמנה מזמין, בכל פעם מחדש.</p>
+    </section>
+
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <p class="fcall">רוצים לראות איך זה מרגיש? הדמו פתוח, בלי התקנה ובלי הרשמה.</p>
+    <a class="btn-demo" href="https://claude.ai/artifact/N6HuWafMG1kLRiFnvZsX6p" target="_blank" rel="noopener">
+      <span class="c">▶</span>
+      לצפייה בדמו החי
+    </a>
+    <p class="demonote">תצוגת דמו · הנתונים לדוגמה בלבד</p>
+  </div>
+</footer>
+
+</body>
+</html>

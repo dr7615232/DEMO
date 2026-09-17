@@ -4,6 +4,30 @@ A portfolio repository of project case studies.
 
 ## Projects
 
+### 🦜 [תוכי פרינט — בונה הקטלוג](./tuki/) — a self-updating product catalog builder for a print shop
+
+A Hebrew-RTL catalog builder for a print business with hundreds of products. Instead of
+rebuilding a catalog from scratch each season, the owner ticks which products go in this
+month; the system assembles a designed catalog with a festive cover, correct per-unit and
+bulk prices, and a ready-to-fill client order form — ready to send in a few clicks.
+
+**Stack:** Self-contained HTML · CSS · JavaScript (single-file demo, no build)
+
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): [`tuki/site/index.html`](./tuki/site/index.html)
+- 🦜 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/N6HuWafMG1kLRiFnvZsX6p
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+**📄 Project page (Hebrew):** [`tuki/site/index.html`](./tuki/site/index.html) — a designed,
+RTL Hebrew case-study page (cream/olive/lime style) telling the project story, with a link to the live demo. Open it in a browser (no build).
+
+**🦜 Interactive UI demo:** [`tuki/demo/index.html`](./tuki/demo/index.html) — a self-contained
+reconstruction of the catalog builder, the client cover page and the order form, in Hebrew (RTL)
+with example data. Open it in a browser (no build step).
+
+---
+
 ### 🌞 [SUNSUITE](./sunsuite/) — booking & operations platform for luxury vacation-rental and spa complexes
 
 A production, Hebrew-RTL platform where guests book short-stay suites and a private

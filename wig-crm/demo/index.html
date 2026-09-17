@@ -218,6 +218,27 @@
     border-radius:12px;padding:13px 16px;margin-bottom:18px;font-size:13.5px;color:var(--plum-deep);line-height:1.55}
   .info-note svg{color:var(--rose);margin-top:2px}
 
+  /* client card */
+  .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13.5px;font-weight:600;margin-bottom:14px;cursor:pointer;transition:.13s}
+  .back-link:hover{color:var(--rose)}
+  .back-link svg{width:16px;height:16px}
+  .ch-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+  .ch-top{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .ch-top h2{font-size:21px;font-weight:700;color:var(--plum-deep)}
+  .ch-client{font-size:13.5px;color:var(--muted);margin-top:6px}
+  .ch-mini{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);border-radius:12px;overflow:hidden;margin-top:20px}
+  @media(max-width:820px){.ch-mini{grid-template-columns:repeat(3,1fr)}}
+  .ch-mini .m{background:var(--surface);padding:14px 10px;text-align:center}
+  .ch-mini .mk{font-size:11.5px;color:var(--muted);font-weight:500}
+  .ch-mini .mv{font-size:18px;font-weight:700;color:var(--plum-deep);margin-top:4px;letter-spacing:-.3px}
+  .ch-mini .mv.neg{color:var(--danger)}
+  .ch-mini .mv.pos{color:var(--ok)}
+  .pill{font-size:11px;font-weight:700;padding:2px 10px;border-radius:99px}
+  .pill.paid{background:#E7F0E2;color:#4C6540}
+  .pill.due{background:var(--danger-wash);color:var(--danger)}
+  .pill.partial{background:#EFD6A9;color:#7E5A16}
+  .pill.neutral{background:var(--line-soft);color:var(--muted)}
+
   .view{display:none}
   .view.on{display:block;animation:fade .22s ease}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -304,6 +325,8 @@
       <section class="view" id="v-calendar"></section>
       <!-- ===== CLIENTS ===== -->
       <section class="view" id="v-clients"></section>
+      <!-- ===== CLIENT CARD ===== -->
+      <section class="view" id="v-clientcard"></section>
       <!-- ===== TASKS ===== -->
       <section class="view" id="v-tasks"></section>
       <!-- ===== DEALS ===== -->
@@ -384,11 +407,11 @@ const deals=[
 
 /* payments (money in) & expenses (money out) for current month */
 const payments=[
-  {clientId:"c2",amount:2000,method:"transfer",svcLabel:"מכירה · פאה חדשה"},
-  {clientId:"c1",amount:220,method:"bit",svcLabel:"סירוק"},
-  {clientId:"c5",amount:650,method:"card",svcLabel:"שדרוג"},
-  {clientId:"c4",amount:400,method:"cash",svcLabel:"שדרוג"},
-  {clientId:"c7",amount:1800,method:"transfer",svcLabel:"מכירה · יד שנייה"},
+  {clientId:"c2",amount:2000,method:"transfer",svcLabel:"מכירה · פאה חדשה",d:-1},
+  {clientId:"c1",amount:220,method:"bit",svcLabel:"סירוק",d:0},
+  {clientId:"c5",amount:650,method:"card",svcLabel:"שדרוג",d:-4},
+  {clientId:"c4",amount:400,method:"cash",svcLabel:"שדרוג",d:-2},
+  {clientId:"c7",amount:1800,method:"transfer",svcLabel:"מכירה · יד שנייה",d:-9},
 ];
 const expenses=[
   {title:"תשלום לספק",amount:1500,cat:"עבודות חוץ"},
@@ -495,15 +518,15 @@ function toggleTask(id,el){const t=tasks.find(x=>x.id===id);if(!t)return;t.done=
   el.classList.toggle("on");el.parentElement.querySelector(".t-title").classList.toggle("done");}
 
 function renderClients(){
-  const rows=clients.map(c=>`<tr>
+  const rows=clients.map(c=>`<tr onclick="openClientCard('${c.id}')" style="cursor:pointer">
     <td><div class="name-cell"><div class="avatar">${initials(c.name)}</div>
       <div><div class="cell-name">${c.name}</div><div class="cell-sub">${c.bday?"יום הולדת "+fmtDate(c.bday)+" · "+hebFull(c.bday):""}</div></div></div></td>
     <td><div>${c.phone}</div></td>
     <td>${badge(clientStatuses,c.statusId)}</td>
     <td>${c.groupId?badge(groups,c.groupId):'<span class="cell-sub">—</span>'}</td>
     <td><div class="row-actions">
-      <button class="icon-btn" title="עריכה" onclick="toast('פתיחת כרטיס לקוחה')">${ico.edit}</button>
-      <button class="icon-btn del" title="מחיקה" onclick="toast('מחיקה')">${ico.trash}</button></div></td></tr>`).join("");
+      <button class="icon-btn" title="כרטיס לקוחה" onclick="event.stopPropagation();openClientCard('${c.id}')">${ico.edit}</button>
+      <button class="icon-btn del" title="מחיקה" onclick="event.stopPropagation();toast('מחיקה')">${ico.trash}</button></div></td></tr>`).join("");
   document.getElementById("v-clients").innerHTML=`<div class="panel">
     <div class="panel-head"><h2>אנשי קשר (${clients.length})</h2>
       <div class="act">
@@ -513,6 +536,73 @@ function renderClients(){
   </div>`;
 }
 function fmtDate(iso){if(!iso)return "";const [y,m,d]=iso.split("-");return +d+" ב"+HE_MONTHS[+m-1];}
+function fmtDateBoth(dt){const d=(dt instanceof Date)?dt:new Date(dt+"T12:00:00");const g=d.toLocaleDateString("he-IL",{day:"numeric",month:"numeric",year:"2-digit"});const h=hebFull(d);return h?g+" · "+h:g;}
+
+/* ---- client card ---- */
+let currentClientId=null;
+function openClientCard(id){currentClientId=id;go("clientcard");}
+function visitPill(v){
+  if(evPending(v))return '<span class="pill neutral">נקבע · ממתין לשירות</span>';
+  const price=evTotal(v);if(price<=0)return '<span class="pill neutral">ללא חיוב</span>';
+  const p=paidFor(v);
+  if(p>=price)return '<span class="pill paid">שולם</span>';
+  if(p>0)return '<span class="pill partial">שולם חלקית</span>';
+  return '<span class="pill due">ממתין לתשלום</span>';
+}
+function renderClientCard(){
+  const c=clients.find(x=>x.id===currentClientId);
+  if(!c){go("clients");return;}
+  const visits=events.filter(e=>e.clientId===c.id&&e.type==="appt").sort((a,b)=>b.date-a.date);
+  const pays=payments.filter(p=>p.clientId===c.id).sort((a,b)=>(b.d||0)-(a.d||0));
+  const charged=visits.reduce((s,v)=>s+evTotal(v),0);
+  const paid=pays.reduce((s,p)=>s+p.amount,0);
+  const costs=visits.reduce((s,v)=>s+v.items.reduce((a,i)=>a+(Number(i.cost)||0),0),0);
+  const bal=charged-paid, profit=charged-costs;
+  const svcBtns=services.map(s=>`<button class="btn btn-rose btn-sm" onclick="toast('רישום מהיר: ${s.label}')">${ico.plus} ${s.label}</button>`).join("");
+  const visitRows=visits.map(v=>`<tr>
+    <td><div class="cell-name" style="font-weight:500">${evDate(v).toLocaleDateString("he-IL",{day:"numeric",month:"numeric",year:"2-digit"})}</div>
+      <div class="cell-sub">${hebFull(evDate(v))}</div></td>
+    <td>${v.items.length?v.items.map(i=>svcBadge(i.svc)).join(" "):`<span class="cell-sub">${v.title}</span>`}</td>
+    <td style="font-weight:700;color:var(--plum-deep)">${evTotal(v)?money(evTotal(v)):'<span class="cell-sub" style="font-weight:400">—</span>'}</td>
+    <td>${visitPill(v)}</td></tr>`).join("");
+  document.getElementById("v-clientcard").innerHTML=`
+  <a class="back-link" onclick="go('clients')">${ico.chevR} חזרה ללקוחות</a>
+  <div class="ch-hero">
+    <div class="ch-top">
+      <div class="avatar" style="width:48px;height:48px;font-size:17px">${initials(c.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h2>${c.name}</h2>${badge(clientStatuses,c.statusId)}${c.groupId?badge(groups,c.groupId):""}</div>
+        <div class="ch-client">${c.phone}${c.bday?" · יום הולדת "+fmtDateBoth(c.bday):""}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="toast('עריכת פרטי לקוחה')">${ico.edit} עריכה</button>
+    </div>
+    <div class="ch-mini">
+      <div class="m"><div class="mk">ביקורים</div><div class="mv">${visits.length}</div></div>
+      <div class="m"><div class="mk">סה״כ חיוב</div><div class="mv">${money(charged)}</div></div>
+      <div class="m"><div class="mk">שולם</div><div class="mv pos">${money(paid)}</div></div>
+      <div class="m"><div class="mk">${bal>0.5?"יתרה לתשלום":"מאוזן"}</div><div class="mv ${bal>0.5?'neg':'pos'}">${money(Math.abs(bal))}</div></div>
+      <div class="m"><div class="mk">עלויות</div><div class="mv">${money(costs)}</div></div>
+      <div class="m"><div class="mk">רווח</div><div class="mv ${profit>=0?'pos':'neg'}">${money(profit)}</div></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;align-items:center">
+      <span class="cell-sub" style="margin-inline-end:4px">רישום מהיר:</span>${svcBtns}
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-head"><h2>היסטוריית ביקורים</h2></div>
+      ${visits.length?`<table><thead><tr><th>תאריך</th><th>שירות</th><th>מחיר</th><th>תשלום</th></tr></thead><tbody>${visitRows}</tbody></table>`
+        :`<div class="empty" style="padding:34px"><p style="margin:0">אין עדיין ביקורים</p></div>`}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>תשלומים</h2><div class="act"><button class="btn btn-rose btn-sm" onclick="toast('רישום תשלום')">${ico.plus} תשלום</button></div></div>
+      ${pays.length?pays.map(p=>`<div class="exp-row">
+        <div style="flex:1"><div style="font-weight:600;color:var(--plum-deep)">${money(p.amount)}</div>
+          <div class="t-meta"><span class="badge" style="background:var(--rose-wash);color:var(--plum)">${methods[p.method]}</span> · ${p.svcLabel} · ${fmtDateBoth(dOff(p.d))}</div></div></div>`).join("")
+        :`<div class="empty" style="padding:28px"><p style="margin:0">אין תשלומים רשומים</p></div>`}
+    </div>
+  </div>`;
+}
 
 function renderTasks(){
   const open=tasks.filter(t=>!t.done),done=tasks.filter(t=>t.done);
@@ -729,14 +819,16 @@ function renderSettings(){
 const TITLES={dashboard:["לוח בקרה","מבט על מהיר"],calendar:["יומן","תורים וארועים"],
   clients:["לקוחות","כל אנשי הקשר במקום אחד"],tasks:["משימות","מה צריך לקרות ומתי"],
   deals:["פניות","צנרת הפניות והמכירות"],finances:["כספים","הכנסות והוצאות לפי חודשים"],
-  settings:["ניהול והגדרות","שליטה בשדות, סטטוסים והמחירון"]};
+  settings:["ניהול והגדרות","שליטה בשדות, סטטוסים והמחירון"],
+  clientcard:["כרטיס לקוחה","היסטוריה, תשלומים ורווח"]};
 const RENDER={dashboard:renderDashboard,calendar:renderCalendar,clients:renderClients,
-  tasks:renderTasks,deals:renderDeals,finances:renderFinances,settings:renderSettings};
+  tasks:renderTasks,deals:renderDeals,finances:renderFinances,settings:renderSettings,clientcard:renderClientCard};
 function go(v){
+  const navKey=(v==="clientcard")?"clients":v;
   document.querySelectorAll(".view").forEach(s=>s.classList.remove("on"));
   document.getElementById("v-"+v).classList.add("on");
-  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
-  document.querySelectorAll(".mnav button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===navKey));
+  document.querySelectorAll(".mnav button").forEach(b=>b.classList.toggle("active",b.dataset.view===navKey));
   document.getElementById("pg-title").textContent=TITLES[v][0];
   document.getElementById("pg-sub").textContent=TITLES[v][1];
   RENDER[v]();
@@ -756,7 +848,7 @@ function toast(msg){
 
 /* mobile nav */
 (function(){const mnav=document.getElementById("mnav");
-  Object.keys(TITLES).forEach(v=>{const b=document.createElement("button");b.dataset.view=v;b.textContent=TITLES[v][0];
+  Object.keys(TITLES).filter(v=>v!=="clientcard").forEach(v=>{const b=document.createElement("button");b.dataset.view=v;b.textContent=TITLES[v][0];
     if(v==="dashboard")b.classList.add("active");b.onclick=()=>go(v);mnav.appendChild(b);});})();
 
 go("dashboard");

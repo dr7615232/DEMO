@@ -69,3 +69,41 @@ reports, broadcast, finances, settings, phone-line settings, and logs. Open it i
 
 > ℹ️ These are portfolio materials describing a real client system. Before making anything
 > public, review the anonymization checklist in [`zramim/docs/README.md`](./zramim/docs/README.md).
+
+---
+
+### 🌸 [Wig CRM (אומנות בפאות)](./wig-crm/) — a whole wig-studio business in one offline HTML file
+
+A production, Hebrew-RTL business-management system for a wig studio, delivered as a **single,
+self-contained HTML file** that runs offline by double-click — no install, no server, no
+internet, zero dependencies. One interface runs the whole business: clients, a two-stage
+appointment calendar, tasks, a sales pipeline, and a finance suite. Its heart is the money
+model: a product's cost and supplier hang off the price list, so every sale computes true
+profit, auto-posts a charge to a self-reconciling supplier ledger, and never shows the cost on
+the screen the customer can see.
+
+**Stack:** Vanilla JavaScript (no framework, no build) · HTML5 · CSS3 · localStorage ·
+File System Access API · IndexedDB · fully offline
+
+**▶ צפייה חיה / Live:**
+- 📄 עמוד הפרויקט (Project page): https://claude.ai/artifact/3BpMvdsk3X7rgx3A9m1yAu
+- 🌸 דמו אינטראקטיבי (Interactive demo): https://claude.ai/artifact/3dWkLcgWaeR2ThY3n5XnEq
+
+*(הקישורים פרטיים — נפתחים כשאת מחוברת לחשבון Claude שלך.)*
+
+Start with **[`wig-crm/docs/README.md`](./wig-crm/docs/README.md)** for the full index, or jump to
+the **[case study](./wig-crm/docs/case-study.md)**.
+
+**📄 Project page (Hebrew):** [`wig-crm/site/index.html`](./wig-crm/site/index.html) — a designed,
+RTL Hebrew case-study page telling the project story: the problem, the features, and the money
+that adds up by itself, with a link to the live demo. Open it in a browser (no build).
+
+**🌸 Interactive UI demo:** [`wig-crm/demo/index.html`](./wig-crm/demo/index.html) — a faithful,
+self-contained reconstruction of the real system's screens in Hebrew (RTL) with demo data:
+dashboard, calendar, clients, tasks, deals, finances (overview, transactions, upcoming, suppliers),
+and settings. Open it in a browser (no build step). Uses example data only — no real customers.
+
+> ℹ️ These are portfolio materials describing a real client system. The client's real logo
+> contains a personal name and is deliberately excluded; the pages use a neutral wordmark.
+> Before making anything public, review the anonymization checklist in
+> [`wig-crm/docs/README.md`](./wig-crm/docs/README.md).

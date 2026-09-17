@@ -1,0 +1,73 @@
+{
+  "slug": "wig-crm",
+  "name": "Wig CRM",
+  "nameHebrew": "אומנות בפאות",
+  "tagline": "A whole wig business in one offline HTML file",
+  "oneLiner": "A production, Hebrew-RTL business-management system for a wig studio, delivered as a single self-contained HTML file that runs offline by double-click: clients, a two-stage appointment calendar, a per-sale cost/supplier ledger, profit tracking that never exposes cost to the customer, and rule-based reminder automations.",
+  "role": "Full-stack engineer & system designer (sole developer)",
+  "status": "Production / client delivery",
+  "year": 2026,
+  "language": "Hebrew (RTL)",
+  "clientType": "Small business — wig studio (custom & second-hand wigs, styling, upgrades)",
+  "audience": "Business owner (non-technical)",
+  "confidential": true,
+  "repositoryVisibility": "private",
+  "metrics": {
+    "deliverable": "Single HTML file",
+    "totalLines": 2495,
+    "jsLines": 1957,
+    "namedFunctions": 228,
+    "cssRuleBlocks": 396,
+    "fileSizeKb": 300,
+    "externalDependencies": 0,
+    "buildStep": "none",
+    "backend": "none",
+    "inlineSvgIcons": 35,
+    "dataCollections": 10,
+    "screens": 8
+  },
+  "stack": {
+    "language": ["Vanilla JavaScript (ES2019+)", "HTML5", "CSS3"],
+    "framework": ["None — hand-rolled hash-free view router, string-template rendering"],
+    "storage": ["localStorage (always-on)", "File System Access API (optional local-file sync)", "IndexedDB (persisting the file handle)"],
+    "persistenceModel": ["Single JSON document", "JSON backup / restore", "CSV & Excel-compatible import/export"],
+    "offline": ["Runs fully from file:// with no network"],
+    "assets": ["Base64-inlined logo & favicon (no external image requests)"]
+  },
+  "highlights": [
+    "An entire business system delivered as one ~300 KB HTML file that opens by double-click and needs no install, no server, and no internet",
+    "Cost and supplier are attached to the sub-service (product), not to the payment, so every sale computes true profit automatically",
+    "Selling a product auto-posts a charge to that supplier's rolling ledger, keyed by the source appointment, so the supplier balance is always right with zero manual entry",
+    "Two-stage appointment flow: booked by phone with only a service, then the exact sub-service (and its price/cost) is captured on arrival",
+    "Customer profit uses charge minus cost (not paid minus cost), so a partial payment never distorts the monthly profit",
+    "Cost fields live only in a hidden internal area — the screen the customer can see never shows what a wig cost the studio",
+    "Idempotent reminder engine: one-day-before wash reminders and birthday greetings are created once each via per-rule log keys",
+    "Optional true local-file persistence via the File System Access API, with the file handle preserved across sessions in IndexedDB",
+    "Every screen rendered with plain template strings and a tiny router — no framework, no virtual DOM, no build pipeline",
+    "Full RTL Hebrew UI with a consistent rose-gold design system and forms designed to never scroll"
+  ],
+  "features": [
+    "Dashboard: today's appointments, open tasks, due auto-reminders, and this month's profit at a glance",
+    "Calendar: month grid of appointments and events, with Hebrew month names",
+    "Clients: contacts with statuses, groups, birthdays; CSV import and Excel export",
+    "Tasks: manual and auto-generated to-dos with priorities",
+    "Deals: a five-stage inquiry/sales pipeline",
+    "Finances — four tabs: overview (income, supplier cost, expenses, net profit, open debts, trend, by-service), transactions, upcoming payments (6-month credit & supplier forecast), suppliers (rolling account)",
+    "Settings: services & price list, payment methods, cards, groups, statuses, suppliers, automations, and business branding",
+    "Client card: per-customer visit history, payments, expenses and running balance"
+  ],
+  "engineeringDecisions": [
+    "Model the business rule 'appointment = what was sold, payment = money in, expense = money out, supplier = what is owed' as the single source of truth",
+    "Attach cost/supplier to the sub-service so the money math survives partial payments and price changes",
+    "Regenerate the supplier ledger deterministically from appointments (delete-then-rebuild by sourceEvent key) so re-saving an appointment is always consistent",
+    "Write to localStorage on every mutation; mirror to a real file only when a handle is connected, with debounced writes",
+    "Keep all state in one JSON document to make backup, restore, and file-sync trivial",
+    "Ship zero dependencies and inline every asset so the file keeps working offline, forever, with no supply chain"
+  ],
+  "links": {
+    "liveDemo": "https://claude.ai/artifact/3dWkLcgWaeR2ThY3n5XnEq",
+    "projectPage": "https://claude.ai/artifact/3BpMvdsk3X7rgx3A9m1yAu",
+    "repository": null,
+    "caseStudy": "case-study.md"
+  }
+}
